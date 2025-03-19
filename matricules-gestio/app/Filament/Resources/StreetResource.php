@@ -25,12 +25,15 @@ class StreetResource extends Resource
 {
     protected static ?string $model = Street::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-map';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('CARCOD')
+                    ->required()
+                    ->numeric(),
                 Forms\Components\TextInput::make('PAISCOD')
                     ->required()
                     ->numeric(),
