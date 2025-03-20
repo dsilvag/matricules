@@ -19,6 +19,50 @@ class Dwelling extends Model
 
     protected $guarded=[];
 
+    protected $fillable = [
+        'DOMCOD',
+        'PAISCOD',
+        'PROVCOD',
+        'MUNICOD',
+        'CARCOD',
+        'PSEUDOCOD',
+        'GISCOD',
+        'DOMNUM',
+        'DOMBIS',
+        'DOMNUM2',
+        'DOMBIS2',
+        'DOMESC',
+        'DOMPIS',
+        'DOMPTA',
+        'DOMBLOC',
+        'DOMPTAL',
+        'DOMKM',
+        'DOMHM',
+        'DOMTLOC',
+        'APCORREUS',
+        'DOMTIP',
+        'DOMOBS',
+        'VALDATA',
+        'BAIXASW',
+        'STDAPLADD',
+        'STDAPLMOD',
+        'STDUGR',
+        'STDUMOD',
+        'STDDGR',
+        'STDDMOD',
+        'STDHGR',
+        'STDHMOD',
+        'DOMCP',
+        'X',
+        'Y',
+        'POBLDESC',
+        'GID',
+        'SWREVISAT',
+        'REFCADASTRAL',
+        'SWPARE',
+        'CIV',
+    ];
+
     /**
      *  Get the Street 
      *

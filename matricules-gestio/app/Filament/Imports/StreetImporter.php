@@ -14,6 +14,10 @@ class StreetImporter extends Importer
     public static function getColumns(): array
     {
         return [
+            ImportColumn::make('CARCOD')
+                ->requiredMapping()
+                ->numeric()
+                ->rules(['required', 'integer']),
             ImportColumn::make('PAISCOD')
                 ->requiredMapping()
                 ->numeric()
@@ -27,52 +31,52 @@ class StreetImporter extends Importer
                 ->numeric()
                 ->rules(['required', 'integer']),
             ImportColumn::make('CARSIG')
-                ->rules(['max:5']),
+                ->rules(['max:5', 'nullable']),
             ImportColumn::make('CARPAR')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('CARDESC')
                 ->requiredMapping()
                 ->rules(['required', 'max:50']),
             ImportColumn::make('CARDESC2')
-                ->rules(['max:25']),
+                ->rules(['max:25', 'nullable']),
             ImportColumn::make('STDUGR')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('STDUMOD')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('STDDGR')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('STDDMOD')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('STDHGR')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('STDHMOD')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('VALDATA')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('BAIXASW')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
             ImportColumn::make('INICIFI')
-                ->rules(['max:4000']),
+                ->rules(['max:4000', 'nullable']),
             ImportColumn::make('OBSERVACIONS')
-                ->rules(['max:4000']),
+                ->rules(['max:4000', 'nullable']),
             ImportColumn::make('ORGCOD')
-                ->rules(['max:4']),
+                ->rules(['max:4', 'nullable']),
             ImportColumn::make('ORGDATA')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('ORGOBS')
-                ->rules(['max:4000']),
+                ->rules(['max:4000', 'nullable']),
             ImportColumn::make('PLACA')
-                ->rules(['max:255']),
+                ->rules(['max:255', 'nullable']),
             ImportColumn::make('GENERIC')
-                ->rules(['max:50']),
+                ->rules(['max:50', 'nullable']),
             ImportColumn::make('ESPECIFIC')
-                ->rules(['max:50']),
+                ->rules(['max:50', 'nullable']),
             ImportColumn::make('TEMATICA')
-                ->rules(['max:50']),
+                ->rules(['max:50', 'nullable']),
             ImportColumn::make('SEXE')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
             ImportColumn::make('LOCAL')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
         ];
     }
 

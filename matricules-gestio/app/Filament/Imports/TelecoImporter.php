@@ -23,27 +23,27 @@ class TelecoImporter extends Importer
                 ->numeric()
                 ->rules(['required', 'integer']),
             ImportColumn::make('TIPCONTACTE')
-                ->rules(['max:4']),
+                ->rules(['max:4', 'nullable']),
             ImportColumn::make('CONTACTE')
-                ->rules(['max:255']),
+                ->rules(['max:255', 'nullable']),
             ImportColumn::make('OBSERVACIONS')
-                ->rules(['max:255']),
+                ->rules(['max:255', 'nullable']),
             ImportColumn::make('STDUGR')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('STDUMOD')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('STDDGR')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('STDDMOD')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('STDHGR')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('STDHMOD')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('VALDATA')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('BAIXASW')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
         ];
     }
 

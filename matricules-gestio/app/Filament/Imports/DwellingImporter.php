@@ -14,99 +14,102 @@ class DwellingImporter extends Importer
     public static function getColumns(): array
     {
         return [
+            ImportColumn::make('DOMCOD')
+                ->numeric()
+                ->rules(['integer']),
             ImportColumn::make('PAISCOD')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('PROVCOD')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('MUNICOD')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('CARCOD')
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'integer']),
             ImportColumn::make('PSEUDOCOD')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('GISCOD')
-                ->rules(['max:255']),
+                ->rules(['max:255', 'nullable']),
             ImportColumn::make('DOMNUM')
-                ->rules(['max:4']),
+                ->rules(['max:4', 'nullable']),
             ImportColumn::make('DOMBIS')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
             ImportColumn::make('DOMNUM2')
-                ->rules(['max:4']),
+                ->rules(['max:4', 'nullable']),
             ImportColumn::make('DOMBIS2')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
             ImportColumn::make('DOMESC')
-                ->rules(['max:2']),
+                ->rules(['max:2', 'nullable']),
             ImportColumn::make('DOMPIS')
-                ->rules(['max:3']),
+                ->rules(['max:3', 'nullable']),
             ImportColumn::make('DOMPTA')
-                ->rules(['max:4']),
+                ->rules(['max:4', 'nullable']),
             ImportColumn::make('DOMBLOC')
-                ->rules(['max:2']),
+                ->rules(['max:2', 'nullable']),
             ImportColumn::make('DOMPTAL')
-                ->rules(['max:2']),
+                ->rules(['max:2', 'nullable']),
             ImportColumn::make('DOMKM')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('DOMHM')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('DOMTLOC')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
             ImportColumn::make('APCORREUS')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('DOMTIP')
-                ->rules(['max:4']),
+                ->rules(['max:4', 'nullable']),
             ImportColumn::make('DOMOBS')
-                ->rules(['max:256']),
+                ->rules(['max:256', 'nullable']),
             ImportColumn::make('VALDATA')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('BAIXASW')
-                ->rules(['max:1']),
+                ->rules(['max:1', 'nullable']),
             ImportColumn::make('STDAPLADD')
-                ->rules(['max:5']),
+                ->rules(['max:5', 'nullable']),
             ImportColumn::make('STDAPLMOD')
-                ->rules(['max:5']),
+                ->rules(['max:5', 'nullable']),
             ImportColumn::make('STDUGR')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('STDUMOD')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('STDDGR')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('STDDMOD')
-                ->rules(['max:8']),
+                ->rules(['max:8', 'nullable']),
             ImportColumn::make('STDHGR')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('STDHMOD')
-                ->rules(['max:6']),
+                ->rules(['max:6', 'nullable']),
             ImportColumn::make('DOMCP')
-                ->rules(['max:20']),
+                ->rules(['max:20', 'nullable']),
             ImportColumn::make('X')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('Y')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('POBLDESC')
-                ->rules(['max:50']),
+                ->rules(['max:50', 'nullable']),
             ImportColumn::make('GID')
-                ->rules(['max:32']),
+                ->rules(['max:32', 'nullable']),
             ImportColumn::make('SWREVISAT')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('REFCADASTRAL')
-                ->rules(['max:255']),
+                ->rules(['max:255', 'nullable']),
             ImportColumn::make('SWPARE')
                 ->numeric()
-                ->rules(['integer']),
+                ->rules(['integer', 'nullable']),
             ImportColumn::make('CIV')
-                ->rules(['max:24']),
+                ->rules(['max:24', 'nullable']),
         ];
     }
 
