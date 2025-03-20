@@ -57,6 +57,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
-            ]);
+            ])
+            ->favicon(asset('/logo/ajBny-nobg.png'))
+            ->brandName('AjBanyoles')
+            ->brandLogo(asset('/logo/ajBny-nobg.png'))
+            ->brandLogoHeight('3rem');
     }
 }

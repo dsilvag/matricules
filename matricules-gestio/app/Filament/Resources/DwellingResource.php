@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ExportAction;
 use App\Filament\Exports\DwellingExporter;
 use Filament\Tables\Actions\ExportBulkAction;
@@ -32,91 +33,84 @@ class DwellingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('DOMCOD')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('PAISCOD')
-                    ->numeric(),
-                Forms\Components\TextInput::make('PROVCOD')
-                    ->numeric(),
-                Forms\Components\TextInput::make('MUNICOD')
-                    ->numeric(),
-                Forms\Components\TextInput::make('CARCOD')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('PSEUDOCOD')
-                    ->numeric(),
-                Forms\Components\TextInput::make('GISCOD')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('DOMNUM')
-                    ->maxLength(4),
-                Forms\Components\TextInput::make('DOMBIS')
-                    ->maxLength(1),
-                Forms\Components\TextInput::make('DOMNUM2')
-                    ->maxLength(4),
-                Forms\Components\TextInput::make('DOMBIS2')
-                    ->maxLength(1),
-                Forms\Components\TextInput::make('DOMESC')
-                    ->maxLength(2),
-                Forms\Components\TextInput::make('DOMPIS')
-                    ->maxLength(3),
-                Forms\Components\TextInput::make('DOMPTA')
-                    ->maxLength(4),
-                Forms\Components\TextInput::make('DOMBLOC')
-                    ->maxLength(2),
-                Forms\Components\TextInput::make('DOMPTAL')
-                    ->maxLength(2),
-                Forms\Components\TextInput::make('DOMKM')
-                    ->numeric(),
-                Forms\Components\TextInput::make('DOMHM')
-                    ->numeric(),
-                Forms\Components\TextInput::make('DOMTLOC')
-                    ->maxLength(1),
-                Forms\Components\TextInput::make('APCORREUS')
-                    ->numeric(),
-                Forms\Components\TextInput::make('DOMTIP')
-                    ->maxLength(4),
-                Forms\Components\TextInput::make('DOMOBS')
-                    ->maxLength(256),
-                Forms\Components\TextInput::make('VALDATA')
-                    ->maxLength(8),
-                Forms\Components\TextInput::make('BAIXASW')
-                    ->maxLength(1),
-                Forms\Components\TextInput::make('STDAPLADD')
-                    ->maxLength(5),
-                Forms\Components\TextInput::make('STDAPLMOD')
-                    ->maxLength(5),
-                Forms\Components\TextInput::make('STDUGR')
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('STDUMOD')
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('STDDGR')
-                    ->maxLength(8),
-                Forms\Components\TextInput::make('STDDMOD')
-                    ->maxLength(8),
-                Forms\Components\TextInput::make('STDHGR')
-                    ->maxLength(6),
-                Forms\Components\TextInput::make('STDHMOD')
-                    ->maxLength(6),
-                Forms\Components\TextInput::make('DOMCP')
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('X')
-                    ->numeric(),
-                Forms\Components\TextInput::make('Y')
-                    ->numeric(),
-                Forms\Components\TextInput::make('POBLDESC')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('GID')
-                    ->maxLength(32),
-                Forms\Components\TextInput::make('SWREVISAT')
-                    ->numeric(),
-                Forms\Components\TextInput::make('REFCADASTRAL')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('SWPARE')
-                    ->numeric(),
-                Forms\Components\TextInput::make('CIV')
-                    ->maxLength(24),
-            ]);
+                // Direcció
+                Section::make('Direcció')
+                    ->icon('heroicon-o-map-pin')
+                    ->description('Introduïu la informació relacionada amb la direcció del domicili.')
+                    ->schema([
+                        Forms\Components\TextInput::make('DOMCOD')->required()->numeric(),
+                        Forms\Components\TextInput::make('PAISCOD')->numeric(),
+                        Forms\Components\TextInput::make('PROVCOD')->numeric(),
+                        Forms\Components\TextInput::make('MUNICOD')->numeric(),
+                        Forms\Components\TextInput::make('CARCOD')->required()->numeric(),
+                        Forms\Components\TextInput::make('PSEUDOCOD')->numeric(),
+                        Forms\Components\TextInput::make('GISCOD')->maxLength(255),
+                        Forms\Components\TextInput::make('DOMNUM')->maxLength(4),
+                        Forms\Components\TextInput::make('DOMBIS')->maxLength(1),
+                        Forms\Components\TextInput::make('DOMNUM2')->maxLength(4),
+                        Forms\Components\TextInput::make('DOMBIS2')->maxLength(1),
+                        Forms\Components\TextInput::make('DOMESC')->maxLength(2),
+                        Forms\Components\TextInput::make('DOMPIS')->maxLength(3),
+                        Forms\Components\TextInput::make('DOMPTA')->maxLength(4),
+                        Forms\Components\TextInput::make('DOMBLOC')->maxLength(2),
+                        Forms\Components\TextInput::make('DOMPTAL')->maxLength(2),
+                        Forms\Components\TextInput::make('DOMKM')->numeric(),
+                        Forms\Components\TextInput::make('DOMHM')->numeric(),
+                        Forms\Components\TextInput::make('DOMTLOC')->maxLength(1),
+                        Forms\Components\TextInput::make('DOMTIP')->maxLength(4),
+                        Forms\Components\TextInput::make('DOMOBS')->maxLength(256),
+                ])->columnSpan(2)->columns(3),
+                        
+                // Estat i Validació
+                Section::make('Estat i Validació')
+                    ->icon('heroicon-o-check-circle')
+                    ->description('Indiqueu l\'estat de validació del domicili i altres dades associades.')
+                    ->schema([
+                        Forms\Components\TextInput::make('VALDATA')->maxLength(8),
+                        Forms\Components\TextInput::make('BAIXASW')->maxLength(1),
+                        Forms\Components\TextInput::make('SWREVISAT')->numeric(),
+                        Forms\Components\TextInput::make('SWPARE')->numeric(),
+                ])->columnSpan(1)->columns(2),
+
+                // Temps i Modificacions
+                Section::make('Temps i Modificacions')
+                    ->icon('heroicon-o-clock')
+                    ->description('Introduïu la informació sobre els canvis i modificacions de l\'habitatge.')
+                    ->schema([
+                        Forms\Components\TextInput::make('STDAPLADD')->maxLength(5),
+                        Forms\Components\TextInput::make('STDAPLMOD')->maxLength(5),
+                        Forms\Components\TextInput::make('STDUGR')->maxLength(20),
+                        Forms\Components\TextInput::make('STDUMOD')->maxLength(20),
+                        Forms\Components\TextInput::make('STDDGR')->maxLength(8),
+                        Forms\Components\TextInput::make('STDDMOD')->maxLength(8),
+                        Forms\Components\TextInput::make('STDHGR')->maxLength(6),
+                        Forms\Components\TextInput::make('STDHMOD')->maxLength(6),
+                ])->columnSpan(1)->columns(4),
+
+                // Informació Geogràfica i Catastral
+                Section::make('Informació Geogràfica i Catastral')
+                    ->icon('heroicon-o-flag')
+                    ->description('Dades relacionades amb la ubicació geogràfica i la informació catastral del domicili.')
+                    ->schema([
+                        Forms\Components\TextInput::make('APCORREUS')->numeric(),
+                        Forms\Components\TextInput::make('DOMCP')->maxLength(20),
+                        Forms\Components\TextInput::make('X')->numeric(),
+                        Forms\Components\TextInput::make('Y')->numeric(),
+                        Forms\Components\TextInput::make('POBLDESC')->maxLength(50),
+                        Forms\Components\TextInput::make('REFCADASTRAL')->maxLength(255),
+                        Forms\Components\TextInput::make('GID')->maxLength(32),
+                ])->columnSpan(1)->columns(3),
+
+                // Informació Cívica i Altres Dades
+                Section::make('Informació Cívica i Altres Dades')
+                    ->icon('heroicon-o-users')
+                    ->description('Incloeu informació relacionada amb el codi cívic i altres dades addicionals.')
+                    ->schema([
+                        Forms\Components\TextInput::make('CIV')->maxLength(24),
+                        Forms\Components\TextInput::make('GID')->maxLength(32),
+                        Forms\Components\TextInput::make('PSEUDOCOD')->numeric(),
+                    ])->columnSpan(1)->columns(3),
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table
