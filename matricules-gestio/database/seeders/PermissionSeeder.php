@@ -85,20 +85,16 @@ class PermissionSeeder extends Seeder
         ];
 
         #Permisos del panel User
-        /*$panelUserPermissions = [
-            'view_any_group',
-            'view_group',
-            'view_any_url',
-            'view_url',
-            'create_url',
-            'update_url',
-            'delete_url',
-            'delete_any_url',
-            'restore_url',
-            'restore_any_url',
-            'replicate_url',
-            'reorder_url',
-        ];*/
+        $panelUserPermissions = [
+           'view_any_dwelling',
+            'view_dwelling',
+            'view_any_person',
+            'view_person',
+            'view_any_street',
+            'view_street',
+            'view_any_teleco',
+            'view_teleco',
+        ];
         #Creem permisos
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -114,6 +110,6 @@ class PermissionSeeder extends Seeder
 
         $admin->syncPermissions($permissions);
 
-        #$panelUser->syncPermissions($panelUserPermissions);
+        $panelUser->syncPermissions($panelUserPermissions);
     }
 }
