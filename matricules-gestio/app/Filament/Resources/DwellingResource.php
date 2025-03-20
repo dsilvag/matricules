@@ -32,6 +32,9 @@ class DwellingResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('DOMCOD')
+                    ->required()
+                    ->numeric(),
                 Forms\Components\TextInput::make('PAISCOD')
                     ->numeric(),
                 Forms\Components\TextInput::make('PROVCOD')

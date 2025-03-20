@@ -19,6 +19,36 @@ class Street extends Model
 
     protected $guarded = [];
 
+    protected $fillable = [
+        'PAISCOD',
+        'PROVCOD',
+        'MUNICOD',
+        'CARCOD',
+        'CARSIG',
+        'CARPAR',
+        'CARDESC',
+        'CARDESC2',
+        'STDUGR',
+        'STDUMOD',
+        'STDDGR',
+        'STDDMOD',
+        'STDHGR',
+        'STDHMOD',
+        'VALDATA',
+        'BAIXASW',
+        'INICIFI',
+        'OBSERVACIONS',
+        'ORGCOD',
+        'ORGDATA',
+        'ORGOBS',
+        'PLACA',
+        'GENERIC',
+        'ESPECIFIC',
+        'TEMATICA',
+        'SEXE',
+        'LOCAL',
+    ];
+
     /**
      *  Get all of dwellings for the Street
      *

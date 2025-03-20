@@ -14,6 +14,22 @@ class Teleco extends Model
 
     protected $primaryKey = ['PERSCOD', 'NUMORDRE'];
 
+    protected $fillable = [
+        'PERSCOD',
+        'NUMORDRE',
+        'TIPCONTACTE',
+        'CONTACTE',
+        'OBSERVACIONS',
+        'STDUGR',
+        'STDUMOD',
+        'STDDGR',
+        'STDDMOD',
+        'STDHGR',
+        'STDHMOD',
+        'VALDATA',
+        'BAIXASW',
+    ];
+
     public function getKeyName()
     {
         return implode(',', $this->primaryKey);
