@@ -6,6 +6,7 @@ use App\Models\Street;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 
 class StreetImporter extends Importer
 {
@@ -14,10 +15,6 @@ class StreetImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('CARCOD')
-                ->requiredMapping()
-                ->numeric()
-                ->rules(['required', 'integer']),
             ImportColumn::make('PAISCOD')
                 ->requiredMapping()
                 ->numeric()
@@ -27,6 +24,10 @@ class StreetImporter extends Importer
                 ->numeric()
                 ->rules(['required', 'integer']),
             ImportColumn::make('MUNICOD')
+                ->requiredMapping()
+                ->numeric()
+                ->rules(['required', 'integer']),
+            ImportColumn::make('CARCOD')
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'integer']),
@@ -79,13 +80,24 @@ class StreetImporter extends Importer
                 ->rules(['max:1', 'nullable']),
         ];
     }
-
+    
     public function resolveRecord(): ?Street
     {
-        // return Street::firstOrNew([
-        //     // Update existing records, matching them by `$this->data['column_name']`
-        //     'email' => $this->data['email'],
-        // ]);
+        $paisCod = $this->data['PAISCOD'] ?? null;
+        $provCod = $this->data['PROVCOD'] ?? null;
+        $muniCod = $this->data['MUNICOD'] ?? null;
+
+        // Comprovar país, província i municipi
+        if ($paisCod != 108 || $provCod != 17 || $muniCod != 15) {
+            throw new RowImportFailedException('Els valors de PAISCOD, PROVCOD y MUNICOD no són vàlids. '.$paisCod . ' ' . $provCod . ' ' . $muniCod);
+        }
+
+        //mirem si el carrer ja existeix
+        $streetExists = Street::where('CARCOD', $this->data['CARCOD'])->exists();
+
+        if ($streetExists) {
+            throw new RowImportFailedException('El CARCOD '.$this->data['CARCOD'] . ' ja existeix, està duplicat.' );
+        }
 
         return new Street();
     }

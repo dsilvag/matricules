@@ -31,6 +31,8 @@ class DwellingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Habitatges';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -100,7 +102,6 @@ class DwellingResource extends Resource
                     Forms\Components\TextInput::make('Y')->numeric()->label('Y'),
                     Forms\Components\TextInput::make('POBLDESC')->maxLength(50)->label('POBLDESC'),
                     Forms\Components\TextInput::make('REFCADASTRAL')->maxLength(255)->label('REFCADASTRAL'),
-                    Forms\Components\TextInput::make('GID')->maxLength(32)->label('GID'),
                 ])->columnSpan(1)->columns(3),
         
             // Informació Cívica i Altres Dades
@@ -109,7 +110,7 @@ class DwellingResource extends Resource
                 ->description('Incloeu informació relacionada amb el codi cívic i altres dades addicionals.')
                 ->schema([
                     Forms\Components\TextInput::make('CIV')->maxLength(24)->label('CIV'),
-                    Forms\Components\TextInput::make('GID')->maxLength(32)->label('GID'),
+                    Forms\Components\TextInput::make('GUID')->maxLength(32)->label('GUID'),
                     Forms\Components\TextInput::make('PSEUDOCOD')->numeric()->label('PSEUDOCOD'),
                 ])->columnSpan(1)->columns(3),
         ])->columns(2);
@@ -203,7 +204,7 @@ class DwellingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('POBLDESC')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('GID')
+                Tables\Columns\TextColumn::make('GUID')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('SWREVISAT')
                     ->numeric()

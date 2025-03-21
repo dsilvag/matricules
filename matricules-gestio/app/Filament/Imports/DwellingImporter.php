@@ -98,7 +98,7 @@ class DwellingImporter extends Importer
                 ->rules(['integer', 'nullable']),
             ImportColumn::make('POBLDESC')
                 ->rules(['max:50', 'nullable']),
-            ImportColumn::make('GID')
+            ImportColumn::make('GUID')
                 ->rules(['max:32', 'nullable']),
             ImportColumn::make('SWREVISAT')
                 ->numeric()
@@ -115,6 +115,30 @@ class DwellingImporter extends Importer
 
     public function resolveRecord(): ?Dwelling
     {
+        $paisCod = $this->data['PAISCOD'] ?? null;
+        $provCod = $this->data['PROVCOD'] ?? null;
+        $muniCod = $this->data['MUNICOD'] ?? null;
+
+        // Comprovar país, província i municipi
+        if ($paisCod != 108 || $provCod != 17 || $muniCod != 15) {
+            throw new RowImportFailedException('Els valors de PAISCOD, PROVCOD y MUNICOD no són vàlids. '.$paisCod . ' ' . $provCod . ' ' . $muniCod);
+        }
+
+        //mirem si el carcod existeix
+        $streetExists = \DB::table('streets')->where('CARCOD', $this->data['CARCOD'])->exists();
+    
+        // Si no existeix mostrem un error en la row
+        if (!$streetExists) {
+            throw new RowImportFailedException('El carrer amb el codi '.$this->data['CARCOD'] . ' no existeix en la taula carrers.' );
+        }
+
+        //mirem si el domicili ja existeix
+        $domCodExists = Dwelling::where('DOMCOD', $this->data['DOMCOD'])->exists();
+
+        if ($domCodExists) {
+            throw new RowImportFailedException('El DOMCOD '. $this->data['DOMCOD'] . ' ja existeix, està duplicat.' );
+        }
+
         // return Dwelling::firstOrNew([
         //     // Update existing records, matching them by `$this->data['column_name']`
         //     'email' => $this->data['email'],

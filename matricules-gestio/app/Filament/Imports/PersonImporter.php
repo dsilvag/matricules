@@ -14,6 +14,10 @@ class PersonImporter extends Importer
     public static function getColumns(): array
     {
         return [
+            ImportColumn::make('PERSCOD')
+                ->requiredMapping()
+                ->numeric()
+                ->rules(['required', 'integer']),
             ImportColumn::make('PAISCOD')
                 ->numeric()
                 ->rules(['integer', 'nullable']),
@@ -105,6 +109,13 @@ class PersonImporter extends Importer
         //     // Update existing records, matching them by `$this->data['column_name']`
         //     'email' => $this->data['email'],
         // ]);
+        
+        //mirem si la persona ja existeix
+        $personExists = Person::where('PERSCOD', $this->data['PERSCOD'])->exists();
+
+        if ($personExists) {
+            throw new RowImportFailedException('El PERSCOD '.$this->data['PERSCOD'] . ' ja existeix, està duplicat.' );
+        }
 
         return new Person();
     }

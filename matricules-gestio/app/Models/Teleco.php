@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Teleco extends Model
 {
     use HasFactory;
-
+/*
     protected $table = 'telecos';
 
-    protected $primaryKey = ['PERSCOD', 'NUMORDRE'];
+    protected $primaryKey = ['PERSCOD', 'NUMORDRE'];*/
 
     protected $fillable = [
         'PERSCOD',
@@ -29,12 +29,12 @@ class Teleco extends Model
         'VALDATA',
         'BAIXASW',
     ];
-
+/*
     public function getKeyName()
     {
         return implode(',', $this->primaryKey);
     }
-
+*/
 
     public $incrementing = false;
 

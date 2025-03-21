@@ -50,7 +50,7 @@ class DwellingExporter extends Exporter
             ExportColumn::make('X')->label('X'),
             ExportColumn::make('Y')->label('Y'),
             ExportColumn::make('POBLDESC')->label('POBLDESC'),
-            ExportColumn::make('GID')->label('GID'),
+            ExportColumn::make('GUID')->label('GUID'),
             ExportColumn::make('SWREVISAT')->label('SWREVISAT'),
             ExportColumn::make('REFCADASTRAL')->label('REFCADASTRAL'),
             ExportColumn::make('SWPARE')->label('SWPARE'),
