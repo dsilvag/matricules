@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('telecos', function (Blueprint $table) {
+            $table->id();//identificador 
             $table->integer('PERSCOD');
             $table->integer('NUMORDRE');
             $table->foreign('PERSCOD')->references('PERSCOD')->on('people')
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->char('STDHMOD',6)->nullable();
             $table->char('VALDATA',8)->nullable();
             $table->char('BAIXASW',1)->nullable();
-            $table->primary(['PERSCOD', 'NUMORDRE']);
+            //$table->primary(['PERSCOD', 'NUMORDRE']);
             $table->timestamps();
         });
     }

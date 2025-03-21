@@ -11,6 +11,7 @@ class TelecoImporter extends Importer
 {
     protected static ?string $model = Teleco::class;
 
+
     public static function getColumns(): array
     {
         return [
@@ -49,10 +50,21 @@ class TelecoImporter extends Importer
 
     public function resolveRecord(): ?Teleco
     {
-        // return Teleco::firstOrNew([
-        //     // Update existing records, matching them by `$this->data['column_name']`
-        //     'email' => $this->data['email'],
-        // ]);
+        //mirem si el perscod existeix
+        $personExists = \DB::table('people')->where('PERSCOD', $this->data['PERSCOD'])->exists();
+    
+        // Si no existeix la persona amb el perscod que diu mostrem un error en la row
+        if (!$personExists) {
+            throw new RowImportFailedException('La persona amb el codi '. $this->data['PERSCOD'] . ' no existeix en la taula persones.' );
+        }
+        
+        //Mirem si el perscod i el numordre existeixen (per si s'esta duplicant un teleco)
+        $telecoExists = Street::where('PERSCOD', $this->data['PERSCOD'])->where('NUMORDRE', $this->data['NUMORDRE'])->exists();
+
+        //si s'esta duplicant mostrem error
+        if ($telecoExists) {
+            throw new RowImportFailedException('El PERSCOD i el NUMORDRE'. $this->data['PERSCOD'] . ' ' . $this->data['NUMORDRE'] . ' ja existeixen, estan duplicats.');
+        }
 
         return new Teleco();
     }

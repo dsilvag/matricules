@@ -50,7 +50,7 @@ return new class extends Migration
             $table->float('X')->nullable();
             $table->float('Y')->nullable();
             $table->string('POBLDESC',50)->nullable();
-            $table->string('GID',32)->nullable();
+            $table->string('GUID',32)->nullable();
             $table->integer('SWREVISAT')->nullable();
             $table->string('REFCADASTRAL',255)->nullable();
             $table->integer('SWPARE')->nullable();

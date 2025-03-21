@@ -56,7 +56,7 @@ class Dwelling extends Model
         'X',
         'Y',
         'POBLDESC',
-        'GID',
+        'GUID',
         'SWREVISAT',
         'REFCADASTRAL',
         'SWPARE',
