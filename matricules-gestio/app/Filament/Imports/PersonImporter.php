@@ -6,10 +6,16 @@ use App\Models\Person;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 
 class PersonImporter extends Importer
 {
     protected static ?string $model = Person::class;
+
+    //Comptadors estats dels camps
+    protected static $modified = 0;
+    protected static $created = 0;
+    //protected static $invalid = 0; de moment no l'utilitzem
 
     public static function getColumns(): array
     {
@@ -110,20 +116,22 @@ class PersonImporter extends Importer
         //     'email' => $this->data['email'],
         // ]);
         
-        //mirem si la persona ja existeix
-        $personExists = Person::where('PERSCOD', $this->data['PERSCOD'])->exists();
-
+        $personExists =  Person::where('PERSCOD', $this->data['PERSCOD'])->exists();
         if ($personExists) {
-            throw new RowImportFailedException('El PERSCOD '.$this->data['PERSCOD'] . ' ja existeix, està duplicat.' );
+            self::$modified++; // es modificarà un registre existent
+        } else {
+            self::$created++; // es crearà un nou registre
         }
 
-        return new Person();
+        return Person::firstOrNew([
+            'PERSCOD' => $this->data['PERSCOD'],
+        ]);
     }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your person import has completed and ' . number_format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
-
+        $body = 'Your person import has completed. ' . number_format(self::$created) . ' ' . str('person')->plural(self::$created) . ' created, ' . number_format(self::$modified) . ' ' . str('person')->plural(self::$modified) . ' modified.';
+        
         if ($failedRowsCount = $import->getFailedRowsCount()) {
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
         }

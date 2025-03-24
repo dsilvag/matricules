@@ -6,11 +6,16 @@ use App\Models\Teleco;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 
 class TelecoImporter extends Importer
 {
     protected static ?string $model = Teleco::class;
 
+    //Comptadors estats dels camps
+    protected static $modified = 0;
+    protected static $created = 0;
+    protected static $invalid = 0;
 
     public static function getColumns(): array
     {
@@ -55,26 +60,30 @@ class TelecoImporter extends Importer
     
         // Si no existeix la persona amb el perscod que diu mostrem un error en la row
         if (!$personExists) {
+            self::$invalid++;
             throw new RowImportFailedException('La persona amb el codi '. $this->data['PERSCOD'] . ' no existeix en la taula persones.' );
         }
+
+        $telecoExists = Teleco::where('PERSCOD', $this->data['PERSCOD'])->where('NUMORDRE', $this->data['NUMORDRE'])->exists();
         
-        //Mirem si el perscod i el numordre existeixen (per si s'esta duplicant un teleco)
-        $telecoExists = Street::where('PERSCOD', $this->data['PERSCOD'])->where('NUMORDRE', $this->data['NUMORDRE'])->exists();
-
-        //si s'esta duplicant mostrem error
         if ($telecoExists) {
-            throw new RowImportFailedException('El PERSCOD i el NUMORDRE'. $this->data['PERSCOD'] . ' ' . $this->data['NUMORDRE'] . ' ja existeixen, estan duplicats.');
+            self::$modified++; // es modificarà un registre existent
+        } else {
+            self::$created++; // es crearà un nou registre
         }
-
-        return new Teleco();
+        
+        return Teleco::firstOrNew([
+            'PERSCOD' => $this->data['PERSCOD'],
+            'NUMORDRE' => $this->data['NUMORDRE'],
+        ]);
     }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your teleco import has completed and ' . number_format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
+        $body = 'Your teleco import has completed. ' . number_format(self::$created) . ' ' . str('teleco')->plural(self::$created) . ' created, ' . number_format(self::$modified) . ' ' . str('teleco')->plural(self::$modified) . ' modified.';
 
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
+        if (self::$invalid > 0) {
+            $body .= ' ' . number_format(self::$invalid) . ' ' . str('teleco')->plural(self::$invalid) . ' did not meet the requirements.';
         }
 
         return $body;

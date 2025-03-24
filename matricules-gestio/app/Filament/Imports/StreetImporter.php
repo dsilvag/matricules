@@ -12,6 +12,11 @@ class StreetImporter extends Importer
 {
     protected static ?string $model = Street::class;
 
+    //Comptadors estats dels camps
+    protected static $modified = 0;
+    protected static $created = 0;
+    protected static $invalid = 0;
+
     public static function getColumns(): array
     {
         return [
@@ -89,25 +94,28 @@ class StreetImporter extends Importer
 
         // Comprovar país, província i municipi
         if ($paisCod != 108 || $provCod != 17 || $muniCod != 15) {
-            throw new RowImportFailedException('Els valors de PAISCOD, PROVCOD y MUNICOD no són vàlids. '.$paisCod . ' ' . $provCod . ' ' . $muniCod);
+            self::$invalid++;
+            return null;
         }
 
-        //mirem si el carrer ja existeix
-        $streetExists = Street::where('CARCOD', $this->data['CARCOD'])->exists();
-
+        $streetExists =  Street::where('CARCOD', $this->data['CARCOD'])->exists();
         if ($streetExists) {
-            throw new RowImportFailedException('El CARCOD '.$this->data['CARCOD'] . ' ja existeix, està duplicat.' );
+            self::$modified++; // es modificarà un registre existent
+        } else {
+            self::$created++; // es crearà un nou registre
         }
 
-        return new Street();
+        return Street::firstOrNew([
+            'CARCOD' => $this->data['CARCOD'],
+        ]);
     }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your street import has completed and ' . number_format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
+        $body = 'Your street import has completed. ' . number_format(self::$created) . ' ' . str('street')->plural(self::$created) . ' created, ' . number_format(self::$modified) . ' ' . str('street')->plural(self::$modified) . ' modified.';
 
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
+        if (self::$invalid > 0) {
+            $body .= ' ' . number_format(self::$invalid) . ' ' . str('street')->plural(self::$invalid) . ' did not meet the requirements.';
         }
 
         return $body;
