@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ExportAction;
 use App\Filament\Exports\TelecoExporter;
@@ -154,6 +155,7 @@ class TelecoResource extends Resource
             ])
             ->headerActions([
                 ExportAction::make()
+                    ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->exporter(TelecoExporter::class)
                     ->label('Exportar Telecos')
                     ->formats([
@@ -161,6 +163,7 @@ class TelecoResource extends Resource
                     ]),
 
                 ImportAction::make()
+                    ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->importer(TelecoImporter::class)
                     ->csvDelimiter(';')
                     ->label('Importar Telecos'),
@@ -170,6 +173,7 @@ class TelecoResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 ExportBulkAction::make()
+                    ->hidden(fn () => !auth()->user()->hasRole('Admin'))
                     ->exporter(TelecoExporter::class)
                     ->formats([
                         ExportFormat::Csv,

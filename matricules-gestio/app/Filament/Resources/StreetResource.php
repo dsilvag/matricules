@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ExportAction;
 use App\Filament\Exports\StreetExporter;
@@ -245,6 +246,7 @@ class StreetResource extends Resource
             ])
             ->headerActions([
                 ExportAction::make()
+                    ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->exporter(StreetExporter::class)
                     ->label('Exportar carrers')
                     ->formats([
@@ -252,6 +254,7 @@ class StreetResource extends Resource
                     ]),
 
                 ImportAction::make()
+                    ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->importer(StreetImporter::class)
                     ->csvDelimiter(';')
                     ->label('Importar carrers'),
@@ -261,6 +264,7 @@ class StreetResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
                 ExportBulkAction::make()
+                    ->hidden(fn () => !auth()->user()->hasRole('Admin'))
                     ->exporter(StreetExporter::class)
                     ->formats([
                         ExportFormat::Csv,
