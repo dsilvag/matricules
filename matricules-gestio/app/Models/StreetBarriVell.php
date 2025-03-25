@@ -32,4 +32,8 @@ class StreetBarriVell extends Model
     {
         return $this->belongsTo(Street::class, 'CARCOD','CARCOD');
     }
+    public function vehicles()
+    {
+        return $this->belongsToMany(Vehicle::class, 'vehicle_street', 'CARCOD', 'MATRICULA')->withTimestamps();
+    }
 }

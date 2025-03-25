@@ -72,4 +72,9 @@ class Dwelling extends Model
     {
         return $this->belongsTo(Street::class);
     }
+
+    public function vehicles(): HasMany
+    {
+        return $this->hasMany(Vehicle::class, 'DOMCOD');
+    }
 }
