@@ -40,16 +40,9 @@ class VehicleResource extends Resource
                     }),
                 Forms\Components\Select::make('DOMCOD')
                     ->label('Habitatge')
-                    ->relationship('habitatge', 'vehicles.DOMCOD')
+                    ->relationship('habitatge', 'DOMCOD')
                     ->preload()
-                    ->searchable()
-                    ->options(function ($query) {
-                        return $query->select('DOMCOD', 'DOMNUM', 'CARCOD')
-                            ->get()
-                            ->mapWithKeys(function ($item) {
-                                return [$item->DOMCOD => $item->DOMCOD . ' - ' . $item->DOMNUM . ' - ' . $item->CARCOD];
-                            });
-                    }),
+                    ->searchable(),
                 Forms\Components\DatePicker::make('DATAEXP'),
             ]);
     }
