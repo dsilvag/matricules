@@ -58,7 +58,7 @@ class VehicleResource extends Resource
                         ->mapWithKeys(function ($dwelling) {
                             $streetName = $dwelling->street ? $dwelling->street->nom_carrer : 'No disponible';
                             return [
-                                $dwelling->DOMCOD => "{$streetName}, {$dwelling->DOMNUM} {$dwelling->DOMBIS} {$dwelling->DOMNUM2} {$dwelling->DOMBIS2} {$dwelling->DOMESC} {$dwelling->DOMPIS} {$dwelling->DOMPTA} {$dwelling->DOMBLOC} {$dwelling->DOMPTAL} {$dwelling->DOMKM} {$dwelling->DOMHM}"
+                                $dwelling->DOMCOD => "{$dwelling->DOMCOD} {$streetName}, {$dwelling->DOMNUM} {$dwelling->DOMBIS} {$dwelling->DOMNUM2} {$dwelling->DOMBIS2} {$dwelling->DOMESC} {$dwelling->DOMPIS} {$dwelling->DOMPTA} {$dwelling->DOMBLOC} {$dwelling->DOMPTAL} {$dwelling->DOMKM} {$dwelling->DOMHM}"
                             ];
                         });
                     }),
