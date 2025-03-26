@@ -36,6 +36,7 @@ class VehicleResource extends Resource
                     ->preload()
                     ->searchable()
                     ->multiple()
+                    //Mostrem el nom del carrer
                     ->options(function () {
                         return \App\Models\StreetBarriVell::with('street')
                             ->get()
@@ -50,13 +51,14 @@ class VehicleResource extends Resource
                     ->relationship('habitatge', 'DOMCOD')
                     ->preload()
                     ->searchable()
+                    //Mostrem el nom del carrer i la direccio de la vivenda
                     ->options(function () {
                         return \App\Models\Dwelling::with('street')
                         ->get()
                         ->mapWithKeys(function ($dwelling) {
                             $streetName = $dwelling->street ? $dwelling->street->nom_carrer : 'No disponible';
                             return [
-                                $dwelling->DOMCOD => "{$streetName}, {$dwelling->DOMNUM}"
+                                $dwelling->DOMCOD => "{$streetName}, {$dwelling->DOMNUM} {$dwelling->DOMBIS} {$dwelling->DOMNUM2} {$dwelling->DOMBIS2} {$dwelling->DOMESC} {$dwelling->DOMPIS} {$dwelling->DOMPTA} {$dwelling->DOMBLOC} {$dwelling->DOMPTAL} {$dwelling->DOMKM} {$dwelling->DOMHM}"
                             ];
                         });
                     }),
