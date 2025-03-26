@@ -64,3 +64,516 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Dades connexió web service ADM
+
+# Endpoints Portal Extern #ADM 2.0
+
+## Password Grant (Login)
+
+**METHOD:** POST
+
+```
+http://3.68.148.3:8080/alpha-data-manager/oauth/token?grant_type=password&username=usuarix@alphanet.cat&password=contrasenyadelusuari
+```
+
+#### **Authorization**
+
+Username & Password
+
+
+
+#### **Query Params**
+
+**grant_type:** password
+
+**username:** usuarix@alphanet.cat
+
+**password:** contrasenyadelusuari
+
+
+
+#### **Example**:
+
+```php
+<?php
+require_once 'HTTP/Request2.php';
+$request = new HTTP_Request2();
+$request->setUrl('3.68.148.3:8080/alpha-data-manager/oauth/token?grant_type=password&username=usuarix@alphanet.cat&password=contrasenyadelusuari');
+$request->setMethod(HTTP_Request2::METHOD_POST);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Authorization' => 'Basic ZnJvbnRlbmQtdHJ1c3RlZC1jbGllbnQ6Q0FrdVRxYWx1OXliWks3dXRnSA=='
+));
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    echo $response->getBody();
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+```
+
+
+
+#### Response:
+
+```json
+{
+    "access_token": "25sCQKCJLPJTHLzNhY1IDblTg5c",
+    "token_type": "bearer",
+    "refresh_token": "7MnccmCJ8DpqBJ-F6g7o8pQP_JM",
+    "expires_in": 43199,
+    "scope": "all",
+    "authorities": [],
+    "tenantAcceptedAllLegalDisclaimers": "true",
+    "tenantType": "TOWN_HALL",
+    "shieldActive": "false",
+    "language": "CA",
+    "timeZone": "Europe/Madrid",
+    "userEmail": "usuarix@alphanet.cat",
+    "distributorName": "AlphanetSolutions",
+    "permissions": [
+        "GENERAL131"
+    ],
+    "tenantId": 417,
+    "groupId": 562,
+    "distributorId": 1,
+    "tenantName": "Pals",
+    "groupName": "Usuaris externs - Autoritzats_CA_Llista",
+    "userFirstName": "nom-usuari"
+}
+```
+
+
+
+---
+
+
+
+## Refresh Token
+
+**METHOD:** POST
+
+```
+http://3.68.148.3:8080/alpha-data-manager/oauth/token
+```
+
+#### **Authorization**
+
+Username & Password
+
+
+
+#### **Query Params**
+
+**grant_type:** password
+
+**username:** usuarix@alphanet.cat
+
+**password:** contrasenyadelusuari
+
+
+
+#### **Example**:
+
+```php
+<?php
+require_once 'HTTP/Request2.php';
+$request = new HTTP_Request2();
+$request->setUrl('3.68.148.3:8080/alpha-data-manager/oauth/token');
+$request->setMethod(HTTP_Request2::METHOD_POST);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Content-Type' => 'application/x-www-form-urlencoded',
+  'Authorization' => 'Basic ZnJvbnRlbmQtdHJ1c3RlZC1jbGllbnQ6Q0FrdVRxYWx1OXliWks3dXRnSA=='
+));
+$request->addPostParameter(array(
+  'grant_type' => 'refresh_token',
+  'refresh_token' => 'hjG9H88RYVv2kGjTANjopgfl9Lg'
+));
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    echo $response->getBody();
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+```
+
+
+
+#### Response:
+
+```json
+{
+    "access_token": "25sCQKCJLPJTHLzNhY1IDblTg5c",
+    "token_type": "bearer",
+    "refresh_token": "7MnccmCJ8DpqBJ-F6g7o8pQP_JM",
+    "expires_in": 43199,
+    "scope": "all",
+    "authorities": [],
+    "tenantAcceptedAllLegalDisclaimers": "true",
+    "tenantType": "TOWN_HALL",
+    "shieldActive": "false",
+    "language": "CA",
+    "timeZone": "Europe/Madrid",
+    "userEmail": "usuarix@alphanet.cat",
+    "distributorName": "AlphanetSolutions",
+    "permissions": [
+        "GENERAL131"
+    ],
+    "tenantId": 417,
+    "groupId": 562,
+    "distributorId": 1,
+    "tenantName": "Pals",
+    "groupName": "Usuaris externs - Autoritzats_CA_Llista",
+    "userFirstName": "nom-usuari"
+}
+```
+
+
+
+
+
+---
+
+
+
+## Create Authorized List Plate (Crear una Matrícula)
+
+**METHOD:** POST
+
+```
+3.68.148.3:8080/alpha-data-manager/api/1.0/portal
+```
+
+#### **Request Headers**
+
+Authorization: {{access_token}}
+
+
+
+#### **Body**
+
+```json
+{
+    "plate": "TEST12345",
+    "startsOn": "2022-02-01",
+    "expiresOn": "2022-02-02"
+}
+```
+
+
+
+#### **Example**:
+
+```php
+<?php
+require_once 'HTTP/Request2.php';
+$request = new HTTP_Request2();
+$request->setUrl('3.68.148.3:8080/alpha-data-manager/api/1.0/portal');
+$request->setMethod(HTTP_Request2::METHOD_POST);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Authorization' => 'Bearer iIxCyda3rMwV2rxlLQSj7pcQvXI',
+  'Content-Type' => 'application/json'
+));
+$request->setBody('{\n    "plate": "TEST89345",\n    "startsOn": "2023-07-01",\n    "expiresOn": "2023-08-01"\n}');
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    echo $response->getBody();
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+```
+
+
+
+#### Response
+
+```json
+{
+    "id": 172119
+}
+```
+
+
+
+---
+
+
+
+## Delete Authorized List Plate (Eliminar una Matrícula)
+
+**METHOD:** DELETE
+
+```
+3.68.148.3:8080/alpha-data-manager/api/1.0/portal/172117
+```
+
+#### **Request Headers**
+
+Authorization: {{access_token}}
+
+
+
+#### **Example**:
+
+```php
+<?php
+require_once 'HTTP/Request2.php';
+$request = new HTTP_Request2();
+$request->setUrl('3.68.148.3:8080/alpha-data-manager/api/1.0/portal/172117');
+$request->setMethod(HTTP_Request2::METHOD_DELETE);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Authorization' => 'Bearer iIxCyda3rMwV2rxlLQSj7pcQvXI'
+));
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    echo $response->getBody();
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+```
+
+
+
+#### Response
+
+```json
+{
+    "value": true
+}
+```
+
+
+
+---
+
+
+
+## Update Authorized List Plate (Actualitzar una Matrícula)
+
+**METHOD:** PUT
+
+```
+3.68.148.3:8080/alpha-data-manager/api/1.0/portal/172117
+```
+
+#### **Request Headers**
+
+Authorization: {{access_token}}
+
+
+
+#### **Params** (amb els canvis)
+
+```json
+{
+    "plate": "TEST1237745",
+    "startsOn": "2022-02-01",
+    "expiresOn": "2022-02-02"
+}
+```
+
+
+
+#### **Example**:
+
+```php
+<?php
+require_once 'HTTP/Request2.php';
+$request = new HTTP_Request2();
+$request->setUrl('3.68.148.3:8080/alpha-data-manager/api/1.0/portal/172117');
+$request->setMethod(HTTP_Request2::METHOD_PUT);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Authorization' => 'Bearer iIxCyda2rMwV2rxlLQSj7pcQvXI',
+  'Content-Type' => 'application/json'
+));
+$request->setBody('{\n    "plate": "TEST1237745",\n    "startsOn": "2022-02-01",\n    "expiresOn": "2022-02-02"\n}');
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    echo $response->getBody();
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+```
+
+
+
+#### Response
+
+```json
+{
+    "value": true
+}
+```
+
+
+
+---
+
+
+
+## Find All Authorized List Plates (Llistar totes les matrícules amb paginació)
+
+**METHOD:** GET
+
+```
+3.68.148.3:8080/alpha-data-manager/api/1.0/portal?page=0&size=10&sort=updatedOn,asc
+```
+
+#### **Request Headers**
+
+Authorization: {{access_token}}
+
+
+
+#### **Query Params**
+
+**page:** 0
+
+**size:** 10
+
+**sort:** updatedOn,asc
+
+
+
+#### **Example**:
+
+```php
+<?php
+require_once 'HTTP/Request2.php';
+$request = new HTTP_Request2();
+$request->setUrl('3.68.148.3:8080/alpha-data-manager/api/1.0/portal?page=0&size=10&sort=updatedOn,asc&plates=&authorizedListIds=');
+$request->setMethod(HTTP_Request2::METHOD_GET);
+$request->setConfig(array(
+  'follow_redirects' => TRUE
+));
+$request->setHeader(array(
+  'Authorization' => 'Bearer iIxCyda2rMwV2rxlLQSj7pcQvXI'
+));
+try {
+  $response = $request->send();
+  if ($response->getStatus() == 200) {
+    echo $response->getBody();
+  }
+  else {
+    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
+    $response->getReasonPhrase();
+  }
+}
+catch(HTTP_Request2_Exception $e) {
+  echo 'Error: ' . $e->getMessage();
+}
+```
+
+
+
+#### Response
+
+```json
+{
+    "data": [
+        {
+            "id": 172117,
+            "plate": "TEST12345",
+            "comments": "",
+            "authorizedListId": 89,
+            "authorizedListName": "Autoritzats_CA_Llista",
+            "startsOn": "2023-07-01",
+            "expiresOn": "2023-08-01"
+        },
+        {
+            "id": 172118,
+            "plate": "TEST15345",
+            "comments": "",
+            "authorizedListId": 89,
+            "authorizedListName": "Autoritzats_CA_Llista",
+            "startsOn": "2023-07-01",
+            "expiresOn": "2023-08-01"
+        },
+        {
+            "id": 172119,
+            "plate": "TEST89345",
+            "comments": "",
+            "authorizedListId": 89,
+            "authorizedListName": "Autoritzats_CA_Llista",
+            "startsOn": "2023-07-01",
+            "expiresOn": "2023-08-01"
+        }
+    ],
+    "page": 0,
+    "totalPages": 1,
+    "totalElements": 3,
+    "numberOfElements": 3,
+    "size": 10,
+    "first": true,
+    "last": true,
+    "sort": [
+        {
+            "property": "updatedOn",
+            "direction": "ASC"
+        }
+    ]
+}
+```
+
+
+
+---
+
+
+
+## Observacions:
+
+Tenir en compte que els token d'accés triguen 12h en caducar, però es poden anar demanant tokens sense haver de tornar a fer login si es fa un refresh d'aquest (el refresh token dura 30 dies).
+
+
+#adm #adm-backend #java #api #postman
