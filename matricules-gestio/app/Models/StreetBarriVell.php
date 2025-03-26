@@ -32,6 +32,13 @@ class StreetBarriVell extends Model
     {
         return $this->belongsTo(Street::class, 'CARCOD','CARCOD');
     }
+
+    public function getNomCarrerAttribute()
+    {
+        return $this->street ? $this->street->nom_carrer : null;
+        //$this->street()->getNomCarrerAttribute();
+    }
+
     public function vehicles()
     {
         return $this->belongsToMany(Vehicle::class, 'vehicle_street', 'CARCOD', 'MATRICULA')->withTimestamps();

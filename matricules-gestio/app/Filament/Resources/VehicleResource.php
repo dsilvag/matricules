@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Select;
+use App\Models\StreetBarriVell;
 
 
 class VehicleResource extends Resource
@@ -29,20 +30,36 @@ class VehicleResource extends Resource
                     ->label('MATRICULA:')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('carrersBarriVell')
+                Forms\Components\MultiSelect::make('carrersBarriVell')
                     ->label('Carrers validats')
                     ->relationship('carrersBarriVell', 'CARCOD') 
                     ->preload()
                     ->searchable()
                     ->multiple()
                     ->options(function () {
-                        return \App\Models\StreetBarriVell::all()->pluck('street.CARDESC', 'CARCOD');
+                        return \App\Models\StreetBarriVell::with('street')
+                            ->get()
+                            ->mapWithKeys(function ($streetBarrivell) {
+                                return [
+                                    $streetBarrivell->CARCOD => $streetBarrivell->nom_carrer
+                                ];
+                            });
                     }),
                 Forms\Components\Select::make('DOMCOD')
                     ->label('Habitatge')
                     ->relationship('habitatge', 'DOMCOD')
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->options(function () {
+                        return \App\Models\Dwelling::with('street')
+                        ->get()
+                        ->mapWithKeys(function ($dwelling) {
+                            $streetName = $dwelling->street ? $dwelling->street->nom_carrer : 'No disponible';
+                            return [
+                                $dwelling->DOMCOD => "{$streetName}, {$dwelling->DOMNUM}"
+                            ];
+                        });
+                    }),
                 Forms\Components\DatePicker::make('DATAEXP'),
             ]);
     }
