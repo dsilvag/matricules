@@ -68,4 +68,9 @@ class Street extends Model
     {
         return $this->belongsTo(StreetBarriVell::class, 'CARCOD','CARCOD');
     }
+    public function getNomCarrerAttribute()
+    {
+        //return $this->CARCOD . ' ' . $this->CARSIG;
+        return "{$this->CARSIG} {$this->CARDESC}";
+    }
 }

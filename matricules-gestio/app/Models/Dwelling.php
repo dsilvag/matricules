@@ -70,7 +70,7 @@ class Dwelling extends Model
      */
     public function street()
     {
-        return $this->belongsTo(Street::class);
+        return $this->belongsTo(Street::class, 'CARCOD','CARCOD');
     }
 
     public function vehicles(): HasMany
