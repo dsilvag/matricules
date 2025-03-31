@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('vehicles', function (Blueprint $table) {
             $table->string('MATRICULA')->primary();
             $table->date('DATAEXP')->nullable();
-            $table->integer('DOMCOD');
-            $table->foreign('DOMCOD')->references('DOMCOD')->on('dwellings')
+            $table->date('DATAINICI')->nullable();
+            $table->char('instance_RESNUME', 11)->nullable();
+            $table->foreign('instance_RESNUME')->references('RESNUME')->on('instances')
                 ->onDelete('cascade');
             $table->timestamps();
         });

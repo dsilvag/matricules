@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicle_street', function (Blueprint $table) {
+        Schema::create('instance_street', function (Blueprint $table) {
             $table->id();
-            $table->string('MATRICULA');  // Explicitly define the foreign key for Vehicle
-            $table->integer('CARCOD');  // Explicitly define the foreign key for StreetBarriVell
+            $table->string('RESNUME');  
+            $table->integer('CARCOD');  
             $table->timestamps();
 
             // Foreign key constraints
-            $table->foreign('MATRICULA')->references('MATRICULA')->on('vehicles')->onDelete('cascade');
+            $table->foreign('RESNUME')->references('RESNUME')->on('instances')->onDelete('cascade');
             $table->foreign('CARCOD')->references('CARCOD')->on('street_barri_vells')->onDelete('cascade');
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicle_street');
+        Schema::dropIfExists('instance_street');
     }
 };

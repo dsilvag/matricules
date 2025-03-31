@@ -21,16 +21,23 @@ class Vehicle extends Model
     protected $fillable = [
         'MATRICULA',
         'DATAEXP',
-        'DOMCOD'
+        'DOMCOD',
+        'instance_RESNUME'
     ];
 
-    public function carrersBarriVell()
+   /**
+     *  Get the Instance 
+     *
+     *  @return BelongsTo<int, Instance>
+     */
+    /*
+    public function instance()
     {
-        return $this->belongsToMany(StreetBarriVell::class, 'vehicle_street','MATRICULA','CARCOD')->withTimestamps();
+        return $this->belongsTo(Instance::class, 'instances_vehicle','RESNUME','MATRICULA');
     }
-
-    public function habitatge()
+        */
+    public function instance()
     {
-        return $this->belongsTo(Dwelling::class, 'DOMCOD', 'DOMCOD');
+        return $this->belongsTo(Instance::class, 'instance_RESNUME', 'RESNUME');
     }
 }

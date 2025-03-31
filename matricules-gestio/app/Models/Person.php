@@ -67,4 +67,15 @@ class Person extends Model
     {
         return $this->hasMany(Teleco::class);
     }
+
+    public function instances()
+    {
+        return $this->hasMany(Instance::class, 'PERSCOD', 'PERSCOD');
+    }
+
+    public function getNomPersonAttribute()
+    {
+        //return $this->CARCOD . ' ' . $this->CARSIG;
+        return "{$this->PERSCOD} {$this->PERSNOM} {$this->PERSCOG1} {$this->PERSCOG2}";
+    }
 }
