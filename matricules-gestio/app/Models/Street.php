@@ -59,15 +59,6 @@ class Street extends Model
         return $this->hasMany(Dwelling::class);
     }
 
-    /**
-     *  Get the Street 
-     *
-     *  @return BelongsTo<int, Street>
-     */
-    public function streetBarriVell()
-    {
-        return $this->belongsTo(StreetBarriVell::class, 'CARCOD','CARCOD');
-    }
     public function getNomCarrerAttribute()
     {
         //return $this->CARCOD . ' ' . $this->CARSIG;

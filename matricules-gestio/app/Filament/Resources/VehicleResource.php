@@ -30,39 +30,8 @@ class VehicleResource extends Resource
                     ->label('MATRICULA:')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\MultiSelect::make('carrersBarriVell')
-                    ->label('Carrers validats')
-                    ->relationship('carrersBarriVell', 'CARCOD') 
-                    ->preload()
-                    ->searchable()
-                    ->multiple()
-                    //Mostrem el nom del carrer
-                    ->options(function () {
-                        return \App\Models\StreetBarriVell::with('street')
-                            ->get()
-                            ->mapWithKeys(function ($streetBarrivell) {
-                                return [
-                                    $streetBarrivell->CARCOD => $streetBarrivell->nom_carrer
-                                ];
-                            });
-                    }),
-                Forms\Components\Select::make('DOMCOD')
-                    ->label('Habitatge')
-                    ->relationship('habitatge', 'DOMCOD')
-                    ->preload()
-                    ->searchable()
-                    //Mostrem el nom del carrer i la direccio de la vivenda
-                    ->options(function () {
-                        return \App\Models\Dwelling::with('street')
-                        ->get()
-                        ->mapWithKeys(function ($dwelling) {
-                            $streetName = $dwelling->street ? $dwelling->street->nom_carrer : 'No disponible';
-                            return [
-                                $dwelling->DOMCOD => "{$dwelling->DOMCOD} {$streetName}, {$dwelling->DOMNUM} {$dwelling->DOMBIS} {$dwelling->DOMNUM2} {$dwelling->DOMBIS2} {$dwelling->DOMESC} {$dwelling->DOMPIS} {$dwelling->DOMPTA} {$dwelling->DOMBLOC} {$dwelling->DOMPTAL} {$dwelling->DOMKM} {$dwelling->DOMHM}"
-                            ];
-                        });
-                    }),
                 Forms\Components\DatePicker::make('DATAEXP'),
+                Forms\Components\DatePicker::make('DATAINICI'),
             ]);
     }
 
@@ -75,10 +44,6 @@ class VehicleResource extends Resource
                 Tables\Columns\TextColumn::make('DATAEXP')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('habitatge.DOMCOD')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
