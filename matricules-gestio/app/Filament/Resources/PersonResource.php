@@ -43,6 +43,7 @@ class PersonResource extends Resource
                     ->icon('heroicon-o-user')
                     ->description('Dades personals de la persona.')
                     ->schema([
+                        Forms\Components\TextInput::make('PERSCOD')->required()->numeric()->label('PERSCOD'),
                         Forms\Components\TextInput::make('PAISCOD')->numeric()->label('PAISCOD'),
                         Forms\Components\TextInput::make('PROVCOD')->numeric()->label('PROVCOD'),
                         Forms\Components\TextInput::make('MUNICOD')->numeric()->label('MUNICOD'),
