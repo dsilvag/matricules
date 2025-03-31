@@ -39,6 +39,7 @@ class InstanceResource extends Resource
                         Forms\Components\TextInput::make('RESNUME')
                             ->label('RESNUME')
                             ->required()
+                            ->minLength(11)
                             ->maxLength(11),
                     ]),
                 Section::make()
@@ -46,22 +47,19 @@ class InstanceResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('NUMEXP')
                             ->visibleOn('edit')
-                            ->required()
+                            ->label('NUMEXP')
                             ->required()
                             ->maxLength(11),
                         Forms\Components\TextInput::make('DECRETAT')
                             ->visibleOn('edit')
-                            ->required()
-                            ->required()
+                            ->label('DECRETAT')
                             ->maxLength(255),
                         Forms\Components\Radio::make('VALIDAT')
                             ->visibleOn('edit')
-                            ->required()
-                            ->label('Validat / Rebutjat')
-                            ->required()
+                            ->label('VALIDAT / REBUTJAT')
                             ->options([
-                                'validat' => 'Validat',
-                                'rebutjat' => 'Rebutjat',
+                                'validat' => 'VALIDAT',
+                                'rebutjat' => 'REBUTJAT',
                                 
                             ]),
                         ])->columns(3)->visibleOn('edit'),
@@ -72,7 +70,6 @@ class InstanceResource extends Resource
                         ->visibleOn('edit')
                         ->required()
                         ->label('SOL.LICITANT')
-                        ->required()
                         ->relationship('person', 'PERSCOD') 
                         ->preload()
                         ->searchable()
@@ -89,7 +86,7 @@ class InstanceResource extends Resource
                             ->visibleOn('edit')
                             ->label('REPRESENTANT')
                             //->description('quan calgui')
-                            ->relationship('person', 'PERSCOD') 
+                            ->relationship('personRepresentative', 'REPRCOD') 
                             ->preload()
                             ->searchable()
                             ->options(function () {
@@ -107,7 +104,7 @@ class InstanceResource extends Resource
                     Forms\Components\Select::make('DOMCOD')
                         ->visibleOn('edit')
                         ->required()
-                        ->label('Codi domicili')
+                        ->label('CODI DOMICILI')
                         ->relationship('domicili', 'DOMCOD')
                         ->preload()
                         ->searchable()
@@ -124,8 +121,7 @@ class InstanceResource extends Resource
                         }),
                     Forms\Components\MultiSelect::make('carrersBarriVell')
                         ->visibleOn('edit')
-                        ->required()
-                        ->label('Carrers validats')
+                        ->label('CARRERS VALIDATS')
                         ->relationship('carrersBarriVell', 'CARCOD') 
                         ->preload()
                         ->searchable()

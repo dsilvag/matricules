@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Validation\ValidationException;
+use App\Exceptions\CustomValidationException;
 
 class Instance extends Model
 {
@@ -47,7 +47,12 @@ class Instance extends Model
 
     public function person()
     {
-        return $this->belongsTo(Person::class, 'PERSCOD', 'PERSCOD');
+        return $this->belongsTo(Person::class, 'PERSCOD');
+    }
+
+    public function personRepresentative()
+    {
+        return $this->belongsTo(Person::class, 'REPRCOD');
     }
 
     public function domicili()
@@ -62,19 +67,35 @@ class Instance extends Model
 
     public static function booted(): void
     {
-        static::creating(function ($record) {
-            $resnume = $record->RESNUME;
-            $url = "https://g5.banyoles.cat:443/GenesysWS/services/RegistreEntradaWS";
-            $xmlData = <<<XML
-            <request>
-            <arg0>
-                <aplicacio>MARTICULES</aplicacio>
-                <nivell>9999</nivell>
-                <usuari>robot</usuari>
-                <numeroRegistreEntrada>$resnume</numeroRegistreEntrada>
-            </arg0>
-            </request>
-            XML;
+        static::creating(function ($record) { 
+            $wsdl = "https://g5.banyoles.cat/GenesysWS/services/RegistreEntradaWS?wsdl";
+            $params = array(
+                'arg0' => array(
+                    'aplicacio' => 'WEB',
+                    'nivell' => '9999',
+                    'usuari' => 'robot',
+                    'numeroRegistreEntrada' => $record->RESNUME,
+                ),
+            );
+                
+            try {
+                $client = new \SoapClient($wsdl);
+                $response = $client->doRecuperarRegistreEntrada($params);
+                if (isset($response->return->registreRelacionat)) {
+                   $record->NUMEXP=$response->return->registreRelacionat;
+                }
+                if (isset($response->return->codiPersona)) {
+                    $record->PERSCOD=$response->return->codiPersona;
+                }
+                if (isset($response->return->codiRepresentant)) {
+                    $record->REPRCOD=$response->return->codiPersona;
+                }
+                if (isset($response->return->codiDomiciliPersona)) {
+                    $record->DOMCOD=$response->return->codiDomiciliPersona;
+                }
+            } catch (SoapFault $fault) {
+                echo "Error: " . $fault->getMessage();
+            }
         });
     }
 }
