@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Exceptions\CustomValidationException;
+use Filament\Notifications\Notification;
+use Illuminate\Validation\ValidationException;
 
 class Instance extends Model
 {
@@ -67,7 +69,7 @@ class Instance extends Model
 
     public static function booted(): void
     {
-        static::creating(function ($record) { 
+        static::creating(function ($record) {
             $wsdl = "https://g5.banyoles.cat/GenesysWS/services/RegistreEntradaWS?wsdl";
             $params = array(
                 'arg0' => array(
@@ -83,19 +85,42 @@ class Instance extends Model
                 $response = $client->doRecuperarRegistreEntrada($params);
                 if (isset($response->return->registreRelacionat)) {
                    $record->NUMEXP=$response->return->registreRelacionat;
+                }else{
+                    self::sendErrorNotification('Numexp inexistent','El número d\'expedient no existeix al sistema.','NUMEXP');
                 }
                 if (isset($response->return->codiPersona)) {
                     $record->PERSCOD=$response->return->codiPersona;
+                }else{
+                    self::sendErrorNotification('Perscod inexistent','El codi persona no existeix al sistema.','PERSCOD');
                 }
                 if (isset($response->return->codiRepresentant)) {
                     $record->REPRCOD=$response->return->codiPersona;
                 }
                 if (isset($response->return->codiDomiciliPersona)) {
                     $record->DOMCOD=$response->return->codiDomiciliPersona;
+                }else{
+                    self::sendErrorNotification('Domcod inexistent','El codi domicili no existeix al sistema.','DOMCOD');
                 }
-            } catch (SoapFault $fault) {
-                echo "Error: " . $fault->getMessage();
+            } catch (\SoapFault $e) {
+                if (strpos($e->getMessage(), 'REG_REG_ENTRADA_INEXISTENT') !== false) {
+                    self::sendErrorNotification('Resnume inexistent','El número de registre no és vàlid.','RESNUM');
+                } else {
+                    self::sendErrorNotification('Error Soap',$e->getMessage(),'unknown');
+                }
+            } catch (Exception $e) {
+                self::sendErrorNotification('Error general',$e->getMessage(),'unknown');
             }
         });
+    }
+    private static function sendErrorNotification($title,$message,$field)
+    {
+        Notification::make()
+            ->title($title)
+            ->body($message)
+            ->danger()
+            ->send();
+            throw ValidationException::withMessages([
+                $field => [$message]
+            ]);
     }
 }
