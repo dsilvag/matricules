@@ -32,6 +32,11 @@ class StreetBarriVellResource extends Resource
                 ->relationship('street','CARDESC')
                 ->preload()
                 ->searchable() 
+                ->options(function () {
+                    // Obtener las calles que no están asignadas en el Barri Vell
+                    return \App\Models\Street::whereNotIn('CARCOD', StreetBarriVell::pluck('CARCOD'))
+                        ->pluck('CARDESC', 'CARCOD'); // Usamos CARCOD para la clave primaria
+                }),
             ]);
     }
 
