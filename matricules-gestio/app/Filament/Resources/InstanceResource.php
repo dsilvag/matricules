@@ -145,18 +145,40 @@ class InstanceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('RESNUME')
-                    ->searchable(),
+                    ->label('RESNUME')
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('NUMEXP')
-                    ->searchable(),
+                    ->label('NUMEXP')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('person.nom_person')
+                    ->label('PERSONA')
+                    ->sortable()
+                    ->extraAttributes([
+                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
+                    ])
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('personRepresentative.nom_person')
+                    ->label('REPRESENTANT')
+                    ->sortable()
+                    ->extraAttributes([
+                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
+                    ])
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
+                    ->label('CARRERS VALIDATS')
+                    ->sortable()
+                    ->extraAttributes([
+                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
+                    ])
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('DECRETAT')
-                    ->searchable(),
+                        ->label('DECRETAT')
+                        ->searchable()
+                        ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('VALIDAT')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('PERSCOD')
-                    ->numeric()
-                    ->sortable(),
-                /*Tables\Columns\TextColumn::make('vehicles.MATRICULA')
-                    ->searchable(),*/
+                        ->label('VALIDAT')
+                        ->searchable()
+                        ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -123,99 +123,140 @@ class DwellingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('DOMCOD')
+                    ->label('DOMCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PAISCOD')
+                    ->label('PAISCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PROVCOD')
+                    ->label('PROVCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('MUNICOD')
+                    ->label('MUNICOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('CARCOD')
+                    ->label('CARCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PSEUDOCOD')
+                    ->label('PSEUDOCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('GISCOD')
+                    ->label('GISCOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMNUM')
+                    ->label('DOMNUM')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMBIS')
+                    ->label('DOMBIS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMNUM2')
+                    ->label('DOMNUM2')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMBIS2')
+                    ->label('DOMBIS2')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMESC')
+                    ->label('DOMESC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMPIS')
+                    ->label('DOMPIS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMPTA')
+                    ->label('DOMPTA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMBLOC')
+                    ->label('DOMBLOC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMPTAL')
+                    ->label('DOMPTAL')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMKM')
+                    ->label('DOMKM')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('DOMHM')
+                    ->label('DOMHM')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('DOMTLOC')
+                    ->label('DOMTLOC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('APCORREUS')
+                    ->label('APCORREUS')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('DOMTIP')
+                    ->label('DOMTIP')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMOBS')
+                    ->label('DOMOBS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('VALDATA')
+                    ->label('VALDATA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('BAIXASW')
+                    ->label('BAIXASW')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDAPLADD')
+                    ->label('STDAPLADD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDAPLMOD')
+                    ->label('STDAPLMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUGR')
+                    ->label('STDUGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUMOD')
+                    ->label('STDUMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDGR')
+                    ->label('STDDGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDMOD')
+                    ->label('STDDMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHGR')
+                    ->label('STDHGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHMOD')
+                    ->label('STDHMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMCP')
+                    ->label('DOMCP')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('X')
+                    ->label('X')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('Y')
+                    ->label('Y')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('POBLDESC')
+                    ->label('POBLDESC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('GUID')
+                    ->label('GUID')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('SWREVISAT')
+                    ->label('SWREVISAT')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('REFCADASTRAL')
+                    ->label('REFCADASTRAL')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('SWPARE')
+                    ->label('SWPARE')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('CIV')
+                    ->label('CIV')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
