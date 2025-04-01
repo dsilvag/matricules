@@ -172,68 +172,97 @@ class StreetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('PAISCOD')
+                    ->label('PAISCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PROVCOD')
+                    ->label('PROVCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('MUNICOD')
+                    ->label('MUNICOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('CARCOD')
+                    ->label('CARCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('CARSIG')
+                    ->label('CARSIG')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CARPAR')
+                    ->label('CARPAR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CARDESC')
+                    ->label('CARDESC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CARDESC2')
+                    ->label('CARDESC2')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUGR')
+                    ->label('STDUGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUMOD')
+                    ->label('STDUMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDGR')
+                    ->label('STDDGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDMOD')
+                    ->label('STDDMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHGR')
+                    ->label('STDHGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHMOD')
+                    ->label('STDHMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('VALDATA')
+                    ->label('VALDATA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('BAIXASW')
+                    ->label('BAIXASW')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('INICIFI')
+                    ->label('INICIFI')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('OBSERVACIONS')
+                    ->label('OBSERVACIONS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ORGCOD')
+                    ->label('ORGCOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ORGDATA')
+                    ->label('ORGDATA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ORGOBS')
+                    ->label('ORGOBS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PLACA')
+                    ->label('PLACA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('GENERIC')
+                    ->label('GENERIC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ESPECIFIC')
+                    ->label('ESPECIFIC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('TEMATICA')
+                    ->label('TEMATICA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('SEXE')
+                    ->label('SEXE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('LOCAL')
+                    ->label('LOCAL')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

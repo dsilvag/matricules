@@ -120,87 +120,125 @@ class PersonResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('PERSCOD')
+                    ->label('PERSCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PAISCOD')
+                    ->label('PAISCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PROVCOD')
+                    ->label('PROVCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('MUNICOD')
+                    ->label('MUNICOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PERSNOM')
+                    ->label('PERSNOM')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSCOG1')
+                    ->label('PERSCOG1')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSCOG2')
+                    ->label('PERSCOG2')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSPAR1')
+                    ->label('PERSPAR1')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSPAR2')
+                    ->label('PERSPAR2')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('NIFNUMP')
+                    ->label('NIFNUMP')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('NIFNUM')
+                    ->label('NIFNUM')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('NIFDC')
+                    ->label('NIFDC')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('NIFSW')
+                    ->label('NIFSW')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSDCONNIF')
+                    ->label('PERSDCONNIF')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSDCANNIF')
+                    ->label('PERSDCANNIF')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSNACIONA')
+                    ->label('PERSNACIONA')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PERSPASSPORT')
+                    ->label('PERSPASSPORT')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSNDATA')
+                    ->label('PERSNDATA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSPARE')
+                    ->label('PERSPARE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSMARE')
+                    ->label('PERSMARE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSSEXE')
+                    ->label('PERSSEXE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSSW')
+                    ->label('PERSSW')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('IDIOCOD')
+                    ->label('IDIOCOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSVNUM')
+                    ->label('PERSVNUM')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('STDAPLADD')
+                    ->label('STDAPLADD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDAPLMOD')
+                    ->label('STDAPLMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUGR')
+                    ->label('STDUGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUMOD')
+                    ->label('STDUMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDGR')
+                    ->label('STDDGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDMOD')
+                    ->label('STDDMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHGR')
+                    ->label('STDHGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHMOD')
+                    ->label('STDHMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CONTVNUM')
+                    ->label('CONTVNUM')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('NIFORIG')
+                    ->label('NIFORIG')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('PERSCODOLD')
+                    ->label('PERSCODOLD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('VALDATA')
+                    ->label('VALDATA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('BAIXASW')
+                    ->label('BAIXASW')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('GUID')
+                    ->label('GUID')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

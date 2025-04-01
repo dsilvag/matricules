@@ -40,68 +40,121 @@ class StreetBarriVellResource extends Resource
         return $table
         ->columns([
             Tables\Columns\TextColumn::make('street.PAISCOD')
+                ->label('PAISCOD')
                 ->numeric()
-                ->sortable(),
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
             Tables\Columns\TextColumn::make('street.PROVCOD')
+                ->label('PROVCOD')
                 ->numeric()
-                ->sortable(),
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
             Tables\Columns\TextColumn::make('street.MUNICOD')
+                ->label('MUNICOD')
                 ->numeric()
-                ->sortable(),
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
             Tables\Columns\TextColumn::make('street.CARCOD')
+                ->label('CARCOD')
                 ->numeric()
                 ->sortable(),
             Tables\Columns\TextColumn::make('street.CARSIG')
+                ->label('CARSIG')
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.CARPAR')
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->label('CARPAR')
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.CARDESC')
+                ->label('CARDESC')
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.CARDESC2')
-                ->searchable(),
+                ->label('CARDESC2')
+                ->searchable()
+                ->toggleable(isToggledHiddenByDefault: true),
             Tables\Columns\TextColumn::make('street.STDUGR')
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->label('STDUGR')
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.STDUMOD')
+                ->toggleable(isToggledHiddenByDefault: true)    
+                ->label('STDUMOD')
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.STDDGR')
+                ->label('STDDGR')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.STDDMOD')
+                ->label('STDDMOD')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.STDHGR')
+                ->label('STDHGR')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.STDHMOD')
+                ->label('STDHMOD')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.VALDATA')
+                ->label('VALDATA')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.BAIXASW')
+                ->label('BAIXASW')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.INICIFI')
+                ->label('INICIFI')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.OBSERVACIONS')
+                ->label('OBSERVACIONS')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.ORGCOD')
+                ->label('ORGCOD')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.ORGDATA')
+                ->label('ORGDATA')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.ORGOBS')
+                ->label('ORGOBS')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.PLACA')
+                ->label('PLACA')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.GENERIC')
+                ->label('GENERIC')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.ESPECIFIC')
+                ->label('ESPECIFIC')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.TEMATICA')
+                ->label('TEMATICA')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.SEXE')
+                ->label('SEXE')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.LOCAL')
+                ->label('LOCAL')
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.created_at')
+                ->label('Created At')
                 ->dateTime()
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
             Tables\Columns\TextColumn::make('updated_at')
+                ->label('Updated At')
                 ->dateTime()
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),

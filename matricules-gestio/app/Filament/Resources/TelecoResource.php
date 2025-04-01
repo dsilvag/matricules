@@ -111,32 +111,45 @@ class TelecoResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('PERSCOD')
+                    ->label('PERSCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('NUMORDRE')
+                    ->label('NUMORDRE')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('TIPCONTACTE')
+                    ->label('TIPCONTACTE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CONTACTE')
+                    ->label('CONTACTE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('OBSERVACIONS')
+                    ->label('OBSERVACIONS')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUGR')
+                    ->label('STDUGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDUMOD')
+                    ->label('STDUMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDGR')
+                    ->label('STDDGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDMOD')
+                    ->label('STDDMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHGR')
+                    ->label('STDHGR')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDHMOD')
+                    ->label('STDHMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('VALDATA')
+                    ->label('VALDATA')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('BAIXASW')
+                    ->label('BAIXASW')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -147,6 +160,7 @@ class TelecoResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+
             ->filters([
                 //
             ])
