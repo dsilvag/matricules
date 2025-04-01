@@ -40,4 +40,13 @@ class Vehicle extends Model
     {
         return $this->belongsTo(Instance::class, 'instance_RESNUME', 'RESNUME');
     }
+    public static function booted(): void
+    {   
+        static::creating(function ($record) {
+            $existingVehicle = \App\Models\Vehicle::where('MATRICULA', $record->MATRICULA)->first();
+            if ($existingVehicle){
+                Instance::sendErrorNotification('Vehicle duplicat','Vehicle ja existent ves a consultar-lo','MATRICULA');
+            }
+        });
+    }
 }

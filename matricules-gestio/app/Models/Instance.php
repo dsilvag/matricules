@@ -112,7 +112,7 @@ class Instance extends Model
             }
         });
     }
-    private static function sendErrorNotification($title,$message,$field)
+    public static function sendErrorNotification($title,$message,$field)
     {
         Notification::make()
             ->title($title)
