@@ -40,10 +40,19 @@ class VehicleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('MATRICULA')
+                    ->label('MATRICULA')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('DATAEXP')
+                Tables\Columns\TextColumn::make('instance.RESNUME')
+                    ->label('RESNUME')
+                    ->searchable(),    
+                Tables\Columns\TextColumn::make('DATAINICI')
+                    ->label('DATAINICI')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('DATAEXP')
+                    ->label('DATAEXP')
+                    ->date()
+                    ->sortable(),    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
