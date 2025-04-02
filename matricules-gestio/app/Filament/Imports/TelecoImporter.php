@@ -55,6 +55,7 @@ class TelecoImporter extends Importer
 
     public function resolveRecord(): ?Teleco
     {
+        set_time_limit(30);
         //mirem si el perscod existeix
         $personExists = \DB::table('people')->where('PERSCOD', $this->data['PERSCOD'])->exists();
     

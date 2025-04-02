@@ -164,6 +164,10 @@ class InstanceResource extends Resource
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
                     ])
                     ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('carrersBarriVell.street.CARSIG')
+                    ->label('CARSIG')
+                    ->sortable()
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
                     ->label('CARRERS VALIDATS')
                     ->sortable()
