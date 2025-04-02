@@ -111,6 +111,7 @@ class PersonImporter extends Importer
 
     public function resolveRecord(): ?Person
     {
+        set_time_limit(30);
         // return Person::firstOrNew([
         //     // Update existing records, matching them by `$this->data['column_name']`
         //     'email' => $this->data['email'],

@@ -121,6 +121,7 @@ class DwellingImporter extends Importer
 
     public function resolveRecord(): ?Dwelling
     {
+        set_time_limit(30);
         $paisCod = $this->data['PAISCOD'] ?? null;
         $provCod = $this->data['PROVCOD'] ?? null;
         $muniCod = $this->data['MUNICOD'] ?? null;
