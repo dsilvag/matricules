@@ -14,6 +14,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Section;
+use App\Models\Person;
+use App\Models\Dwelling;
+use App\Models\StreetBarriVell;
 
 class InstanceResource extends Resource
 {
@@ -33,6 +36,7 @@ class InstanceResource extends Resource
                         Forms\Components\Placeholder::make('Missatge d\'Informació')
                             ->content('Per afegir vehicles a la instància, primer cal crear la instància'),
                     ])->visibleOn('create'),
+
                 Section::make()
                     ->icon('heroicon-o-key')
                     ->schema([
@@ -42,6 +46,7 @@ class InstanceResource extends Resource
                             ->minLength(11)
                             ->maxLength(11),
                     ]),
+
                 Section::make()
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -63,6 +68,7 @@ class InstanceResource extends Resource
                                 
                             ]),
                         ])->columns(3)->visibleOn('edit'),
+
                 Section::make()
                     ->icon('heroicon-o-identification')
                     ->schema([    
@@ -71,33 +77,20 @@ class InstanceResource extends Resource
                         ->required()
                         ->label('SOL.LICITANT')
                         ->relationship('person', 'PERSCOD') 
-                        ->preload()
+                        //->preload()
                         ->searchable()
-                        ->options(function () {
-                            return \App\Models\Person::all()
-                                ->mapWithKeys(function ($person) {
-                                    return [
-                                        $person->PERSCOD => $person->nom_person
-                                    ];
-                                });
-                        }),
+                        ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
 
                         Forms\Components\Select::make('REPRCOD')
                             ->visibleOn('edit')
                             ->label('REPRESENTANT')
                             //->description('quan calgui')
-                            ->relationship('personRepresentative', 'REPRCOD') 
-                            ->preload()
+                            ->relationship('personRepresentative', 'PERSCOD')
+                            //->preload()
                             ->searchable()
-                            ->options(function () {
-                                return \App\Models\Person::all()
-                                    ->mapWithKeys(function ($person) {
-                                        return [
-                                            $person->PERSCOD => $person->nom_person
-                                        ];
-                                    });
-                            }),
+                            ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
                     ])->columns(2)->visibleOn('edit'),
+                    
                 Section::make()
                     ->icon('heroicon-o-globe-europe-africa')
                     ->schema([  
@@ -106,36 +99,17 @@ class InstanceResource extends Resource
                         ->required()
                         ->label('CODI DOMICILI')
                         ->relationship('domicili', 'DOMCOD')
-                        ->preload()
-                        ->searchable()
-                        //Mostrem el nom del carrer i la direccio de la vivenda
-                        ->options(function () {
-                            return \App\Models\Dwelling::with('street')
-                            ->get()
-                            ->mapWithKeys(function ($dwelling) {
-                                $streetName = $dwelling->street ? $dwelling->street->nom_carrer : 'No disponible';
-                                return [
-                                    $dwelling->DOMCOD => "{$dwelling->DOMCOD} {$streetName}, {$dwelling->DOMNUM} {$dwelling->DOMBIS} {$dwelling->DOMNUM2} {$dwelling->DOMBIS2} {$dwelling->DOMESC} {$dwelling->DOMPIS} {$dwelling->DOMPTA} {$dwelling->DOMBLOC} {$dwelling->DOMPTAL} {$dwelling->DOMKM} {$dwelling->DOMHM}"
-                                ];
-                            });
-                        }),
-                    Forms\Components\MultiSelect::make('carrersBarriVell')
+                        ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
+                            "{$record->DOMCOD} {$record->street->nom_carrer}, {$record->nom_habitatge}")
+                        ->searchable(),
+                    Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
                         ->relationship('carrersBarriVell', 'CARCOD') 
                         ->preload()
                         ->searchable()
                         ->multiple()
-                        //Mostrem el nom del carrer
-                        ->options(function () {
-                            return \App\Models\StreetBarriVell::with('street')
-                                ->get()
-                                ->mapWithKeys(function ($streetBarrivell) {
-                                    return [
-                                        $streetBarrivell->CARCOD => $streetBarrivell->nom_carrer
-                                    ];
-                                });
-                        }),
+                        ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}"),
                 ])->columns(2)->visibleOn('edit')
         ]);
     }

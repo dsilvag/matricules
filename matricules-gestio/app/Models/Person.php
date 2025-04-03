@@ -70,7 +70,13 @@ class Person extends Model
 
     public function instances()
     {
-        return $this->hasMany(Instance::class, 'PERSCOD', 'PERSCOD');
+        return $this->hasMany(Instance::class, 'PERSCOD');
+    }
+
+    //Obtenir totes les instancies d'un representant
+    public function representations()
+    {
+        return $this->hasMany(Instance::class, 'REPRCOD');
     }
 
     public function getNomPersonAttribute()

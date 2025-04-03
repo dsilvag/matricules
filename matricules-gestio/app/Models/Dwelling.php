@@ -77,4 +77,8 @@ class Dwelling extends Model
     {
         return $this->hasMany(Vehicle::class, 'DOMCOD');
     }
+    public function getNomHabitatgeAttribute()
+    {
+        return "{$this->DOMNUM} {$this->DOMBIS} {$this->DOMNUM2} {$this->DOMBIS2} {$this->DOMESC} {$this->DOMPIS} {$this->DOMPTA} {$this->DOMBLOC} {$this->DOMPTAL} {$this->DOMKM} {$this->DOMHM}";
+    }
 }
