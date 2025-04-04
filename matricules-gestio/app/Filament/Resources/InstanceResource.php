@@ -17,6 +17,7 @@ use Filament\Forms\Components\Section;
 use App\Models\Person;
 use App\Models\Dwelling;
 use App\Models\StreetBarriVell;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class InstanceResource extends Resource
 {
@@ -61,10 +62,10 @@ class InstanceResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Radio::make('VALIDAT')
                             ->visibleOn('edit')
-                            ->label('VALIDAT / REBUTJAT')
+                            ->label('DECRET FAVORABLE  / DESFAVORABLE')
                             ->options([
-                                'validat' => 'VALIDAT',
-                                'rebutjat' => 'REBUTJAT',
+                                'FAVORABLE' => 'FAVORABLE',
+                                'DESFAVORABLE' => 'DESFAVORABLE',
                                 
                             ]),
                         ])->columns(3)->visibleOn('edit'),
@@ -96,6 +97,7 @@ class InstanceResource extends Resource
                     ->schema([  
                     Forms\Components\Select::make('DOMCOD')
                         ->visibleOn('edit')
+                        ->reactive()
                         ->required()
                         ->label('CODI DOMICILI')
                         ->relationship('domicili', 'DOMCOD')
@@ -110,6 +112,44 @@ class InstanceResource extends Resource
                         ->searchable()
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}"),
+                ])->columns(2)->visibleOn('edit'),
+                Section::make()
+                    ->icon('heroicon-o-flag')
+                    ->schema([
+                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles ')->columnSpan(2),
+                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles')->columnSpan(2),
+                        Forms\Components\Toggle::make('noempadronat_viu_barri_vell')
+                        ->reactive()
+                        ->label(function ($get) {
+                            $persona = $get('noempadronat_viu_barri_vell_text');
+                            $persona = $persona ? $persona : 'X';
+                            return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell";
+                        }),    
+                        Forms\Components\TextInput::make('noempadronat_viu_barri_vell_text')
+                            ->label('Propietari / llogater / ...')
+                            ->reactive()
+                            ->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
+                            ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
+                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(2),
+                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada')->columnSpan(2),
+                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat ')->columnSpan(2),
+                        Forms\Components\Toggle::make('vehicle_comercial')->label('Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme')->columnSpan(2),
+                        Forms\Components\Toggle::make('client_botiga')->label('Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga) ')->columnSpan(2),
+                        Forms\Components\Toggle::make('empresa_serveis')->label('Empresa de serveis (neteja, aigua, llum, lampisteria,...) ')->columnSpan(2),
+                        Forms\Components\Toggle::make('empresa_constructora')->label('Empresa constructora ')->columnSpan(2),
+                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) ')->columnSpan(2),
+                        Forms\Components\Toggle::make('acces_excepcional')->label('Autorització d\'accés excepcional (dins de les 48 hores abans o després) ')->columnSpan(2),
+                        Forms\Components\Toggle::make('altres_motius')
+                            ->label(function ($get){
+                                $motiu = $get('altres_motius_text');
+                                return "Altres: $motiu";
+                            })
+                            ->reactive(),
+                        Forms\Components\TextInput::make('altres_motius_text')
+                            ->label('Altres motius')
+                            ->reactive()
+                            ->required(fn ($get) => $get('altres_motius') === true)
+                            ->visible(fn ($get) => $get('altres_motius') === true),
                 ])->columns(2)->visibleOn('edit')
         ]);
     }
@@ -171,6 +211,10 @@ class InstanceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('exportDocx')
+                    ->label('Exportar DOCX')
+                    ->action(fn ($record) => static::exportToDocx($record))
+                    ->icon('heroicon-o-arrow-down-tray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -193,5 +237,91 @@ class InstanceResource extends Resource
             'create' => Pages\CreateInstance::route('/create'),
             'edit' => Pages\EditInstance::route('/{record}/edit'),
         ];
+    }
+    public static function exportToDocx($record)
+    {
+       // dd($record->person->PERSNOM);
+        $templatePath = storage_path('app/templates/template_decret.docx');
+        $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
+
+        // Cargar la plantilla
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Reemplazar valores con los datos del registro
+        $templateProcessor->setValue('PERSNOM', $record->person->PERSNOM);
+        $templateProcessor->setValue('PERSCOG1', $record->person->PERSCOG1);
+        $templateProcessor->setValue('PERSCOG2', $record->person->PERSCOG2);
+        $templateProcessor->setValue('DNI', $record->person->NIFNUM . $record->person->NIFDC);
+        $templateProcessor->setValue('CARRER_HABITATGE', $record->domicili->street->nom_carrer . $record->domicili->nom_habitatge);
+        $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
+        $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
+
+        $totalVehicles = $record->vehicles->count();
+        if ($totalVehicles == 0) {
+            $templateProcessor->setValue('MATRICULA', '');
+        } else {
+            $matriculas = '';
+            
+            for ($i = 1; $i <= $totalVehicles; $i++) {
+                if ($vehicle = $record->vehicles->get($i - 1)) {
+                    $matriculas .= $vehicle->MATRICULA . "\n";
+                }
+            }
+            $templateProcessor->setValue('MATRICULA', $matriculas);
+        }
+        // Reemplazar direcciones en Barri Vell (1 a 4)
+        for ($i = 1; $i <= 4; $i++) {
+            $campo = 'CARRER_BARRI_VELL_' . $i;
+            $street = $record->carrersBarriVell->get($i - 1);
+            if ($street) {
+                $templateProcessor->setValue($campo, $street->nom_carrer); // Usa el atributo accesor `NomCarrer`
+            } else {
+                $templateProcessor->setValue($campo, ''); // Si no hay calle, dejamos el campo vacío
+            }
+        }
+
+        // Guardar el documento actualizado
+        $templateProcessor->saveAs($outputPath);
+
+        // Retornar el archivo para descarga
+        return response()->download($outputPath)->deleteFileAfterSend(true);
+    }
+    private static function getTextMotiu($record)
+    {
+        $motius = [];
+        if ($record->noempadronat_viu_barri_vell === true) {
+            $motius[] = 'La persona no hi està empadronada i és ' . $record->noempadronat_viu_barri_vell_text .' d\'un immoble al carrer';
+        }
+        if ($record->pares_menor_edat === true) {
+            $motius[] = 'La persona és pare o mare d\'un/a menor resident';
+        }
+        if ($record->familiar_adult_major === true) {
+            $motius[] = 'La persona és familiar d\'una persona d\'edat avançada';
+        }
+        if ($record->targeta_aparcament_discapacitat === true) {
+            $motius[] = 'Persona amb targeta d\'aparcament per a persones amb discapacitat';
+        }
+        if ($record->vehicle_comercial === true) {
+            $motius[] = 'Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme';
+        }
+        if ($record->client_botiga === true) {
+            $motius[] = 'Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga)';
+        }
+        if ($record->empresa_serveis === true) {
+            $motius[] = 'Empresa de serveis (neteja, aigua, llum, lampisteria,...)';
+        }
+        if ($record->empresa_constructora === true) {
+            $motius[] = 'Empresa constructora';
+        }
+        if ($record->familiar_resident === true) {
+            $motius[] = 'Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre)';
+        }
+        if ($record->acces_excepcional === true) {
+            $motius[] = 'Autorització d\'accés excepcional (dins de les 48 hores abans o després)';
+        }
+        if ($record->altres_motius === true && !empty($record->altres_motius_text)) {
+            $motius[] = "Altres: " . $record->altres_motius_text;
+        }
+        return implode(', ', $motius);
     }
 }
