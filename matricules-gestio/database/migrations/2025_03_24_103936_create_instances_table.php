@@ -38,6 +38,8 @@ return new class extends Migration
             $table->boolean('empresa_constructora')->default(false);
             $table->boolean('familiar_resident')->default(false);
             $table->boolean('acces_excepcional')->default(false);
+            $table->date('acces_excepcional_inici')->nullable();
+            $table->date('acces_excepcional_fi')->nullable();
             $table->boolean('altres_motius')->default(false);
             $table->String('altres_motius_text')->nullable();
             $table->timestamps();

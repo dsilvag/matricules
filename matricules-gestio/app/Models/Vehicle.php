@@ -4,17 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Filament\Notifications\Notification;
 
 class Vehicle extends Model
 {
     use HasFactory;
-
-    // Quan primaryKey no es id hem d'indicar
-    protected $primaryKey = 'MATRICULA';
-
-    // No estem utilitzant auto increment en la primary key
-    public $incrementing = false;
 
     protected $guarded = [];
 
@@ -46,7 +40,11 @@ class Vehicle extends Model
             //Mirar data inici i data fi matricules
             $existingVehicle = \App\Models\Vehicle::where('MATRICULA', $record->MATRICULA)->first();
             if ($existingVehicle){
-                Instance::sendErrorNotification('Vehicle duplicat','Vehicle ja existent ves a consultar-lo','MATRICULA');
+                Notification::make()
+                    ->title('Vehicle duplicat')
+                    ->body('Vehicle ja existent ves a consultar-lo')
+                    ->danger()
+                    ->send();
             }
         });
     }
