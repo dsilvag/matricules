@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InstanceResource\Pages;
 use App\Filament\Resources\InstanceResource\RelationManagers;
 use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesRelationManager;
+use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesInSameDomicileRelationManager;
 use App\Models\Instance;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -116,41 +117,57 @@ class InstanceResource extends Resource
                 Section::make()
                     ->icon('heroicon-o-flag')
                     ->schema([
-                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles ')->columnSpan(2),
-                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles')->columnSpan(2),
+                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles ')->columnSpan(3),
+                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles')->columnSpan(3),
                         Forms\Components\Toggle::make('noempadronat_viu_barri_vell')
                         ->reactive()
                         ->label(function ($get) {
                             $persona = $get('noempadronat_viu_barri_vell_text');
                             $persona = $persona ? $persona : 'X';
                             return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell";
-                        }),    
+                        })->columnSpan(2),    
                         Forms\Components\TextInput::make('noempadronat_viu_barri_vell_text')
                             ->label('Propietari / llogater / ...')
                             ->reactive()
                             ->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
                             ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
-                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(2),
-                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada')->columnSpan(2),
-                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat ')->columnSpan(2),
-                        Forms\Components\Toggle::make('vehicle_comercial')->label('Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme')->columnSpan(2),
-                        Forms\Components\Toggle::make('client_botiga')->label('Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga) ')->columnSpan(2),
-                        Forms\Components\Toggle::make('empresa_serveis')->label('Empresa de serveis (neteja, aigua, llum, lampisteria,...) ')->columnSpan(2),
-                        Forms\Components\Toggle::make('empresa_constructora')->label('Empresa constructora ')->columnSpan(2),
-                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) ')->columnSpan(2),
-                        Forms\Components\Toggle::make('acces_excepcional')->label('Autorització d\'accés excepcional (dins de les 48 hores abans o després) ')->columnSpan(2),
+                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(3),
+                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada')->columnSpan(3),
+                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat ')->columnSpan(3),
+                        Forms\Components\Toggle::make('vehicle_comercial')->label('Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme')->columnSpan(3),
+                        Forms\Components\Toggle::make('client_botiga')->label('Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga) ')->columnSpan(3),
+                        Forms\Components\Toggle::make('empresa_serveis')->label('Empresa de serveis (neteja, aigua, llum, lampisteria,...) ')->columnSpan(3),
+                        Forms\Components\Toggle::make('empresa_constructora')->label('Empresa constructora ')->columnSpan(3),
+                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) ')->columnSpan(3),
+                        Forms\Components\Toggle::make('acces_excepcional')->label('Autorització d\'accés excepcional (dins de les 48 hores abans o després) ')->columnSpan(1)->reactive(),
+                        //Estan sempre visibles perquè si no altres es menja l'espai i no queda bé
+                        Forms\Components\DatePicker::make('acces_excepcional_inici')
+                            ->label('Data inici')
+                            ->reactive()
+                            ->required(fn ($get) => $get('acces_excepcional') === true)
+                            ->disabled(fn ($get) => $get('acces_excepcional') !== true)
+                            //->visible(fn ($get) => $get('acces_excepcional') === true)
+                            ->columnSpan(1),
+                        Forms\Components\DatePicker::make('acces_excepcional_fi')
+                            ->label('Data fi')
+                            ->reactive()
+                            ->required(fn ($get) => $get('acces_excepcional') === true)
+                            ->disabled(fn ($get) => $get('acces_excepcional') !== true)
+                            //->visible(fn ($get) => $get('acces_excepcional') === true)
+                            ->columnSpan(1),
                         Forms\Components\Toggle::make('altres_motius')
                             ->label(function ($get){
                                 $motiu = $get('altres_motius_text');
                                 return "Altres: $motiu";
                             })
-                            ->reactive(),
+                            ->reactive()
+                            ->columnSpan(1),
                         Forms\Components\TextInput::make('altres_motius_text')
                             ->label('Altres motius')
                             ->reactive()
                             ->required(fn ($get) => $get('altres_motius') === true)
                             ->visible(fn ($get) => $get('altres_motius') === true),
-                ])->columns(2)->visibleOn('edit')
+                ])->columns(3)->visibleOn('edit'),
         ]);
     }
     
@@ -226,7 +243,8 @@ class InstanceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            VehiclesRelationManager::class
+            VehiclesRelationManager::class,
+            VehiclesInSameDomicileRelationManager::class,
         ];
     }
 
@@ -255,6 +273,7 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('CARRER_HABITATGE', $record->domicili->street->nom_carrer . $record->domicili->nom_habitatge);
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
         $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
+        $templateProcessor->setValue('VALIDAT', $record->VALIDAT);
 
         $totalVehicles = $record->vehicles->count();
         if ($totalVehicles == 0) {
@@ -279,7 +298,6 @@ class InstanceResource extends Resource
                 $templateProcessor->setValue($campo, ''); // Si no hay calle, dejamos el campo vacío
             }
         }
-
         // Guardar el documento actualizado
         $templateProcessor->saveAs($outputPath);
 

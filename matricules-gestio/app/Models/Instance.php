@@ -47,6 +47,14 @@ class Instance extends Model
         return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME');
     }
 
+    public function vehiclesInSameDomicile()
+    {
+        return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME')
+            ->whereHas('instance', function($query) {
+                $query->where('DOMCOD', $this->DOMCOD); // Filtra por el mismo DOMCOD
+            });
+    }
+    
     public function person()
     {
         return $this->belongsTo(Person::class, 'PERSCOD');

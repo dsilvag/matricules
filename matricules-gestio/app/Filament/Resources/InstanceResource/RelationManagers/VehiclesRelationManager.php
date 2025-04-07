@@ -14,6 +14,12 @@ class VehiclesRelationManager extends RelationManager
 {
     protected static string $relationship = 'vehicles';
 
+    public static function getTitle($ownerRecord, string $pageClass): string
+    {
+        $vehicleCount = $ownerRecord->vehicles()->count();
+        return "Vehicles instància ($vehicleCount)";
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -22,8 +28,6 @@ class VehiclesRelationManager extends RelationManager
                     ->label('MATRICULA:')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('DATAEXP'),
-                Forms\Components\DatePicker::make('DATAINICI'),
             ]);
     }
 
@@ -32,9 +36,12 @@ class VehiclesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('MATRICULA')
             ->columns([
-                Tables\Columns\TextColumn::make('MATRICULA'),
-                Tables\Columns\TextColumn::make('DATAEXP'),
-                Tables\Columns\TextColumn::make('DATAINICI'),
+                Tables\Columns\TextColumn::make('MATRICULA')
+                ->label('MATRICULA'),
+                Tables\Columns\TextColumn::make('DATAEXP')
+                ->label('DATAEXP'),
+                Tables\Columns\TextColumn::make('DATAINICI')
+                ->label('DATAINICI'),
             ])
             ->filters([
                 //

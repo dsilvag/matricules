@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vehicles', function (Blueprint $table) {
-            $table->string('MATRICULA')->primary();
+            $table->id()->primary();
+            $table->string('MATRICULA');
             $table->date('DATAEXP')->nullable();
             $table->date('DATAINICI')->nullable();
             $table->char('instance_RESNUME', 11)->nullable();

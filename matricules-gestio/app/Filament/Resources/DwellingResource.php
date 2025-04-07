@@ -125,6 +125,7 @@ class DwellingResource extends Resource
                 Tables\Columns\TextColumn::make('DOMCOD')
                     ->label('DOMCOD')
                     ->numeric()
+                    //->searchable(isIndividual: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PAISCOD')
                     ->label('PAISCOD')
