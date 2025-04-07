@@ -228,6 +228,10 @@ class InstanceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('sendToWs') 
+                    ->label('Send to WS')
+                    ->action(fn () => Instance::sendToWs())
+                    ->icon('heroicon-o-arrow-up-circle'),
                 Tables\Actions\Action::make('exportDocx')
                     ->label('Exportar DOCX')
                     ->action(fn ($record) => static::exportToDocx($record))

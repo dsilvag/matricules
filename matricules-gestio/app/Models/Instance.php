@@ -131,4 +131,8 @@ class Instance extends Model
                 $field => [$message]
             ]);
     }
+    public static function sendToWS()
+    {
+        //Configurar penjar word al web service
+    }
 }
