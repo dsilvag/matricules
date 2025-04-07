@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Models\Vehicle;
 
-class VehiclesInSameDomicileRelationManager extends RelationManager
+class VehiclesInSameDwellingRelationManager extends RelationManager
 {
-    protected static string $relationship = 'vehiclesInSameDomicile';
+    protected static string $relationship = 'vehiclesInSameDwelling';
 /*
     public function form(Form $form): Form
     {

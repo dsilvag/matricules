@@ -47,7 +47,7 @@ class Instance extends Model
         return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME');
     }
 
-    public function vehiclesInSameDomicile()
+    public function vehiclesInSameDwelling()
     {
         return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME')
             ->whereHas('instance', function($query) {
