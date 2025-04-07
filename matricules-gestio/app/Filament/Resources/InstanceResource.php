@@ -288,15 +288,18 @@ class InstanceResource extends Resource
             }
             $templateProcessor->setValue('MATRICULA', $matriculas);
         }
-        // Reemplazar direcciones en Barri Vell (1 a 4)
-        for ($i = 1; $i <= 4; $i++) {
-            $campo = 'CARRER_BARRI_VELL_' . $i;
-            $street = $record->carrersBarriVell->get($i - 1);
-            if ($street) {
-                $templateProcessor->setValue($campo, $street->nom_carrer); // Usa el atributo accesor `NomCarrer`
-            } else {
-                $templateProcessor->setValue($campo, ''); // Si no hay calle, dejamos el campo vacío
+        $totalCarrers = $record->carrersBarriVell->count();
+        if ($totalCarrers == 0) {
+            $templateProcessor->setValue('CARRER_BARRI_VELL', '');
+        } else {
+            $carrers = '';
+
+            for ($i = 1; $i <= $totalCarrers; $i++) {
+                if ($street=$record->carrersBarriVell->get($i-1)) {
+                    $carrers .= $street->nom_carrer . "\n";
+                }
             }
+            $templateProcessor->setValue('CARRER_BARRI_VELL', $carrers);
         }
         // Guardar el documento actualizado
         $templateProcessor->saveAs($outputPath);
