@@ -296,7 +296,7 @@ class InstanceResource extends Resource
 
             for ($i = 1; $i <= $totalCarrers; $i++) {
                 if ($street=$record->carrersBarriVell->get($i-1)) {
-                    $carrers .= $street->nom_carrer . "\n";
+                    $carrers .= $street->CARSIG . ' ' .$street->nom_carrer . "\n";
                 }
             }
             $templateProcessor->setValue('CARRER_BARRI_VELL', $carrers);
