@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InstanceResource\Pages;
 use App\Filament\Resources\InstanceResource\RelationManagers;
 use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesRelationManager;
-use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesInSameDomicileRelationManager;
+use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesInSameDwellingRelationManager;
 use App\Models\Instance;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -244,7 +244,7 @@ class InstanceResource extends Resource
     {
         return [
             VehiclesRelationManager::class,
-            VehiclesInSameDomicileRelationManager::class,
+            VehiclesInSameDwellingRelationManager::class,
         ];
     }
 
