@@ -91,7 +91,27 @@ class InstanceResource extends Resource
                             //->preload()
                             ->searchable()
                             ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
-                    ])->columns(2)->visibleOn('edit'),
+                        Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
+                            ->label('Propietari / Llogater')
+                            ->options([
+                                'propietari' => 'Propietari',
+                                'llogater' => 'Llogater',
+                            ])
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                if ($get('noempadronat_viu_barri_vell') === true) {
+                                    $persona = $state; 
+                                    $set('data_inici', now()->format('Y-m-d')); 
+                                    if ($persona == 'propietari') {
+                                        $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                                    } else if ($persona == 'llogater') {
+                                        $set('data_fi', now()->addYears(2)->format('Y-m-d')); 
+                                    }
+                                }})
+                            ->reactive()
+                            ->required(),
+                            //->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
+                            //->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
+                    ])->columns(3)->visibleOn('edit'),
                     
                 Section::make()
                     ->icon('heroicon-o-globe-europe-africa')
@@ -143,7 +163,7 @@ class InstanceResource extends Resource
                             return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell";
                         })
                         ->columnSpan(2),    
-                        Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
+                        /*Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
                             ->label('Propietari / Llogater')
                             ->options([
                                 'propietari' => 'Propietari',
@@ -161,7 +181,7 @@ class InstanceResource extends Resource
                                 }})
                             ->reactive()
                             ->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
-                            ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
+                            ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),*/
                         Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
