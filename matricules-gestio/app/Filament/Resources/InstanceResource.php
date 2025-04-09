@@ -364,7 +364,7 @@ class InstanceResource extends Resource
     }
     public static function exportToDocx($record)
     {
-       dd(self::getTextMotiu($record));
+       //dd(self::getTextMotiu($record));
         $templatePath = storage_path('app/templates/template_decret.docx');
         $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
 
@@ -416,47 +416,47 @@ class InstanceResource extends Resource
     }
     private static function getTextMotiu($record)
     {
-        $motius = [];
+        $motius = '';
 
-        if ($record->empadronat_si_ivtm === true) {
-            $motius[] = 'La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles';
+        if ($record->empadronat_si_ivtm == true) {
+            $motius .= 'La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles'."\n";
         }
-        if ($record->empadronat_no_ivtm === true) {
-            $motius[] = 'La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles';
+        if ($record->empadronat_no_ivtm == true) {
+            $motius .= 'La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles'."\n";
         }
-        if ($record->noempadronat_viu_barri_vell === true) {
-            $motius[] = 'La persona no hi està empadronada i és ' . $record->noempadronat_viu_barri_vell_text .' d\'un immoble al carrer';
+        if ($record->noempadronat_viu_barri_vell == true) {
+            $motius .= 'La persona no hi està empadronada i és ' . $record->noempadronat_viu_barri_vell_text .' d\'un immoble al carrer'."\n";
         }
-        if ($record->pares_menor_edat === true) {
-            $motius[] = 'La persona és pare o mare d\'un/a menor resident';
+        if ($record->pares_menor_edat == true) {
+            $motius .= 'La persona és pare o mare d\'un/a menor resident'."\n";
         }
-        if ($record->familiar_adult_major === true) {
-            $motius[] = 'La persona és familiar d\'una persona d\'edat avançada';
+        if ($record->familiar_adult_major == true) {
+            $motius .= 'La persona és familiar d\'una persona d\'edat avançada'."\n";
         }
-        if ($record->targeta_aparcament_discapacitat === true) {
-            $motius[] = 'Persona amb targeta d\'aparcament per a persones amb discapacitat';
+        if ($record->targeta_aparcament_discapacitat == true) {
+            $motius .= 'Persona amb targeta d\'aparcament per a persones amb discapacitat'."\n";
         }
-        if ($record->vehicle_comercial === true) {
-            $motius[] = 'Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme';
+        if ($record->vehicle_comercial == true) {
+            $motius .= 'Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme'."\n";
         }
-        if ($record->client_botiga === true) {
-            $motius[] = 'Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga)';
+        if ($record->client_botiga == true) {
+            $motius .= 'Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga)'."\n";
         }
-        if ($record->empresa_serveis === true) {
-            $motius[] = 'Empresa de serveis (neteja, aigua, llum, lampisteria,...)';
+        if ($record->empresa_serveis == true) {
+            $motius .= 'Empresa de serveis (neteja, aigua, llum, lampisteria,...)'."\n";
         }
-        if ($record->empresa_constructora === true) {
-            $motius[] = 'Empresa constructora';
+        if ($record->empresa_constructora == true) {
+            $motius .= 'Empresa constructora'."\n";
         }
-        if ($record->familiar_resident === true) {
-            $motius[] = 'Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre)';
+        if ($record->familiar_resident == true) {
+            $motius .= 'Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre)'."\n";
         }
-        if ($record->acces_excepcional === true) {
-            $motius[] = 'Autorització d\'accés excepcional (dins de les 48 hores abans o després)';
+        if ($record->acces_excepcional == true) {
+            $motius .= 'Autorització d\'accés excepcional (dins de les 48 hores abans o després)'."\n";
         }
-        if ($record->altres_motius === true && !empty($record->altres_motius_text)) {
-            $motius[] = "Altres: " . $record->altres_motius_text;
+        if ($record->altres_motius == true && !empty($record->altres_motius_text)) {
+            $motius .= "Altres: " . $record->altres_motius_text."\n";
         }
-        return implode(', ', $motius);
+        return $motius;
     }
 }
