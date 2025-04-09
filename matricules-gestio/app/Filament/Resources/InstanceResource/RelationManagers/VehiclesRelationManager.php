@@ -37,11 +37,12 @@ class VehiclesRelationManager extends RelationManager
             ->recordTitleAttribute('MATRICULA')
             ->columns([
                 Tables\Columns\TextColumn::make('MATRICULA')
-                ->label('MATRICULA'),
-                Tables\Columns\TextColumn::make('DATAEXP')
-                ->label('DATAEXP'),
+                    ->label('MATRICULA'),
                 Tables\Columns\TextColumn::make('DATAINICI')
-                ->label('DATAINICI'),
+                    ->label('DATAINICI'),
+                Tables\Columns\TextColumn::make('DATAEXP')
+                    ->label('DATAEXP'),
+                
             ])
             ->filters([
                 //

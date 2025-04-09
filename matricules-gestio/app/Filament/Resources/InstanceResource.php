@@ -114,51 +114,120 @@ class InstanceResource extends Resource
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}"),
                 ])->columns(2)->visibleOn('edit'),
-                Section::make()
+                 Section::make()
                     ->icon('heroicon-o-flag')
+                    ->description('Selecciona un motiu')
                     ->schema([
-                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles ')->columnSpan(3),
-                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles')->columnSpan(3),
+                        /**
+                         * Per a cada Toggle hi ha una data per defecte(és el dia d'avui), i depenent de si l'usuari selecciona una opció o una altra, es permet modificar les dates o no.
+                         */
+                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles')->columnSpan(3)->reactive() 
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                                $set('data_fi', '9999-12-31');
+                            }
+                        }),
+                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                                $set('data_fi', now()->addYears(2)->format('Y-m-d'));
+                            }
+                        }),
                         Forms\Components\Toggle::make('noempadronat_viu_barri_vell')
                         ->reactive()
                         ->label(function ($get) {
                             $persona = $get('noempadronat_viu_barri_vell_text');
                             $persona = $persona ? $persona : 'X';
                             return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell";
-                        })->columnSpan(2),    
-                        Forms\Components\TextInput::make('noempadronat_viu_barri_vell_text')
-                            ->label('Propietari / llogater / ...')
+                        })
+                        ->columnSpan(2),    
+                        Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
+                            ->label('Propietari / Llogater')
+                            ->options([
+                                'propietari' => 'Propietari',
+                                'llogater' => 'Llogater',
+                            ])
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                if ($get('noempadronat_viu_barri_vell') === true) {
+                                    $persona = $state; 
+                                    $set('data_inici', now()->format('Y-m-d')); 
+                                    if ($persona == 'propietari') {
+                                        $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                                    } else if ($persona == 'llogater') {
+                                        $set('data_fi', now()->addYears(2)->format('Y-m-d')); 
+                                    }
+                                }})
                             ->reactive()
                             ->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
                             ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
-                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(3),
-                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada')->columnSpan(3),
-                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat ')->columnSpan(3),
-                        Forms\Components\Toggle::make('vehicle_comercial')->label('Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme')->columnSpan(3),
-                        Forms\Components\Toggle::make('client_botiga')->label('Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga) ')->columnSpan(3),
-                        Forms\Components\Toggle::make('empresa_serveis')->label('Empresa de serveis (neteja, aigua, llum, lampisteria,...) ')->columnSpan(3),
-                        Forms\Components\Toggle::make('empresa_constructora')->label('Empresa constructora ')->columnSpan(3),
-                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) ')->columnSpan(3),
-                        Forms\Components\Toggle::make('acces_excepcional')->label('Autorització d\'accés excepcional (dins de les 48 hores abans o després) ')->columnSpan(1)->reactive(),
-                        //Estan sempre visibles perquè si no altres es menja l'espai i no queda bé
-                        Forms\Components\DatePicker::make('acces_excepcional_inici')
-                            ->label('Data inici')
-                            ->reactive()
-                            ->required(fn ($get) => $get('acces_excepcional') === true)
-                            ->disabled(fn ($get) => $get('acces_excepcional') !== true)
-                            //->visible(fn ($get) => $get('acces_excepcional') === true)
-                            ->columnSpan(1),
-                        Forms\Components\DatePicker::make('acces_excepcional_fi')
-                            ->label('Data fi')
-                            ->reactive()
-                            ->required(fn ($get) => $get('acces_excepcional') === true)
-                            ->disabled(fn ($get) => $get('acces_excepcional') !== true)
-                            //->visible(fn ($get) => $get('acces_excepcional') === true)
-                            ->columnSpan(1),
+                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                                $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                                $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('vehicle_comercial')->label('Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('client_botiga')->label('Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga) ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('empresa_serveis')->label('Empresa de serveis (neteja, aigua, llum, lampisteria,...) ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('empresa_constructora')->label('Empresa constructora ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                                $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                            }
+                        }),
+                        Forms\Components\Toggle::make('acces_excepcional')->label('Autorització d\'accés excepcional (dins de les 48 hores abans o després) ')->columnSpan(3)->reactive()
+                        ->afterStateUpdated(function ($set, $state, $get) {
+                            if ($state) {
+                                $set('data_inici', now()->format('Y-m-d'));
+                            }
+                        }),
                         Forms\Components\Toggle::make('altres_motius')
                             ->label(function ($get){
                                 $motiu = $get('altres_motius_text');
                                 return "Altres: $motiu";
+                            })
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                if ($state) {
+                                    $set('data_inici', now()->format('Y-m-d'));
+                                }
                             })
                             ->reactive()
                             ->columnSpan(1),
@@ -167,7 +236,40 @@ class InstanceResource extends Resource
                             ->reactive()
                             ->required(fn ($get) => $get('altres_motius') === true)
                             ->visible(fn ($get) => $get('altres_motius') === true),
-                ])->columns(3)->visibleOn('edit'),
+
+                        Section::make()
+                            ->schema([
+                                Forms\Components\DatePicker::make('data_inici')
+                                    ->label('Data inici')
+                                    ->reactive()
+                                    ->required()
+                                    ->readOnly(fn ($get) => !(
+                                        $get('targeta_aparcament_discapacitat') || 
+                                        $get('vehicle_comercial') || 
+                                        $get('client_botiga') || 
+                                        $get('empresa_serveis') || 
+                                        $get('empresa_constructora') || 
+                                        $get('acces_excepcional') || 
+                                        $get('altres_motius')
+                                    ))
+                                    ->columnSpan(1),
+
+                                Forms\Components\DatePicker::make('data_fi')
+                                    ->label('Data fi')
+                                    ->reactive()
+                                    ->required()
+                                    ->readOnly(fn ($get) => !(
+                                        $get('targeta_aparcament_discapacitat') || 
+                                        $get('vehicle_comercial') || 
+                                        $get('client_botiga') || 
+                                        $get('empresa_serveis') || 
+                                        $get('empresa_constructora') || 
+                                        $get('acces_excepcional') || 
+                                        $get('altres_motius')
+                                    ))
+                                    ->columnSpan(1),
+                            ])->columns(2)->visibleOn('edit'),
+                ])->columns(3)->visibleOn('edit'),                
         ]);
     }
     
@@ -262,7 +364,7 @@ class InstanceResource extends Resource
     }
     public static function exportToDocx($record)
     {
-       // dd($record->person->PERSNOM);
+       dd(self::getTextMotiu($record));
         $templatePath = storage_path('app/templates/template_decret.docx');
         $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
 
@@ -278,6 +380,7 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
         $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
         $templateProcessor->setValue('VALIDAT', $record->VALIDAT);
+        $templateProcessor->setValue('DATAFI', $record->data_fi);
 
         $totalVehicles = $record->vehicles->count();
         if ($totalVehicles == 0) {
@@ -314,6 +417,13 @@ class InstanceResource extends Resource
     private static function getTextMotiu($record)
     {
         $motius = [];
+
+        if ($record->empadronat_si_ivtm === true) {
+            $motius[] = 'La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles';
+        }
+        if ($record->empadronat_no_ivtm === true) {
+            $motius[] = 'La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles';
+        }
         if ($record->noempadronat_viu_barri_vell === true) {
             $motius[] = 'La persona no hi està empadronada i és ' . $record->noempadronat_viu_barri_vell_text .' d\'un immoble al carrer';
         }

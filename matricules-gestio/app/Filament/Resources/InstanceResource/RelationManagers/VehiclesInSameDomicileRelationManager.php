@@ -28,10 +28,12 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     public static function getTitle($ownerRecord, string $pageClass): string
     {
         $domcod = $ownerRecord->DOMCOD;
-        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($domcod) {
-            $query->where('DOMCOD', $domcod);
+        $resnume = $ownerRecord->RESNUME;
+        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($domcod,$resnume) {
+            $query->where('DOMCOD', $domcod)
+            ->where('RESNUME', '!=', $resnume);
         })->count();
-        return "Vehicles del mateix domicili ($vehicleCount)"; // Título personalizado
+        return "Altres vehicles al mateix domicili ($vehicleCount)"; // Título personalizado
     }
 
     public function table(Table $table): Table
@@ -42,7 +44,11 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('MATRICULA')
                     ->label('MATRICULA'),
                 Tables\Columns\TextColumn::make('instance.RESNUME')
-                    ->label('RESNUME'),    
+                    ->label('RESNUME'),
+                Tables\Columns\TextColumn::make('DATAINICI')
+                    ->label('DATAINICI'),    
+                Tables\Columns\TextColumn::make('DATAEXP')
+                    ->label('DATAEXP'),
             ])
             ->filters([
                 //
@@ -62,11 +68,12 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     }
     public function getTableQuery(): Builder
     {
-        $domcod = $this->ownerRecord->DOMCOD; // Obtener el DOMCOD de la instancia actual
+        $domcod = $this->ownerRecord->DOMCOD;
+        $resnume = $this->ownerRecord->RESNUME;
 
-        // Consulta a la tabla de vehículos para obtener los que pertenecen a instancias con el mismo DOMCOD
-        return Vehicle::whereHas('instance', function ($query) use ($domcod) {
-            $query->where('DOMCOD', $domcod); // Filtra por el DOMCOD de la instancia
+        return Vehicle::whereHas('instance', function ($query) use ($domcod, $resnume) {
+            $query->where('DOMCOD', $domcod)
+                ->where('RESNUME', '!=', $resnume);
         });
     }
 }

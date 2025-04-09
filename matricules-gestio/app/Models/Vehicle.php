@@ -14,6 +14,7 @@ class Vehicle extends Model
 
     protected $fillable = [
         'MATRICULA',
+        'DATAINICI',
         'DATAEXP',
         'DOMCOD',
         'instance_RESNUME'
@@ -43,8 +44,19 @@ class Vehicle extends Model
                 Notification::make()
                     ->title('Vehicle duplicat')
                     ->body('Vehicle ja existent ves a consultar-lo')
-                    ->danger()
+                    ->warning()
                     ->send();
+            }
+            if ($record->instance_RESNUME) {
+                $instance = \App\Models\Instance::find($record->instance_RESNUME);
+                
+                if ($instance) {
+                    if (is_null($instance->data_inici) || is_null($instance->data_fi)) {
+                        \App\Models\Instance::sendErrorNotification('Error de instancia','Cal seleccionar un motiu i fer clic al botó de guardar. Assegura\'t que els camps data inici i data fi continguin un valor','data_inici');
+                    }
+                    $record->DATAINICI = $instance->data_inici;
+                    $record->DATAEXP = $instance->data_fi;
+                }
             }
         });
     }

@@ -26,7 +26,24 @@ class Instance extends Model
         'VALIDAT',
         'PERSCOD',
         'REPRCOD',
-        'DOMCOD'
+        'DOMCOD',
+        'empadronat_si_ivtm',
+        'empadronat_no_ivtm',
+        'noempadronat_viu_barri_vell',
+        'noempadronat_viu_barri_vell_text',
+        'pares_menor_edat',
+        'familiar_adult_major',
+        'targeta_aparcament_discapacitat',
+        'vehicle_comercial',
+        'client_botiga',
+        'empresa_serveis',
+        'empresa_constructora',
+        'familiar_resident',
+        'acces_excepcional',
+        'altres_motius',
+        'altres_motius_text',
+        'data_inici',
+        'data_fi'
     ];
 
     /**
@@ -51,7 +68,8 @@ class Instance extends Model
     {
         return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME')
             ->whereHas('instance', function($query) {
-                $query->where('DOMCOD', $this->DOMCOD); // Filtra por el mismo DOMCOD
+                $query->where('DOMCOD', $this->DOMCOD)
+                      ->where('RESNUME', '!=', $this->RESNUME);
             });
     }
     
@@ -119,6 +137,64 @@ class Instance extends Model
                 self::sendErrorNotification('Error general',$e->getMessage(),'unknown');
             }
         });
+        static::updating(function ($record) {
+            $comptador = self::isToggleActive($record);
+            if($comptador<1)
+            {
+                self::sendErrorNotification('Motiu no seleccionat','Si us plau, selecciona almenys un motiu abans de guardar.','motiu');
+            }
+            if($comptador>1)
+            {
+                self::sendErrorNotification('Més d\'un motiu seleccionat','Només es pot seleccionar un motiu. Si us plau, desmarca la resta abans de guardar.','motiu');
+            }
+        });
+
+    }
+    private static function isToggleActive($record)
+    {
+        $comptador = 0;
+
+        if ($record->empadronat_si_ivtm === true) {
+            $comptador++;
+        }
+        if ($record->empadronat_no_ivtm === true) {
+            $comptador++;
+        }
+        if ($record->noempadronat_viu_barri_vell === true) {
+            $comptador++;
+        }
+        if ($record->pares_menor_edat === true) {
+            $comptador++;
+        }
+        if ($record->familiar_adult_major === true) {
+            $comptador++;
+        }
+        if ($record->targeta_aparcament_discapacitat === true) {
+            $comptador++;
+        }
+        if ($record->vehicle_comercial === true) {
+            $comptador++;
+        }
+        if ($record->client_botiga === true) {
+            $comptador++;
+        }
+        if ($record->empresa_serveis === true) {
+            $comptador++;
+        }
+        if ($record->empresa_constructora === true) {
+            $comptador++;
+        }
+        if ($record->familiar_resident === true) {
+            $comptador++;
+        }
+        if ($record->acces_excepcional === true) {
+            $comptador++;
+        }
+        if ($record->altres_motius === true) {
+            $comptador++;
+        }
+        
+        return $comptador;
     }
     public static function sendErrorNotification($title,$message,$field)
     {
