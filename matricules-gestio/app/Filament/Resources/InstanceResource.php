@@ -332,11 +332,11 @@ class InstanceResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('sendToWs') 
                     ->label('Send to WS')
-                    ->action(fn () => Instance::sendToWs())
+                    ->action(fn ($record) => Instance::sendToWs($record))
                     ->icon('heroicon-o-arrow-up-circle'),
                 Tables\Actions\Action::make('exportDocx')
                     ->label('Exportar DOCX')
-                    ->action(fn ($record) => static::exportToDocx($record))
+                    ->action(fn ($record) => static::downloadDocx($record))
                     ->icon('heroicon-o-arrow-down-tray')
             ])
             ->bulkActions([
@@ -362,11 +362,34 @@ class InstanceResource extends Resource
             'edit' => Pages\EditInstance::route('/{record}/edit'),
         ];
     }
+
+    public static function downloadDocx ($record)
+    {
+        $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
+        $templateProcessor = static::exportToDocx($record);
+        
+        // Guardar el documento actualizado
+        $templateProcessor->saveAs($outputPath);
+
+        // Retornar el archivo para descarga
+        return response()->download($outputPath)->deleteFileAfterSend(true);
+    }
+
+    public static function exportBase64($record)
+    {
+        $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
+        $templateProcessor = static::exportToDocx($record);
+        // Guardar el documento actualizado
+        $templateProcessor->saveAs($outputPath);
+        $fileContent = file_get_contents($outputPath);
+        // Convierte el contenido del archivo a base64
+        return base64_encode($fileContent);
+    }
+
     public static function exportToDocx($record)
     {
        //dd(self::getTextMotiu($record));
-        $templatePath = storage_path('app/templates/template_decret.docx');
-        $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
+        $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
 
         // Cargar la plantilla
         $templateProcessor = new TemplateProcessor($templatePath);
@@ -378,9 +401,11 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('DNI', $record->person->NIFNUM . $record->person->NIFDC);
         $templateProcessor->setValue('CARRER_HABITATGE', $record->domicili->street->nom_carrer . $record->domicili->nom_habitatge);
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
-        $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
-        $templateProcessor->setValue('VALIDAT', $record->VALIDAT);
+        //$templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
+        //$templateProcessor->setValue('VALIDAT', $record->VALIDAT);
         $templateProcessor->setValue('DATAFI', $record->data_fi);
+        $templateProcessor->setValue('DATAINICI', $record->data_inici);
+        $templateProcessor->setValue('AVUI', date('d/m/Y'));
 
         $totalVehicles = $record->vehicles->count();
         if ($totalVehicles == 0) {
@@ -408,11 +433,7 @@ class InstanceResource extends Resource
             }
             $templateProcessor->setValue('CARRER_BARRI_VELL', $carrers);
         }
-        // Guardar el documento actualizado
-        $templateProcessor->saveAs($outputPath);
-
-        // Retornar el archivo para descarga
-        return response()->download($outputPath)->deleteFileAfterSend(true);
+        return $templateProcessor;
     }
     private static function getTextMotiu($record)
     {

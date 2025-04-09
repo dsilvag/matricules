@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Filament\Resources\InstanceResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -96,7 +97,6 @@ class Instance extends Model
     public static function booted(): void
     {
         static::creating(function ($record) {
-            $wsdl = "https://g5.banyoles.cat/GenesysWS/services/RegistreEntradaWS?wsdl";
             $params = array(
                 'arg0' => array(
                     'aplicacio' => 'WEB',
@@ -107,7 +107,7 @@ class Instance extends Model
             );
                 
             try {
-                $client = new \SoapClient($wsdl);
+                $client = new \SoapClient($_ENV['WEB_SERVICE_REGISTRE_ENTRADA']);
                 $response = $client->doRecuperarRegistreEntrada($params);
                 if (isset($response->return->registreRelacionat)) {
                    $record->NUMEXP=$response->return->registreRelacionat;
@@ -207,8 +207,24 @@ class Instance extends Model
                 $field => [$message]
             ]);
     }
-    public static function sendToWS()
+    public static function sendToWS($record)
     {
-        //Configurar penjar word al web service
+        $params = array(
+            'arg0' => array(
+                'aplicacio' => 'WEB',
+                'nivell' => '9999',
+                'usuari' => 'robot',
+                'doccod' => $InstanceResource::exportBase64($record), //document amb base64
+            ),
+        );
+            
+        try {
+            $client = new \SoapClient($_ENV['WEB_SERVICE_ANNEXAR_DOC']);
+            $response = $client->doAnnexarDocumentExp($params);
+        } catch (\SoapFault $e) {
+            self::sendErrorNotification('Error Soap',$e->getMessage(),'unknown');
+        } catch (Exception $e) {
+            self::sendErrorNotification('Error general',$e->getMessage(),'unknown');
+        }
     }
 }
