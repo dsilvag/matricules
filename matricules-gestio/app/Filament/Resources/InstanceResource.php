@@ -80,7 +80,7 @@ class InstanceResource extends Resource
                         ->label('SOL.LICITANT')
                         ->relationship('person', 'PERSCOD') 
                         //->preload()
-                        ->searchable()
+                        ->searchable(['PERSCOD','PERSNOM', 'PERSCOG1', 'PERSCOG2'])
                         ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
 
                         Forms\Components\Select::make('REPRCOD')
@@ -89,7 +89,7 @@ class InstanceResource extends Resource
                             //->description('quan calgui')
                             ->relationship('personRepresentative', 'PERSCOD')
                             //->preload()
-                            ->searchable()
+                            ->searchable(['PERSCOD','PERSNOM', 'PERSCOG1', 'PERSCOG2'])
                             ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
                     ])->columns(2)->visibleOn('edit'),
                     
@@ -484,6 +484,6 @@ class InstanceResource extends Resource
         if ($record->altres_motius == true && !empty($record->altres_motius_text)) {
             $motius .= "Altres: " . $record->altres_motius_text."\n";
         }
-        return $motius;
+        return $motius = rtrim($motius, "\n");
     }
 }
