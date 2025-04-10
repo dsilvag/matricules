@@ -42,6 +42,7 @@ return new class extends Migration
             $table->String('altres_motius_text')->nullable();
             $table->date('data_inici')->nullable();
             $table->date('data_fi')->nullable();
+            $table->string('data_presentacio')->nullable();
             $table->timestamps();
         });
     }

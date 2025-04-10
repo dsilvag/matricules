@@ -91,27 +91,7 @@ class InstanceResource extends Resource
                             //->preload()
                             ->searchable()
                             ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
-                        Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
-                            ->label('Propietari / Llogater')
-                            ->options([
-                                'propietari' => 'Propietari',
-                                'llogater' => 'Llogater',
-                            ])
-                            ->afterStateUpdated(function ($set, $state, $get) {
-                                if ($get('noempadronat_viu_barri_vell') === true) {
-                                    $persona = $state; 
-                                    $set('data_inici', now()->format('Y-m-d')); 
-                                    if ($persona == 'propietari') {
-                                        $set('data_fi', now()->addYears(4)->format('Y-m-d'));
-                                    } else if ($persona == 'llogater') {
-                                        $set('data_fi', now()->addYears(2)->format('Y-m-d')); 
-                                    }
-                                }})
-                            ->reactive()
-                            ->required(),
-                            //->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
-                            //->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
-                    ])->columns(3)->visibleOn('edit'),
+                    ])->columns(2)->visibleOn('edit'),
                     
                 Section::make()
                     ->icon('heroicon-o-globe-europe-africa')
@@ -123,7 +103,7 @@ class InstanceResource extends Resource
                         ->label('CODI DOMICILI')
                         ->relationship('domicili', 'DOMCOD')
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
-                            "{$record->DOMCOD} {$record->street->nom_carrer}, {$record->nom_habitatge}")
+                            "{$record->DOMCOD}, {$record->nom_habitatge}")
                         ->searchable(),
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
@@ -163,7 +143,7 @@ class InstanceResource extends Resource
                             return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell";
                         })
                         ->columnSpan(2),    
-                        /*Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
+                        Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
                             ->label('Propietari / Llogater')
                             ->options([
                                 'propietari' => 'Propietari',
@@ -181,7 +161,7 @@ class InstanceResource extends Resource
                                 }})
                             ->reactive()
                             ->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
-                            ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),*/
+                            ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
                         Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
@@ -317,10 +297,10 @@ class InstanceResource extends Resource
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
                     ])
                     ->searchable(isIndividual: true),
-                Tables\Columns\TextColumn::make('carrersBarriVell.street.CARSIG')
+                /*Tables\Columns\TextColumn::make('carrersBarriVell.street.CARSIG')
                     ->label('CARSIG')
                     ->sortable()
-                    ->searchable(isIndividual: true),
+                    ->searchable(isIndividual: true),*/
                 Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
                     ->label('CARRERS VALIDATS')
                     ->sortable()
@@ -408,7 +388,7 @@ class InstanceResource extends Resource
 
     public static function exportToDocx($record)
     {
-       //dd(self::getTextMotiu($record));
+       //dd(trim($record->domicili->nom_habitatge));
         $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
 
         // Cargar la plantilla
@@ -419,9 +399,13 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('PERSCOG1', $record->person->PERSCOG1);
         $templateProcessor->setValue('PERSCOG2', $record->person->PERSCOG2);
         $templateProcessor->setValue('DNI', $record->person->NIFNUM . $record->person->NIFDC);
-        $templateProcessor->setValue('CARRER_HABITATGE', $record->domicili->street->nom_carrer . $record->domicili->nom_habitatge);
+        $templateProcessor->setValue('CARRER_HABITATGE', trim($record->domicili->nom_habitatge));
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
-        //$templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
+        $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
+        //format data
+        $dataOriginal = $record->data_presentacio;
+        $dataFormat = substr($dataOriginal, 6, 2) . '/' . substr($dataOriginal, 4, 2) . '/' . substr($dataOriginal, 0, 4);
+        $templateProcessor->setValue('DATA_PRESENTACIO', $dataFormat);
         //$templateProcessor->setValue('VALIDAT', $record->VALIDAT);
         $templateProcessor->setValue('DATAFI', $record->data_fi);
         $templateProcessor->setValue('DATAINICI', $record->data_inici);
@@ -435,9 +419,10 @@ class InstanceResource extends Resource
             
             for ($i = 1; $i <= $totalVehicles; $i++) {
                 if ($vehicle = $record->vehicles->get($i - 1)) {
-                    $matriculas .= $vehicle->MATRICULA . "\n";
+                    $matriculas .= $vehicle->MATRICULA . ", ";
                 }
             }
+            $matriculas = rtrim($matriculas, ", ");
             $templateProcessor->setValue('MATRICULA', $matriculas);
         }
         $totalCarrers = $record->carrersBarriVell->count();
@@ -448,9 +433,10 @@ class InstanceResource extends Resource
 
             for ($i = 1; $i <= $totalCarrers; $i++) {
                 if ($street=$record->carrersBarriVell->get($i-1)) {
-                    $carrers .= $street->CARSIG . ' ' .$street->nom_carrer . "\n";
+                    $carrers .= $street->CARSIG . ' ' .$street->nom_carrer . ", ";
                 }
             }
+            $carrers = rtrim($carrers, ", ");
             $templateProcessor->setValue('CARRER_BARRI_VELL', $carrers);
         }
         return $templateProcessor;

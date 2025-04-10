@@ -44,7 +44,8 @@ class Instance extends Model
         'altres_motius',
         'altres_motius_text',
         'data_inici',
-        'data_fi'
+        'data_fi',
+        'data_presentacio'
     ];
 
     /**
@@ -126,6 +127,11 @@ class Instance extends Model
                     $record->DOMCOD=$response->return->codiDomiciliPersona;
                 }else{
                     self::sendErrorNotification('Domcod inexistent','El codi domicili no existeix al sistema.','DOMCOD');
+                }
+                if (isset($response->return->codiDomiciliPersona)) {
+                    $record->data_presentacio=$response->return->dataPresentacio;
+                }else{
+                    self::sendErrorNotification('Data presentacio inexistent','La data presentacio no existeix al sistema.','data_presentacio');
                 }
             } catch (\SoapFault $e) {
                 if (strpos($e->getMessage(), 'REG_REG_ENTRADA_INEXISTENT') !== false) {
@@ -214,11 +220,11 @@ class Instance extends Model
                 'aplicacio' => 'WEB',
                 'nivell' => '9999',
                 'usuari' => 'robot',
-                'doccod' => $InstanceResource::exportBase64($record), //document amb base64
+                'sdenum' => $record->RESNUME, 
             ),
         );
-            
         try {
+            InstanceResource::exportBase64($record); //document amb base64
             $client = new \SoapClient($_ENV['WEB_SERVICE_ANNEXAR_DOC']);
             $response = $client->doAnnexarDocumentExp($params);
         } catch (\SoapFault $e) {
