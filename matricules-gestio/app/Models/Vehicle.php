@@ -29,8 +29,7 @@ class Vehicle extends Model
     public function instance()
     {
         return $this->belongsTo(Instance::class, 'instances_vehicle','RESNUME','MATRICULA');
-    }
-        */
+    }*/
     public function instance()
     {
         return $this->belongsTo(Instance::class, 'instance_RESNUME', 'RESNUME');

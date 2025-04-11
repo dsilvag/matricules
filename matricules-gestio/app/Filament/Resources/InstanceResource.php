@@ -19,6 +19,7 @@ use App\Models\Person;
 use App\Models\Dwelling;
 use App\Models\StreetBarriVell;
 use PhpOffice\PhpWord\TemplateProcessor;
+use App\Filament\Forms\Components\DwellingSearch;
 
 class InstanceResource extends Resource
 {
@@ -95,6 +96,7 @@ class InstanceResource extends Resource
                     
                 Section::make()
                     ->icon('heroicon-o-globe-europe-africa')
+                    ->description('Dades contacte')
                     ->schema([  
                     Forms\Components\Select::make('DOMCOD')
                         ->visibleOn('edit')
@@ -105,6 +107,24 @@ class InstanceResource extends Resource
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
                             "{$record->DOMCOD}, {$record->nom_habitatge}")
                         ->searchable(),
+                ])->columns(1)->visibleOn('edit'),
+                Section::make()
+                    ->icon('heroicon-o-globe-europe-africa')
+                    ->description('Domicili accés')
+                    ->schema([  
+                    Forms\Components\Select::make('domicili_acces')
+                        ->visibleOn('edit')
+                        ->reactive()
+                        ->required()
+                        ->label('CODI DOMICILI ACCÉS')
+                        ->relationship('domiciliAccess', 'DOMCOD')
+                        ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
+                            "{$record->DOMCOD}, {$record->nom_habitatge}")
+                        ->searchable(),
+                    /*DwellingSearch::make('domicili_acces')  // Aquí usamos el custom field DwellingSearch
+                        ->label('Buscar Habitatge')  // Título del campo
+                        ->searchable()  // Permite búsqueda dentro del campo
+                        ->query(fn($query) => $query->where('active', true)),*/
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
@@ -399,7 +419,7 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('PERSCOG1', $record->person->PERSCOG1);
         $templateProcessor->setValue('PERSCOG2', $record->person->PERSCOG2);
         $templateProcessor->setValue('DNI', $record->person->NIFNUM . $record->person->NIFDC);
-        $templateProcessor->setValue('CARRER_HABITATGE', trim($record->domicili->nom_habitatge));
+        $templateProcessor->setValue('CARRER_HABITATGE', trim($record->domiciliAccess->nom_habitatge));
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
         $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
         //format data

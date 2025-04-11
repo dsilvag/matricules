@@ -39,8 +39,25 @@ class StreetBarriVell extends Model
         //$this->street()->getNomCarrerAttribute();
     }
 
+    public function instances()
+    {
+        return $this->belongsToMany(Instance::class, 'instance_street', 'CARCOD', 'RESNUME');
+    }
+
     public function vehicles()
     {
-        return $this->belongsToMany(Vehicle::class, 'vehicle_street', 'CARCOD', 'MATRICULA')->withTimestamps();
+        return $this->hasManyThrough(Vehicle::class, Instance::class, 'RESNUME', 'instance_RESNUME', 'CARCOD', 'RESNUME');
+    }
+
+    public static function obtenirLListaCotxes($record)
+    {
+        $instances = $record->instances;
+
+        $allVehicles = collect();
+
+        foreach ($instances as $instance) {
+            $allVehicles = $allVehicles->merge($instance->vehicles->pluck('MATRICULA'));
+        }
+        dd($allVehicles);
     }
 }

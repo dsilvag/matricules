@@ -45,7 +45,8 @@ class Instance extends Model
         'altres_motius_text',
         'data_inici',
         'data_fi',
-        'data_presentacio'
+        'data_presentacio',
+        'domicili_acces'
     ];
 
     /**
@@ -88,6 +89,11 @@ class Instance extends Model
     public function domicili()
     {
         return $this->belongsTo(Dwelling::class, 'DOMCOD', 'DOMCOD');
+    }
+
+    public function domiciliAccess()
+    {
+        return $this->belongsTo(Dwelling::class, 'domicili_acces');
     }
 
     public function carrersBarriVell()

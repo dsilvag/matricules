@@ -25,6 +25,9 @@ return new class extends Migration
             $table->integer('DOMCOD')->nullable();
             $table->foreign('DOMCOD')->references('DOMCOD')->on('dwellings')
                 ->onDelete('cascade');
+            $table->integer('domicili_acces')->nullable();
+            $table->foreign('domicili_acces')->references('DOMCOD')->on('dwellings')
+                ->onDelete('cascade');
             $table->boolean('empadronat_si_ivtm')->default(false);
             $table->boolean('empadronat_no_ivtm')->default(false);
             $table->boolean('noempadronat_viu_barri_vell')->default(false);
