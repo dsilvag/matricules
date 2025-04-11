@@ -221,18 +221,32 @@ class Instance extends Model
     }
     public static function sendToWS($record)
     {
+        //dd(InstanceResource::exportBase64($record));
         $params = array(
             'arg0' => array(
                 'aplicacio' => 'WEB',
                 'nivell' => '9999',
                 'usuari' => 'robot',
-                'sdenum' => $record->RESNUME, 
+                'aplcod' => 'SDE',
+                'descriptor' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . ' ' . date('dmY'),
+                'doccod' => 'GENE',
+                'docnompc' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . '.pdf',
+                'docorigen' => 'EXPED',
+                'doctip' => '0024',
+                'fitxerAnnexat' => InstanceResource::exportBase64($record),
+                'identificador' => $record->NUMEXP,
+                'modelcod' => 'DECR',
+                'sdenum' => $record->NUMEXP, 
             ),
         );
         try {
             InstanceResource::exportBase64($record); //document amb base64
             $client = new \SoapClient($_ENV['WEB_SERVICE_ANNEXAR_DOC']);
             $response = $client->doAnnexarDocumentExp($params);
+            Notification::make()
+                ->title('Document enviat correctament')
+                ->success()
+                ->send();
         } catch (\SoapFault $e) {
             self::sendErrorNotification('Error Soap',$e->getMessage(),'unknown');
         } catch (Exception $e) {

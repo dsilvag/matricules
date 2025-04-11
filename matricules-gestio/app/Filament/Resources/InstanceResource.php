@@ -19,7 +19,7 @@ use App\Models\Person;
 use App\Models\Dwelling;
 use App\Models\StreetBarriVell;
 use PhpOffice\PhpWord\TemplateProcessor;
-use App\Filament\Forms\Components\DwellingSearch;
+use Filament\Tables\Filters\TernaryFilter;
 
 class InstanceResource extends Resource
 {
@@ -58,10 +58,11 @@ class InstanceResource extends Resource
                             ->label('NUMEXP')
                             ->required()
                             ->maxLength(11),
-                        Forms\Components\TextInput::make('DECRETAT')
+                        Forms\Components\ToggleButtons::make('DECRETAT')
                             ->visibleOn('edit')
                             ->label('DECRETAT')
-                            ->maxLength(255),
+                            ->boolean()
+                            ->inline(),
                         Forms\Components\Radio::make('VALIDAT')
                             ->visibleOn('edit')
                             ->label('DECRET FAVORABLE  / DESFAVORABLE')
@@ -121,10 +122,7 @@ class InstanceResource extends Resource
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
                             "{$record->DOMCOD}, {$record->nom_habitatge}")
                         ->searchable(),
-                    /*DwellingSearch::make('domicili_acces')  // Aquí usamos el custom field DwellingSearch
-                        ->label('Buscar Habitatge')  // Título del campo
-                        ->searchable()  // Permite búsqueda dentro del campo
-                        ->query(fn($query) => $query->where('active', true)),*/
+                    
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
@@ -305,14 +303,12 @@ class InstanceResource extends Resource
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('person.nom_person')
                     ->label('PERSONA')
-                    ->sortable()
                     ->extraAttributes([
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
                     ])
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('personRepresentative.nom_person')
                     ->label('REPRESENTANT')
-                    ->sortable()
                     ->extraAttributes([
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
                     ])
@@ -323,13 +319,13 @@ class InstanceResource extends Resource
                     ->searchable(isIndividual: true),*/
                 Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
                     ->label('CARRERS VALIDATS')
-                    ->sortable()
                     ->extraAttributes([
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
                     ])
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('DECRETAT')
                         ->label('DECRETAT')
+                        ->sortable()
                         ->searchable()
                         ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('VALIDAT')
@@ -346,7 +342,7 @@ class InstanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TernaryFilter::make('DECRETAT')->label('Decretat'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
