@@ -346,7 +346,7 @@ class InstanceResource extends Resource
                 TernaryFilter::make('DECRETAT')->label('Decretat'),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
+                //Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('sendToWs') 
                     ->label('Send to WS')

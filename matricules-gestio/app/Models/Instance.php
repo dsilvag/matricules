@@ -235,7 +235,7 @@ class Instance extends Model
                 'aplcod' => 'SDE',
                 'descriptor' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . ' ' . date('dmY'),
                 'doccod' => 'GENE',
-                'docnompc' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . '.docx',
+                'docnompc' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . '_' . time() . '.docx',
                 'docorigen' => 'EXPED',
                 'doctip' => '0024',
                 'fitxerAnnexat' => InstanceResource::exportBase64($record),
@@ -252,6 +252,10 @@ class Instance extends Model
                 ->title('Document enviat correctament')
                 ->success()
                 ->send();
+            $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
+            if (file_exists($outputPath)) {
+                unlink($outputPath);
+            }
         } catch (\SoapFault $e) {
             self::sendErrorNotification('Error Soap',$e->getMessage(),'unknown');
         } catch (Exception $e) {
