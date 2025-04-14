@@ -297,6 +297,7 @@ class InstanceResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('RESNUME')
                     ->label('RESNUME')
+                    ->sortable()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('NUMEXP')
                     ->label('NUMEXP')
@@ -345,6 +346,7 @@ class InstanceResource extends Resource
                 TernaryFilter::make('DECRETAT')->label('Decretat'),
             ])
             ->actions([
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('sendToWs') 
                     ->label('Send to WS')
@@ -356,10 +358,15 @@ class InstanceResource extends Resource
                     ->icon('heroicon-o-arrow-down-tray')
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                Tables\Actions\DeleteBulkAction::make()
+                /*->action(function (Collection $records) {
+                    dd($records); // This should now show only selected records
+                    foreach ($records as $record) {
+                        $record->delete();
+                    }
+                })
+                ->requiresConfirmation(),*/
+        ]);
     }
 
     public static function getRelations(): array

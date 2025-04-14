@@ -18,6 +18,8 @@ class Instance extends Model
     // No estem utilitzant auto increment en la primary key
     public $incrementing = false;
 
+    protected $keyType = 'string';
+
     protected $guarded=[];
 
     protected $fillable = [
@@ -106,9 +108,9 @@ class Instance extends Model
         static::creating(function ($record) {
             $params = array(
                 'arg0' => array(
-                    'aplicacio' => 'WEB',
-                    'nivell' => '9999',
-                    'usuari' => 'robot',
+                    'aplicacio' => $_ENV['APLICACIO_WS'],
+                    'nivell' => $_ENV['NIVELL_WS'],
+                    'usuari' => $_ENV['USUARI_WS'],
                     'numeroRegistreEntrada' => $record->RESNUME,
                 ),
             );
@@ -159,6 +161,9 @@ class Instance extends Model
             {
                 self::sendErrorNotification('Més d\'un motiu seleccionat','Només es pot seleccionar un motiu. Si us plau, desmarca la resta abans de guardar.','motiu');
             }
+        });
+        static::deleting(function ($record) {
+            //dd($record);
         });
 
     }
@@ -224,13 +229,13 @@ class Instance extends Model
         //dd(InstanceResource::exportBase64($record));
         $params = array(
             'arg0' => array(
-                'aplicacio' => 'WEB',
-                'nivell' => '9999',
-                'usuari' => 'robot',
+                'aplicacio' => $_ENV['APLICACIO_WS'],
+                'nivell' => $_ENV['NIVELL_WS'],
+                'usuari' => $_ENV['USUARI_WS'],
                 'aplcod' => 'SDE',
                 'descriptor' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . ' ' . date('dmY'),
                 'doccod' => 'GENE',
-                'docnompc' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . '.pdf',
+                'docnompc' => 'DEC AUTORITZACIO BARRI VELL ' . $record->RESNUME . '.docx',
                 'docorigen' => 'EXPED',
                 'doctip' => '0024',
                 'fitxerAnnexat' => InstanceResource::exportBase64($record),
