@@ -56,7 +56,14 @@ class StreetBarriVell extends Model
         $allVehicles = collect();
 
         foreach ($instances as $instance) {
-            $allVehicles = $allVehicles->merge($instance->vehicles->pluck('MATRICULA'));
+            $vehicles = $instance->vehicles->map(function ($vehicle) {
+                return [
+                    'MATRICULA' => $vehicle->MATRICULA,
+                    'DATAINICI' => $vehicle->DATAINICI,
+                    'DATAEXP' => $vehicle->DATAEXP,
+                ];
+            });
+            $allVehicles = $allVehicles->merge($vehicles);
         }
         dd($allVehicles);
     }

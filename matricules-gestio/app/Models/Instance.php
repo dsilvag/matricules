@@ -164,6 +164,10 @@ class Instance extends Model
                 {
                     self::sendErrorNotification('Més d\'un motiu seleccionat','Només es pot seleccionar un motiu. Si us plau, desmarca la resta abans de guardar.','motiu');
                 }
+                if($record->data_inici > $record->data_fi)
+                {
+                    self::sendErrorNotification('Error dates','La data fi no pot ser més petita que la data inici','data_fi');
+                }
             }
         });
         static::deleting(function ($record) {
