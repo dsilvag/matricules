@@ -46,6 +46,7 @@ return new class extends Migration
             $table->date('data_inici')->nullable();
             $table->date('data_fi')->nullable();
             $table->string('data_presentacio')->nullable();
+            $table->boolean('is_notificat')->default(false);
             $table->timestamps();
         });
     }

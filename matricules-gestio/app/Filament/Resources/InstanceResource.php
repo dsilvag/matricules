@@ -20,6 +20,7 @@ use App\Models\Dwelling;
 use App\Models\StreetBarriVell;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Support\Enums\Alignment;
 
 class InstanceResource extends Resource
 {
@@ -130,7 +131,18 @@ class InstanceResource extends Resource
                         ->preload()
                         ->searchable()
                         ->multiple()
-                        ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}"),
+                        ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}")
+                        ->options(function () {
+                            $options = StreetBarriVell::all()->pluck('nom_carrer', 'CARCOD')->toArray();
+
+                            return ['*' => 'Tots els carrers'] + $options;
+                        })
+                        ->afterStateUpdated(function ($state, $set) {
+                            // Si el valor seleccionado es '*', seleccionamos todos los registros
+                            if (in_array('*', $state)) {
+                                $set('carrersBarriVell', StreetBarriVell::all()->pluck('CARCOD')->toArray());
+                            }
+                        }),
                 ])->columns(2)->visibleOn('edit'),
                  Section::make()
                     ->icon('heroicon-o-flag')
@@ -305,34 +317,40 @@ class InstanceResource extends Resource
                 Tables\Columns\TextColumn::make('person.nom_person')
                     ->label('PERSONA')
                     ->extraAttributes([
-                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
-                    ])
-                    ->searchable(isIndividual: true),
-                Tables\Columns\TextColumn::make('personRepresentative.nom_person')
+                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 200px;',
+                    ]),
+                
+                    //->searchable(isIndividual: true),
+                /*Tables\Columns\TextColumn::make('personRepresentative.nom_person')
                     ->label('REPRESENTANT')
                     ->extraAttributes([
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
-                    ])
-                    ->searchable(isIndividual: true),
+                    ]),
+                    //->searchable(isIndividual: true),
                 /*Tables\Columns\TextColumn::make('carrersBarriVell.street.CARSIG')
                     ->label('CARSIG')
                     ->sortable()
                     ->searchable(isIndividual: true),*/
-                Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
+                /*Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
                     ->label('CARRERS VALIDATS')
                     ->extraAttributes([
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
                     ])
-                    ->searchable(isIndividual: true),
-                Tables\Columns\TextColumn::make('DECRETAT')
-                        ->label('DECRETAT')
-                        ->sortable()
-                        ->searchable()
-                        ->searchable(isIndividual: true),
-                Tables\Columns\TextColumn::make('VALIDAT')
+                    ->searchable(isIndividual: true),*/
+                    Tables\Columns\TextColumn::make('VALIDAT')
                         ->label('VALIDAT')
                         ->searchable()
                         ->searchable(isIndividual: true),
+                    Tables\Columns\IconColumn::make('DECRETAT')
+                        ->label('DECRETAT')
+                        ->sortable()
+                        ->alignment(Alignment::Center)
+                        ->boolean(),
+                Tables\Columns\IconColumn::make('is_notificat')
+                        ->label('NOTIFICAT')
+                        ->boolean()
+                        ->alignment(Alignment::Center)
+                        ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -343,11 +361,15 @@ class InstanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TernaryFilter::make('DECRETAT')->label('Decretat')->default(false),
+                TernaryFilter::make('DECRETAT')->label('Decretat'),
+                TernaryFilter::make('is_notificat')->label('Notificat')->default(false),
             ])
             ->actions([
                 //Tables\Actions\DeleteAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('notificar')
+                    ->label('Notificar')
+                    ->action(fn ($record) => Instance::notifyInstance($record))
+                    ->icon('heroicon-o-bell-alert'),
                 Tables\Actions\Action::make('sendToWs') 
                     ->label('Send to WS')
                     ->action(fn ($record) => Instance::sendToWs($record))
@@ -355,7 +377,8 @@ class InstanceResource extends Resource
                 Tables\Actions\Action::make('exportDocx')
                     ->label('Exportar DOCX')
                     ->action(fn ($record) => static::downloadDocx($record))
-                    ->icon('heroicon-o-arrow-down-tray')
+                    ->icon('heroicon-o-arrow-down-tray'),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
@@ -412,7 +435,11 @@ class InstanceResource extends Resource
     public static function exportToDocx($record)
     {
        //dd(trim($record->domicili->nom_habitatge));
-        $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
+        if($record->VALIDAT!=null && $record->VALIDAT == 'FAVORABLE'){
+            $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
+        }else{
+            $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES NEGATIU.docx');
+        }
 
         // Cargar la plantilla
         $templateProcessor = new TemplateProcessor($templatePath);

@@ -27,13 +27,15 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
 
     public static function getTitle($ownerRecord, string $pageClass): string
     {
-        $domcod = $ownerRecord->DOMCOD;
+        $domcod = $ownerRecord->domicili_acces;
         $resnume = $ownerRecord->RESNUME;
-        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($domcod,$resnume) {
+        $avui = now()->format('Y-m-d');
+        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($domcod,$resnume,$avui) {
             $query->where('DOMCOD', $domcod)
-            ->where('RESNUME', '!=', $resnume);
+            ->where('RESNUME', '!=', $resnume)
+            ->where('DATAEXP', '>=', $avui);
         })->count();
-        return "Altres vehicles al mateix domicili ($vehicleCount)"; // Título personalizado
+        return "Altres vehicles al mateix domicili ($vehicleCount)";
     }
 
     public function table(Table $table): Table
@@ -57,8 +59,8 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
                 //Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                //Tables\Actions\EditAction::make(),
+                //Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -68,12 +70,11 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     }
     public function getTableQuery(): Builder
     {
-        $domcod = $this->ownerRecord->DOMCOD;
-        $resnume = $this->ownerRecord->RESNUME;
-
-        return Vehicle::whereHas('instance', function ($query) use ($domcod, $resnume) {
-            $query->where('DOMCOD', $domcod)
-                ->where('RESNUME', '!=', $resnume);
+        
+        return Vehicle::whereHas('instance', function ($query){
+            $query->where('DOMCOD', $this->ownerRecord->domicili_acces)
+                ->where('RESNUME', '!=', $this->ownerRecord->RESNUME)
+                ->where('DATAEXP', '>=', now()->format('Y-m-d'));
         });
     }
 }

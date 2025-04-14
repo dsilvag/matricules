@@ -20,6 +20,8 @@ class Instance extends Model
 
     protected $keyType = 'string';
 
+    protected $skipValidation = false;
+
     protected $guarded=[];
 
     protected $fillable = [
@@ -152,14 +154,16 @@ class Instance extends Model
             }
         });
         static::updating(function ($record) {
-            $comptador = self::isToggleActive($record);
-            if($comptador<1)
-            {
-                self::sendErrorNotification('Motiu no seleccionat','Si us plau, selecciona almenys un motiu abans de guardar.','motiu');
-            }
-            if($comptador>1)
-            {
-                self::sendErrorNotification('Més d\'un motiu seleccionat','Només es pot seleccionar un motiu. Si us plau, desmarca la resta abans de guardar.','motiu');
+            if (!$record->skipValidation) {
+                $comptador = self::isToggleActive($record);
+                if($comptador<1)
+                {
+                    self::sendErrorNotification('Motiu no seleccionat','Si us plau, selecciona almenys un motiu abans de guardar.','motiu');
+                }
+                if($comptador>1)
+                {
+                    self::sendErrorNotification('Més d\'un motiu seleccionat','Només es pot seleccionar un motiu. Si us plau, desmarca la resta abans de guardar.','motiu');
+                }
             }
         });
         static::deleting(function ($record) {
@@ -261,5 +265,26 @@ class Instance extends Model
         } catch (Exception $e) {
             self::sendErrorNotification('Error general',$e->getMessage(),'unknown');
         }
+    }
+
+    public static function notifyInstance($record)
+    {
+        if($record->is_notificat==true)
+        {
+            self::sendErrorNotification('Notificació','Aquesta instància ja ha estat notificada','is_notificat');
+        }else{
+            $record->skipValidation();
+            $record->is_notificat=true;
+            $record->save();
+            Notification::make()
+                ->title('Notificació enviada correctament')
+                ->success()
+                ->send();
+        }
+    }
+
+    public function skipValidation()
+    {
+        $this->skipValidation = true;
     }
 }
