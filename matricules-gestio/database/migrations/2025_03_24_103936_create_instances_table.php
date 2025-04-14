@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('instances', function (Blueprint $table) {
             $table->char('RESNUME',11)->primary();
             $table->CHAR('NUMEXP',11)->nullable();
-            $table->string('DECRETAT')->nullable();
+            $table->string('DECRETAT')->default('0');
             $table->string('VALIDAT')->nullable();
             $table->integer('PERSCOD')->nullable();
             $table->foreign('PERSCOD')->references('PERSCOD')->on('people')

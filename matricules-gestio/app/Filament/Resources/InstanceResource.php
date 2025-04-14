@@ -343,7 +343,7 @@ class InstanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TernaryFilter::make('DECRETAT')->label('Decretat'),
+                TernaryFilter::make('DECRETAT')->label('Decretat')->default(false),
             ])
             ->actions([
                 //Tables\Actions\DeleteAction::make(),
