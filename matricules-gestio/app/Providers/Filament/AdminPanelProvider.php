@@ -56,7 +56,8 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                \ChrisReedIO\Socialment\SocialmentPlugin::make(),
             ])
             ->favicon(asset('/logo/ajBny-nobg.png'))
             ->brandName('AjBanyoles')

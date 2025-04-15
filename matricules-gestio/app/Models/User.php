@@ -46,4 +46,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    public static function booted(): void
+    {
+        static::creating(function ($record) {
+            $record->assignRole('Panel User');
+        });
+    }
 }
