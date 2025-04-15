@@ -73,7 +73,7 @@ class InstanceResource extends Resource
                                 'DESFAVORABLE' => 'DESFAVORABLE',
                                 
                             ]),
-                        ])->columns(3)->visibleOn('edit'),
+                        ])->columns(2)->visibleOn('edit'),
 
                 Section::make()
                     ->icon('heroicon-o-identification')

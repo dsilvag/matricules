@@ -250,6 +250,9 @@ class Instance extends Model
     }
     public static function sendToWS($record)
     {
+        if($record->VALIDAT==null){
+            self::sendErrorNotification('Instància no validada','Per poder enviar la instància, cal omplir el camp Validat del formulari".','VALIDAT');
+        }
         //dd(InstanceResource::exportBase64($record));
         $params = array(
             'arg0' => array(
@@ -292,6 +295,10 @@ class Instance extends Model
 
     public static function notifyInstance($record)
     {
+        if($record->DECRETAT!=true)
+        {
+            self::sendErrorNotification('Instància no decretada','Per tal de poder notificar la instància, és necessari emetre una resolució.','VALIDAT');
+        }
         if($record->is_notificat==true)
         {
             self::sendErrorNotification('Notificació','Aquesta instància ja ha estat notificada','is_notificat');
