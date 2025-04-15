@@ -39,10 +39,11 @@ class VehiclesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('MATRICULA')
                     ->label('MATRICULA'),
                 Tables\Columns\TextColumn::make('DATAINICI')
-                    ->label('DATAINICI'),
+                    ->label('DATAINICI')
+                    ->date('d/m/Y'),
                 Tables\Columns\TextColumn::make('DATAEXP')
-                    ->label('DATAEXP'),
-                
+                    ->label('DATAEXP')
+                    ->date('d/m/Y'),
             ])
             ->filters([
                 //

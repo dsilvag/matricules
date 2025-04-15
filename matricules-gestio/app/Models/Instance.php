@@ -168,6 +168,14 @@ class Instance extends Model
                 {
                     self::sendErrorNotification('Error dates','La data fi no pot ser més petita que la data inici','data_fi');
                 }
+                //Al modificar la data inici o data fi s'ha de modificar la data del vehicles assignats a l'instància
+                if($record->isDirty('data_inici') || $record->isDirty('data_fi'))
+                {
+                    $record->vehicles()->update([
+                        'DATAINICI' => $record->data_inici,
+                        'DATAEXP' => $record->data_fi,
+                    ]);
+                }
             }
         });
         static::deleting(function ($record) {
