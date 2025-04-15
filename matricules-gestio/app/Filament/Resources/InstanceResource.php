@@ -59,11 +59,12 @@ class InstanceResource extends Resource
                             ->label('NUMEXP')
                             ->required()
                             ->maxLength(11),
+                            /*
                         Forms\Components\ToggleButtons::make('DECRETAT')
                             ->visibleOn('edit')
                             ->label('DECRETAT')
                             ->boolean()
-                            ->inline(),
+                            ->inline(),*/
                         Forms\Components\Radio::make('VALIDAT')
                             ->visibleOn('edit')
                             ->label('DECRET FAVORABLE  / DESFAVORABLE')

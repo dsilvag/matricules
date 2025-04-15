@@ -179,8 +179,8 @@ class Instance extends Model
                     }
                     else{
                         $record->vehicles()->update([
-                            'DATAINICI' => now()->format('Y-m-d'),
-                            'DATAEXP' => now()->format('Y-m-d'),
+                            'DATAINICI' => now()->subDay()->format('Y-m-d'),
+                            'DATAEXP' => now()->subDay()->format('Y-m-d'),
                         ]);
                     }
                 }

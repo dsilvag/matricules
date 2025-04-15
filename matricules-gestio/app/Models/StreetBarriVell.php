@@ -54,17 +54,22 @@ class StreetBarriVell extends Model
         $instances = $record->instances;
 
         $allVehicles = collect();
-
         foreach ($instances as $instance) {
-            $vehicles = $instance->vehicles->map(function ($vehicle) {
-                return [
-                    'MATRICULA' => $vehicle->MATRICULA,
-                    'DATAINICI' => $vehicle->DATAINICI,
-                    'DATAEXP' => $vehicle->DATAEXP,
-                ];
-            });
-            $allVehicles = $allVehicles->merge($vehicles);
+            //Si esta notificat te un decret favorable mirem els vehicles
+            if($instance->is_notificat==true && $instance->VALIDAT=='FAVORABLE'){
+                foreach ($instance->vehicles as $vehicle) {        
+                    //si el vehicle no ha expirat l'afegim a l'array
+                    if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
+                        $vehicles = [
+                            'MATRICULA' => $vehicle->MATRICULA,
+                            'DATAINICI' => $vehicle->DATAINICI,
+                            'DATAEXP' => $vehicle->DATAEXP,
+                        ];
+                        $allVehicles = $allVehicles->push($vehicles);
+                    }
+                }
+            }
         }
-        dd($allVehicles);
+        dd($allVehicles);       
     }
 }
