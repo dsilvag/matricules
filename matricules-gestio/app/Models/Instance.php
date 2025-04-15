@@ -169,12 +169,20 @@ class Instance extends Model
                     self::sendErrorNotification('Error dates','La data fi no pot ser més petita que la data inici','data_fi');
                 }
                 //Al modificar la data inici o data fi s'ha de modificar la data del vehicles assignats a l'instància
-                if($record->isDirty('data_inici') || $record->isDirty('data_fi'))
+                if($record->isDirty('data_inici') || $record->isDirty('data_fi') || $record->isDirty('VALIDAT'))
                 {
-                    $record->vehicles()->update([
-                        'DATAINICI' => $record->data_inici,
-                        'DATAEXP' => $record->data_fi,
-                    ]);
+                    if($record->VALIDAT!='DESFAVORABLE'){
+                        $record->vehicles()->update([
+                            'DATAINICI' => $record->data_inici,
+                            'DATAEXP' => $record->data_fi,
+                        ]);
+                    }
+                    else{
+                        $record->vehicles()->update([
+                            'DATAINICI' => now()->format('Y-m-d'),
+                            'DATAEXP' => now()->format('Y-m-d'),
+                        ]);
+                    }
                 }
             }
         });
@@ -264,6 +272,9 @@ class Instance extends Model
             InstanceResource::exportBase64($record); //document amb base64
             $client = new \SoapClient($_ENV['WEB_SERVICE_ANNEXAR_DOC']);
             $response = $client->doAnnexarDocumentExp($params);
+            $record->skipValidation();
+            $record->DECRETAT=true;
+            $record->save();
             Notification::make()
                 ->title('Document enviat correctament')
                 ->success()

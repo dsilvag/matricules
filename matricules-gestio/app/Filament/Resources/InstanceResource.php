@@ -308,18 +308,25 @@ class InstanceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('RESNUME')
-                    ->label('RESNUME')
+                    ->label('Entrada')
                     ->sortable()
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('NUMEXP')
-                    ->label('NUMEXP')
+                    ->label('Expedient')
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('person.nom_person')
-                    ->label('PERSONA')
+                    ->label('Persona')
                     ->extraAttributes([
                         'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 200px;',
                     ]),
-                
+                Tables\Columns\TextColumn::make('vehicles.MATRICULA')
+                        ->label('Matrícules')
+                        ->html() // Permite contenido HTML
+                        ->formatStateUsing(fn ($state) => str_replace(',', ',<br>', $state))
+                        ->extraAttributes([
+                            'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 200px;',
+                        ]),
+                    
                     //->searchable(isIndividual: true),
                 /*Tables\Columns\TextColumn::make('personRepresentative.nom_person')
                     ->label('REPRESENTANT')
@@ -338,16 +345,16 @@ class InstanceResource extends Resource
                     ])
                     ->searchable(isIndividual: true),*/
                     Tables\Columns\TextColumn::make('VALIDAT')
-                        ->label('VALIDAT')
+                        ->label('Decret')
                         ->searchable()
                         ->searchable(isIndividual: true),
                     Tables\Columns\IconColumn::make('DECRETAT')
-                        ->label('DECRETAT')
+                        ->label('Decretat')
                         ->sortable()
                         ->alignment(Alignment::Center)
                         ->boolean(),
                 Tables\Columns\IconColumn::make('is_notificat')
-                        ->label('NOTIFICAT')
+                        ->label('Notificat')
                         ->boolean()
                         ->alignment(Alignment::Center)
                         ->sortable(),
@@ -371,7 +378,7 @@ class InstanceResource extends Resource
                     ->action(fn ($record) => Instance::notifyInstance($record))
                     ->icon('heroicon-o-bell-alert'),
                 Tables\Actions\Action::make('sendToWs') 
-                    ->label('Send to WS')
+                    ->label('Penjar decret')
                     ->action(fn ($record) => Instance::sendToWs($record))
                     ->icon('heroicon-o-arrow-up-circle'),
                 Tables\Actions\Action::make('exportDocx')
