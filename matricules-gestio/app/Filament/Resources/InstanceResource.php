@@ -152,14 +152,14 @@ class InstanceResource extends Resource
                         /**
                          * Per a cada Toggle hi ha una data per defecte(és el dia d'avui), i depenent de si l'usuari selecciona una opció o una altra, es permet modificar les dates o no.
                          */
-                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles')->columnSpan(3)->reactive() 
+                        Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles (indefinit)')->columnSpan(3)->reactive() 
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
                                 $set('data_inici', now()->format('Y-m-d'));
                                 $set('data_fi', '9999-12-31');
                             }
                         }),
-                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles')->columnSpan(3)->reactive()
+                        Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles (2 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
                                 $set('data_inici', now()->format('Y-m-d'));
@@ -171,7 +171,7 @@ class InstanceResource extends Resource
                         ->label(function ($get) {
                             $persona = $get('noempadronat_viu_barri_vell_text');
                             $persona = $persona ? $persona : 'X';
-                            return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell";
+                            return "La persona no hi està empadronada i és $persona d'un immoble al carrer del barri vell (2 o 4 anys)";
                         })
                         ->columnSpan(2),    
                         Forms\Components\Select::make('noempadronat_viu_barri_vell_text')
@@ -193,21 +193,21 @@ class InstanceResource extends Resource
                             ->reactive()
                             ->required(fn ($get) => $get('noempadronat_viu_barri_vell') === true)
                             ->visible(fn ($get) => $get('noempadronat_viu_barri_vell') === true),
-                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident ')->columnSpan(3)->reactive()
+                        Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident (4 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
                                 $set('data_inici', now()->format('Y-m-d'));
                                 $set('data_fi', now()->addYears(4)->format('Y-m-d'));
                             }
                         }),
-                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada')->columnSpan(3)->reactive()
+                        Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada (4 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
                                 $set('data_inici', now()->format('Y-m-d'));
                                 $set('data_fi', now()->addYears(4)->format('Y-m-d'));
                             }
                         }),
-                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat ')->columnSpan(3)->reactive()
+                        Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat (igual que la targeta)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
                                 $set('data_inici', now()->format('Y-m-d'));
@@ -237,7 +237,7 @@ class InstanceResource extends Resource
                                 $set('data_inici', now()->format('Y-m-d'));
                             }
                         }),
-                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) ')->columnSpan(3)->reactive()
+                        Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) (4 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
                                 $set('data_inici', now()->format('Y-m-d'));
