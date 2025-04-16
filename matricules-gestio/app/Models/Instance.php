@@ -251,7 +251,7 @@ class Instance extends Model
     public static function sendToWS($record)
     {
         if($record->VALIDAT==null){
-            self::sendErrorNotification('Instància no validada','Per poder enviar la instància, cal omplir el camp Validat del formulari".','VALIDAT');
+            self::sendErrorNotification('Instància no validada','Per poder enviar la instància, cal omplir el camp FAVORABLE / DESFAVORABLE del formulari.','VALIDAT');
         }
         //dd(InstanceResource::exportBase64($record));
         $params = array(
