@@ -446,7 +446,7 @@ class InstanceResource extends Resource
         if($record->VALIDAT!=null && $record->VALIDAT == 'FAVORABLE'){
             $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
         }else{
-            $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES NEGATIU.docx');
+            $templatePath = storage_path('app/templates/MODEL RESOLUCIÓ DESESTIMACIÓ.docx');
         }
 
         // Cargar la plantilla
