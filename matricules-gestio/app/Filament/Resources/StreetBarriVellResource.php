@@ -49,7 +49,6 @@ class StreetBarriVellResource extends Resource
             Tables\Columns\TextColumn::make('street.PAISCOD')
                 ->label('PAISCOD')
                 ->numeric()
-                ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
             Tables\Columns\TextColumn::make('street.PROVCOD')
                 ->label('PROVCOD')
@@ -74,11 +73,17 @@ class StreetBarriVellResource extends Resource
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.CARDESC')
                 ->label('CARDESC')
+                ->sortable()
                 ->searchable(),
             Tables\Columns\TextColumn::make('street.CARDESC2')
                 ->label('CARDESC2')
                 ->searchable()
                 ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('user')
+                ->label('USER')
+                ->copyable()
+                ->copyMessage('Copiado al portapapeles')
+                ->copyMessageDuration(1500),
             Tables\Columns\TextColumn::make('street.STDUGR')
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->label('STDUGR')
@@ -172,7 +177,7 @@ class StreetBarriVellResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('obtenirLListaCotxes') 
-                    ->label('Obtenir llista cotxes validats')
+                    ->label('Validar llista de cotxes')
                     ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record))
                     ->icon('heroicon-o-arrow-up-circle'),
             ])

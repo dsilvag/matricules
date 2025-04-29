@@ -15,6 +15,7 @@ return new class extends Migration
             $table->integer('CARCOD')->primary();
             $table->foreign('CARCOD')->references('CARCOD')->on('streets')
                 ->onDelete('cascade');
+            $table->string('user')->nullable();
             $table->timestamps();
         });
     }
