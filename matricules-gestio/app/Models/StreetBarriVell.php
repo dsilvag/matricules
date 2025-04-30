@@ -49,80 +49,95 @@ class StreetBarriVell extends Model
     {
         return $this->hasManyThrough(Vehicle::class, Instance::class, 'RESNUME', 'instance_RESNUME', 'CARCOD', 'RESNUME');
     }
-
-    public static function obtenirLListaCotxes($record)
+    public static function penjarVehicles()
     {
-        //Obtenim token
-        $token = self::createToken($record);
-        //Si el token comença amb la paraula error vol dir que ha retornat un error
-        if (substr($token, 0, 5) == "Error")
-        {
-            //Mostrem l'error
-            \App\Models\Instance::sendErrorNotification('Token error',$token,'unknown');
+        $streets = self::all();
+    
+        foreach ($streets as $index => $street) {
+            // Nomes el primer carrer tindrà les notificacions activades
+            $notis = $index === 0;
+            self::obtenirLListaCotxes($street, $notis);
         }
-        //si no comença amb la paraula error vol dir que tot ha sortit bé
-        else{
-            //Obtenir tots els vehicles
-            $vehiclesId = self::getVehiclesId($token);
-            //Si no es una array vol dir que ha retornat un error
-            if(!is_array($vehiclesId))
-            {
-                \App\Models\Instance::sendErrorNotification('Vehicles error',$vehiclesId,'unknown');
-            }else{
-                //Missatge d'informació no hi han vehicles
-                if(sizeof($vehiclesId)<1){
-                    Notification::make()
-                        ->title('Llista buida')
-                        ->body('La llista de vehicles està buida.')
-                        ->info()
-                        ->send();
-                }
-                //netejar tots els vehicles
-                foreach ($vehiclesId as $vehicle){
-                    $deleteVehicle = self::deleteVehicles($token,$vehicle);
-                    if(substr($deleteVehicle,0,5)=="Error"){
-                        \App\Models\Instance::sendErrorNotification('Vehicles delete',$deleteVehicle,'unknown');
-                    }
-                }
-                $instances = $record->instances;
-                $allVehicles = collect();
-                $numErrors=0;
-                $nVehiclesInsert=0;
-                foreach ($instances as $instance) {
-                    //Si esta notificat i te un decret favorable mirem els vehicles
-                    if($instance->is_notificat==true && $instance->VALIDAT=='FAVORABLE'){
-                        foreach ($instance->vehicles as $vehicle) {        
-                            //si el vehicle no ha expirat
-                            if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
-                                $v = self::insertVehicle($token, $vehicle);
-                                if(substr($v,0,5)=="Error"){
-                                    $numErrors++;
-                                    \App\Models\Instance::sendErrorNotification('Vehicles insert',$v,'unknown');
-                                }
-                                else{
-                                    $nVehiclesInsert++;
-                                }
+    }
+    
+    public static function obtenirLListaCotxes($record, $notis)
+    {
+        $token = self::createToken($record);
+    
+        // Si el token te algun error
+        if (str_starts_with($token, "Error")) {
+            if ($notis) {
+                \App\Models\Instance::sendErrorNotification('Token error', $token, 'unknown');
+            }
+            return;
+        }
+    
+        $vehiclesId = self::getVehiclesId($token);
+    
+        if (!is_array($vehiclesId)) {
+            if ($notis) {
+                \App\Models\Instance::sendErrorNotification('Vehicles error', $vehiclesId, 'unknown');
+            }
+            return;
+        }
+    
+        if (count($vehiclesId) < 1 && $notis) {
+            Notification::make()
+                ->title('Llista buida')
+                ->body('La llista de vehicles està buida.')
+                ->info()
+                ->send();
+        }
+    
+        // Netejar vehicles anteriors
+        foreach ($vehiclesId as $vehicle) {
+            $deleteVehicle = self::deleteVehicles($token, $vehicle);
+            if (str_starts_with($deleteVehicle, "Error")) {
+                \App\Models\Instance::sendErrorNotification('Vehicles delete', $deleteVehicle, 'unknown');
+            }
+        }
+    
+        $instances = $record->instances;
+        $numErrors = 0;
+        $nVehiclesInsert = 0;
+    
+        foreach ($instances as $instance) {
+            if ($instance->is_notificat && $instance->VALIDAT === 'FAVORABLE') {
+                foreach ($instance->vehicles as $vehicle) {
+                    if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
+                        $v = self::insertVehicle($token, $vehicle);
+    
+                        if (str_starts_with($v, "Error")) {
+                            if ($notis && ($numErrors > 0 || $nVehiclesInsert > 0)) {
+                                \App\Models\Instance::sendErrorNotification('Vehicles insert', $v, 'unknown');
                             }
+                            $numErrors++;
+                        } else {
+                            $nVehiclesInsert++;
                         }
                     }
                 }
-                if($numErrors==0 && $nVehiclesInsert>0){
-                    Notification::make()
-                        ->title('Vehicles inserits')
-                        ->body('S\'han afegit els vehicles correctament.')
-                        ->success()
-                        ->send();
-                }elseif($nVehiclesInsert<1){
-                    Notification::make()
-                        ->title('Llista buida')
-                        ->body('No hi ha vehicles assignats aquest carrer.')
-                        ->warning()
-                        ->send();
-                }
             }
         }
-        //dd($allVehicles); 
+    
+        // Missatges finals
+        if ($notis) {
+            if ($numErrors === 0 && $nVehiclesInsert > 0) {
+                Notification::make()
+                    ->title('Vehicles inserits')
+                    ->body('S\'han afegit els vehicles correctament.')
+                    ->success()
+                    ->send();
+            } elseif ($nVehiclesInsert < 1) {
+                Notification::make()
+                    ->title('Llista buida')
+                    ->body('No hi ha vehicles assignats aquest carrer.')
+                    ->warning()
+                    ->send();
+            }
+        }
     }
+    
     private static function createToken($record): string
     {
         $url = 'https://adm.alphadatamanager.com:8080/alpha-data-manager/oauth/token';

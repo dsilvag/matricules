@@ -174,11 +174,18 @@ class StreetBarriVellResource extends Resource
             ->filters([
                 //
             ])
+           ->headerActions([
+                Tables\Actions\Action::make('penjar_tots')
+                    ->label('Penjar vehicles')
+                    ->color('success')
+                    ->action(fn () => StreetBarriVell::penjarVehicles())
+                    ->icon('heroicon-o-bolt'),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('obtenirLListaCotxes') 
                     ->label('Validar llista de cotxes')
-                    ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record))
+                    ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record, true))
                     ->icon('heroicon-o-arrow-up-circle'),
             ])
             ->bulkActions([
