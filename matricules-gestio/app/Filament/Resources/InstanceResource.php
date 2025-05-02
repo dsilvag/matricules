@@ -6,6 +6,7 @@ use App\Filament\Resources\InstanceResource\Pages;
 use App\Filament\Resources\InstanceResource\RelationManagers;
 use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesRelationManager;
 use App\Filament\Resources\InstanceResource\RelationManagers\VehiclesInSameDwellingRelationManager;
+use App\Filament\Resources\InstanceResource\RelationManagers\DomiciliRelationManager;
 use App\Models\Instance;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,6 +22,8 @@ use App\Models\StreetBarriVell;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
 
 class InstanceResource extends Resource
 {
@@ -83,8 +86,8 @@ class InstanceResource extends Resource
                         ->required()
                         ->label('SOL.LICITANT')
                         ->relationship('person', 'PERSCOD') 
-                        //->preload()
                         ->searchable(['PERSCOD','PERSNOM', 'PERSCOG1', 'PERSCOG2'])
+                        ->lazy()
                         ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
 
                         Forms\Components\Select::make('REPRCOD')
@@ -92,7 +95,7 @@ class InstanceResource extends Resource
                             ->label('REPRESENTANT')
                             //->description('quan calgui')
                             ->relationship('personRepresentative', 'PERSCOD')
-                            //->preload()
+                            ->lazy()
                             ->searchable(['PERSCOD','PERSNOM', 'PERSCOG1', 'PERSCOG2'])
                             ->getOptionLabelFromRecordUsing(fn(Person $record):string =>"{$record->nom_person}"),
                     ])->columns(2)->visibleOn('edit'),
@@ -107,6 +110,7 @@ class InstanceResource extends Resource
                         ->required()
                         ->label('CODI DOMICILI')
                         ->relationship('domicili', 'DOMCOD')
+                        ->lazy()
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
                             "{$record->DOMCOD}, {$record->nom_habitatge}")
                         ->searchable(),
@@ -121,15 +125,17 @@ class InstanceResource extends Resource
                         ->required()
                         ->label('CODI DOMICILI ACCÉS')
                         ->relationship('domiciliAccess', 'DOMCOD')
+                        ->lazy()
+                        ->searchable()
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
-                            "{$record->DOMCOD}, {$record->nom_habitatge}")
-                        ->searchable(),
-                    
+                            "{$record->DOMCOD}, {$record->nom_habitatge}"),
+
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
                         ->relationship('carrersBarriVell', 'CARCOD') 
-                        ->preload()
+                        //->preload()
+                        ->lazy()
                         ->searchable()
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}")
@@ -145,6 +151,26 @@ class InstanceResource extends Resource
                             }
                         }),
                 ])->columns(2)->visibleOn('edit'),
+            
+                Forms\Components\Placeholder::make('scroll_button')
+                ->label('')
+                ->content(function () {
+                    return new HtmlString(
+                        '<button 
+                            onclick="scrollToBottom(event)" 
+                            class="btn" 
+                            style="background-color: #4CAF50; color: white; border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer;">
+                            Buscar domicili
+                        </button>
+                        <script>
+                            function scrollToBottom(event) {
+                                event.preventDefault(); // Evita el comportamiento por defecto (posible recarga)
+                                window.scrollTo(0, document.body.scrollHeight);
+                            }
+                        </script>'
+                    );
+                }),
+
                  Section::make()
                     ->icon('heroicon-o-flag')
                     ->description('Selecciona un motiu')
@@ -405,6 +431,7 @@ class InstanceResource extends Resource
         return [
             VehiclesRelationManager::class,
             VehiclesInSameDwellingRelationManager::class,
+            DomiciliRelationManager::class,
         ];
     }
 
