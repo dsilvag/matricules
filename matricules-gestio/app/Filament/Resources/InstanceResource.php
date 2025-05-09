@@ -165,8 +165,9 @@ class InstanceResource extends Resource
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
                         ->relationship('carrersBarriVell', 'CARCOD') 
-                        //->preload()
-                        //->lazy()
+                        ->preload()
+                        ->lazy()
+                        ->searchable()
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}")
                         ->options(function () {
@@ -178,6 +179,8 @@ class InstanceResource extends Resource
                             // Si el valor seleccionado es '*', seleccionamos todos los registros
                             if (in_array('*', $state)) {
                                 $set('carrersBarriVell', StreetBarriVell::all()->pluck('CARCOD')->toArray());
+                            } else {
+                                $set('carrersBarriVell', $state); // Ensure we keep only selected values
                             }
                         }),
                 ])->columns(2)->visibleOn('edit'),
