@@ -26,6 +26,7 @@ use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Actions\Action;
 use App\Livewire\Dwellings\ListDwellings;
+use \DateTime;
 
 class InstanceResource extends Resource
 {
@@ -500,10 +501,19 @@ class InstanceResource extends Resource
         // Convierte el contenido del archivo a base64
         return base64_encode($fileContent);
     }
+    private static function refactorData($dataOriginal)
+    {
+        return substr($dataOriginal, 6, 2) . '/' . substr($dataOriginal, 4, 2) . '/' . substr($dataOriginal, 0, 4);
+    }
+    private static function changeFormatData($dateString)
+    {
+        $date = DateTime::createFromFormat('Y-m-d', $dateString);
+        return $date ? $date->format('d-m-Y') : null;
+    }
 
     public static function exportToDocx($record)
     {
-       //dd(trim($record->domicili->nom_habitatge));
+       //dd(self::changeFormatData($record->data_fi));
         if($record->VALIDAT!=null && $record->VALIDAT == 'FAVORABLE'){
             $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
         }else{
@@ -520,14 +530,11 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('DNI', $record->person->NIFNUM . $record->person->NIFDC);
         $templateProcessor->setValue('CARRER_HABITATGE', trim($record->domiciliAccess->nom_habitatge));
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
-        $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));
-        //format data
-        $dataOriginal = $record->data_presentacio;
-        $dataFormat = substr($dataOriginal, 6, 2) . '/' . substr($dataOriginal, 4, 2) . '/' . substr($dataOriginal, 0, 4);
-        $templateProcessor->setValue('DATA_PRESENTACIO', $dataFormat);
+        $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));       
+        $templateProcessor->setValue('DATA_PRESENTACIO', self::refactorData($record->data_presentacio));
         //$templateProcessor->setValue('VALIDAT', $record->VALIDAT);
-        $templateProcessor->setValue('DATAFI', $record->data_fi);
-        $templateProcessor->setValue('DATAINICI', $record->data_inici);
+        $templateProcessor->setValue('DATAFI', self::changeFormatData($record->data_fi));
+        $templateProcessor->setValue('DATAINICI', self::changeFormatData($record->data_inici));
         $templateProcessor->setValue('AVUI', date('d/m/Y'));
         $templateProcessor->setValue('CAMERES',self::getCameres($record->carrersBarriVell));
 
