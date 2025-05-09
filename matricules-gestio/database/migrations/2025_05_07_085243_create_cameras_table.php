@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('street_barri_vells', function (Blueprint $table) {
-            $table->integer('CARCOD')->primary();
-            $table->foreign('CARCOD')->references('CARCOD')->on('streets')
+        Schema::create('cameras', function (Blueprint $table) {
+            $table->id();
+            $table->integer('owner_CARCOD')->unique();
+            $table->foreign('owner_CARCOD')->references('CARCOD')->on('street_barri_vells')
                 ->onDelete('cascade');
-            $table->string('user')->nullable();
-            $table->boolean('isCamera')->default(false);
             $table->timestamps();
-        });
+        });        
     }
 
     /**
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('street_barri_vells');
+        Schema::dropIfExists('cameras');
     }
 };

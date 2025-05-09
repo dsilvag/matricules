@@ -13,7 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Select;
-
+use App\Models\Camera;
 
 class StreetBarriVellResource extends Resource
 {
@@ -39,6 +39,18 @@ class StreetBarriVellResource extends Resource
                                 return [$street->CARCOD => $street->nom_carrer];
                             });
                     }),
+                Forms\Components\Toggle::make('isCamera')
+                    ->label('És un carrer càmera?')
+                    ->inline(false),
+                Select::make('coveringCameras')
+                    ->label('Càmeres validades')
+                    ->relationship('coveringCameras', 'owner_CARCOD')
+                    ->lazy()
+                    ->preload()
+                    ->searchable()
+                    ->multiple()
+                    ->getOptionLabelFromRecordUsing(fn(Camera $record): string => "{$record->ownerStreet->street->nom_carrer}"),
+
             ]);
     }
 
@@ -79,11 +91,19 @@ class StreetBarriVellResource extends Resource
                 ->label('CARDESC2')
                 ->searchable()
                 ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('user')
+           /* Tables\Columns\TextColumn::make('user')
                 ->label('USER')
                 ->copyable()
                 ->copyMessage('Copiado al portapapeles')
-                ->copyMessageDuration(1500),
+                ->copyMessageDuration(1500),*/
+            Tables\Columns\TextColumn::make('coveringCameras')
+                ->label('CÀMERES VALIDADES')
+                ->getStateUsing(function (StreetBarriVell $record) {
+                    $coveredStreetNames = $record->coveringCameras->map(function ($camera) {
+                        return $camera->ownerStreet->nom_carrer ?? 'Sin nombre';
+                    });
+                    return $coveredStreetNames->implode(', ');
+                }),
             Tables\Columns\TextColumn::make('street.STDUGR')
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->label('STDUGR')

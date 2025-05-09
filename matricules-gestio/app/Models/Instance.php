@@ -108,6 +108,7 @@ class Instance extends Model
     public static function booted(): void
     {
         static::creating(function ($record) {
+            
             $params = array(
                 'arg0' => array(
                     'aplicacio' => $_ENV['APLICACIO_WS'],
@@ -134,10 +135,20 @@ class Instance extends Model
                     $record->REPRCOD=$response->return->codiPersona;
                 }
                 if (isset($response->return->codiDomiciliPersona)) {
-                    $record->DOMCOD=$response->return->codiDomiciliPersona;
-                }else{
-                    self::sendErrorNotification('Domcod inexistent','El codi domicili no existeix al sistema.','DOMCOD');
-                }
+                    $domcod = $response->return->codiDomiciliPersona;
+                
+                    if (\App\Models\Dwelling::where('DOMCOD', $domcod)->exists()) {
+                        $record->DOMCOD = $domcod;
+                    } else {
+                        self::sendErrorNotification(
+                            'Domcod no trobat a la base de dades',
+                            'El codi de domicili proporcionat pel servei no existeix a la taula habitatges.',
+                            'DOMCOD'
+                        );
+                    }
+                } else {
+                    self::sendErrorNotification('Domcod inexistent', 'El codi domicili no existeix al sistema.', 'DOMCOD');
+                }                
                 if (isset($response->return->codiDomiciliPersona)) {
                     $record->data_presentacio=$response->return->dataPresentacio;
                 }else{

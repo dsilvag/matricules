@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Filament\Notifications\Notification;
-
+use App\Models\Camera;
 
 class StreetBarriVell extends Model
 {
@@ -23,7 +23,17 @@ class StreetBarriVell extends Model
 
    protected $fillable = [
        'CARCOD',
+       'isCamera',
     ];
+    public function ownedCamera()
+    {
+        return $this->hasOne(Camera::class, 'owner_CARCOD', 'CARCOD');
+    }
+
+    public function coveringCameras()
+    {
+        return $this->belongsToMany(Camera::class, 'camera_street', 'CARCOD', 'camera_id');
+    }
     /**
      *  Get the Street 
      *
@@ -266,6 +276,32 @@ class StreetBarriVell extends Model
         static::creating(function ($record) 
         {
             $record->user = strtolower(str_replace([' ', "'"], '', substr("cameres_".$record->street->CARSIG, 0, -1) . $record->street->CARDESC . "@ajbanyoles.org"));
+        });
+        static::created(function($record)
+        {
+            if($record->isCamera==true){
+                $camera = new \App\Models\Camera();
+                $camera->owner_CARCOD = $record->CARCOD;
+                $camera->save();
+            }
+        });
+        static::updating(function ($record) {
+            if($record->getOriginal('isCamera')!=$record->isCamera){
+                if($record->isCamera==true){
+                    $camera = new \App\Models\Camera();
+                    $camera->owner_CARCOD = $record->CARCOD;
+                    $camera->save();
+                }
+                //si es posa iscamera false eliminem
+                if($record->isCamera==false){
+                    $camera = \App\Models\Camera::where('owner_CARCOD', $record->CARCOD)->first();
+
+                    if ($camera) {
+                        $camera->coveredStreets()->detach();
+                        $camera->delete(); 
+                    }
+                }
+            }
         });
     }
 }

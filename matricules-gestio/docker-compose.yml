@@ -21,7 +21,7 @@ services:
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+            - network-prova  # Usar la red personalizada
         depends_on:
             - mysql
             - redis
@@ -43,7 +43,7 @@ services:
             - 'sail-mysql:/var/lib/mysql'
             - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - sail
+            - network-prova  # Usar la red personalizada
         healthcheck:
             test:
                 - CMD
@@ -59,7 +59,7 @@ services:
         volumes:
             - 'sail-redis:/data'
         networks:
-            - sail
+            - network-prova  # Usar la red personalizada
         healthcheck:
             test:
                 - CMD
@@ -76,7 +76,7 @@ services:
         volumes:
             - 'sail-meilisearch:/meili_data'
         networks:
-            - sail
+            - network-prova  # Usar la red personalizada
         healthcheck:
             test:
                 - CMD
@@ -92,7 +92,7 @@ services:
             - '${FORWARD_MAILPIT_PORT:-1025}:1025'
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
-            - sail
+            - network-prova  # Usar la red personalizada
     selenium:
         image: selenium/standalone-chromium
         extra_hosts:
@@ -100,10 +100,10 @@ services:
         volumes:
             - '/dev/shm:/dev/shm'
         networks:
-            - sail
+            - network-prova  # Usar la red personalizada
 networks:
-    sail:
-        driver: bridge
+    network-prova:
+        external: true  # Asegúrate de que la red externa esté configurada
 volumes:
     sail-mysql:
         driver: local

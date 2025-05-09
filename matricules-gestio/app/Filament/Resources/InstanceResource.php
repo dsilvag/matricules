@@ -24,6 +24,8 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Actions\Action;
+use App\Livewire\Dwellings\ListDwellings;
 
 class InstanceResource extends Resource
 {
@@ -119,24 +121,53 @@ class InstanceResource extends Resource
                     ->icon('heroicon-o-globe-europe-africa')
                     ->description('Domicili accés')
                     ->schema([  
+                   
                     Forms\Components\Select::make('domicili_acces')
                         ->visibleOn('edit')
+                        ->suffixIcon('heroicon-m-magnifying-glass')
                         ->reactive()
                         ->required()
-                        ->label('CODI DOMICILI ACCÉS')
+                        ->label('CODI DOMICILI VINCULAT')
                         ->relationship('domiciliAccess', 'DOMCOD')
                         ->lazy()
                         ->searchable()
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
                             "{$record->DOMCOD}, {$record->nom_habitatge}"),
-
+                    /* 
+                    Forms\Components\TextInput::make('domicili_acces')
+                            ->label('Domicili Accés')
+                            ->readOnly()
+                            ->visibleOn('edit')
+                            ->suffixAction(
+                                Action::make('searchDomicili')
+                                    ->label('Buscar Domicili')
+                                    ->icon('heroicon-m-magnifying-glass')
+                                    ->modalContent(function () {
+                                        $dwelling = Dwelling::query()->paginate(10);
+                                        return view('livewire.domicili-selector-modal', ['dwellings' => $dwelling]);
+                                    })
+                            ),
+                */
+                            /*
+                        Forms\Components\TextInput::make('domicili_acces')
+                            ->label('Domicili Accés')
+                            ->readOnly()
+                            ->suffixAction(
+                                Action::make('openModal')
+                                    ->icon('heroicon-o-magnifying-glass')
+                                    ->action(function ($component) {
+                                        $component->mountAction('openDwellingsModal');
+                                    })
+                            ),*/
+                
+                            
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
                         ->relationship('carrersBarriVell', 'CARCOD') 
                         //->preload()
                         ->lazy()
-                        ->searchable()
+                        //->searchable()
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}")
                         ->options(function () {
@@ -154,6 +185,7 @@ class InstanceResource extends Resource
             
                 Forms\Components\Placeholder::make('scroll_button')
                 ->label('')
+                ->visibleOn('edit')
                 ->content(function () {
                     return new HtmlString(
                         '<button 
@@ -495,6 +527,7 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('DATAFI', $record->data_fi);
         $templateProcessor->setValue('DATAINICI', $record->data_inici);
         $templateProcessor->setValue('AVUI', date('d/m/Y'));
+        $templateProcessor->setValue('CAMERES',self::getCameres($record->carrersBarriVell));
 
         $totalVehicles = $record->vehicles->count();
         if ($totalVehicles == 0) {
@@ -518,7 +551,7 @@ class InstanceResource extends Resource
 
             for ($i = 1; $i <= $totalCarrers; $i++) {
                 if ($street=$record->carrersBarriVell->get($i-1)) {
-                    $carrers .= $street->CARSIG . ' ' .$street->nom_carrer . ", ";
+                    $carrers .= $street->nom_carrer . ", ";
                 }
             }
             $carrers = rtrim($carrers, ", ");
@@ -526,6 +559,27 @@ class InstanceResource extends Resource
         }
         return $templateProcessor;
     }
+    private static function getCameres($carrers)
+    {
+        //Inicialitem una array on guardarem els noms dels carrers on hi ha les cameres
+        $nomsCameres = [];
+        //per cada carrer que tenim a l'instància
+        foreach ($carrers as $carrer) {
+            //per cada carrer de l'instància mirem les càmeres on esta validat
+            foreach ($carrer->coveringCameras as $camera) {
+                //Obtenim el nom del carrer de la càmera
+                $nomCarrerCamera = $camera->ownerStreet?->street?->nom_carrer;
+                //l'afegim a l'array
+                if ($nomCarrerCamera) {
+                    $nomsCameres[] = $nomCarrerCamera;
+                }
+            }
+        }
+        // Eliminar carrers dupicats i retornar en string
+        return  implode(", ", array_unique($nomsCameres));
+    }
+    
+
     private static function getTextMotiu($record)
     {
         $motius = '';
