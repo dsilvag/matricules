@@ -166,8 +166,7 @@ class InstanceResource extends Resource
                         ->label('CARRERS VALIDATS')
                         ->relationship('carrersBarriVell', 'CARCOD') 
                         //->preload()
-                        ->lazy()
-                        //->searchable()
+                        //->lazy()
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}")
                         ->options(function () {

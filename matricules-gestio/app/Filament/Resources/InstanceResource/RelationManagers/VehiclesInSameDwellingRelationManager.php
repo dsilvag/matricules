@@ -31,7 +31,7 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
         $resnume = $ownerRecord->RESNUME;
         $avui = now()->format('Y-m-d');
         $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($domcod,$resnume,$avui) {
-            $query->where('DOMCOD', $domcod)
+            $query->where('domicili_acces', $domcod)
             ->where('RESNUME', '!=', $resnume)
             ->where('DATAEXP', '>=', $avui);
         })->count();
@@ -72,9 +72,8 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     }
     public function getTableQuery(): Builder
     {
-        
         return Vehicle::whereHas('instance', function ($query){
-            $query->where('DOMCOD', $this->ownerRecord->domicili_acces)
+            $query->where('domicili_acces', $this->ownerRecord->domicili_acces)
                 ->where('RESNUME', '!=', $this->ownerRecord->RESNUME)
                 ->where('DATAEXP', '>=', now()->format('Y-m-d'));
         });
