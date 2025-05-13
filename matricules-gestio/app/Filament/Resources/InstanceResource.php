@@ -205,6 +205,26 @@ class InstanceResource extends Resource
                         </script>'
                     );
                 }),
+                Forms\Components\Placeholder::make('reload_button')
+                ->label('')
+                ->visibleOn('edit')
+                ->content(function () {
+                    return new HtmlString(
+                        '<button 
+                            onclick="reloadPage(event)" 
+                            class="btn" 
+                            style="background-color: #FF5733; color: white; border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer;">
+                            Refrescar Página
+                        </button>
+                        <script>
+                            function reloadPage(event) {
+                                event.preventDefault(); // Evita el comportamiento por defecto
+                                location.reload(); // Recarga la página
+                            }
+                        </script>'
+                    );
+                }),
+
 
                  Section::make()
                     ->icon('heroicon-o-flag')
@@ -594,43 +614,43 @@ class InstanceResource extends Resource
         $motius = '';
 
         if ($record->empadronat_si_ivtm == true) {
-            $motius .= 'La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles'."\n";
+            $motius .=  env('EMPADRONAT_SI_IVTM')."\n";
         }
         if ($record->empadronat_no_ivtm == true) {
-            $motius .= 'La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles'."\n";
+            $motius .= env('EMPADRONAT_NO_IVTM')."\n";
         }
         if ($record->noempadronat_viu_barri_vell == true) {
-            $motius .= 'La persona no hi està empadronada i és ' . $record->noempadronat_viu_barri_vell_text .' d\'un immoble al carrer'."\n";
+            $motius .= env('NOEMPADRONAT_VIU_BARRI_VELL1') . $record->noempadronat_viu_barri_vell_text . env('NOEMPADRONAT_VIU_BARRI_VELL2')."\n";
         }
         if ($record->pares_menor_edat == true) {
-            $motius .= 'La persona és pare o mare d\'un/a menor resident'."\n";
+            $motius .= env('PARES_MENOR_EDAT')."\n";
         }
         if ($record->familiar_adult_major == true) {
-            $motius .= 'La persona és familiar d\'una persona d\'edat avançada'."\n";
+            $motius .= env('FAMILIAR_ADULT_MAJOR')."\n";
         }
         if ($record->targeta_aparcament_discapacitat == true) {
-            $motius .= 'Persona amb targeta d\'aparcament per a persones amb discapacitat'."\n";
+            $motius .= env('TARGETA_APARCAMENT_DISCAPACITAT')."\n";
         }
         if ($record->vehicle_comercial == true) {
-            $motius .= 'Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme'."\n";
+            $motius .= env('VEHICLE_COMERCIAL')."\n";
         }
         if ($record->client_botiga == true) {
-            $motius .= 'Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga)'."\n";
+            $motius .= env('CLIENT_BOTIGA')."\n";
         }
         if ($record->empresa_serveis == true) {
-            $motius .= 'Empresa de serveis (neteja, aigua, llum, lampisteria,...)'."\n";
+            $motius .= env('EMPRESA_SERVEIS')."\n";
         }
         if ($record->empresa_constructora == true) {
-            $motius .= 'Empresa constructora'."\n";
+            $motius .= env('EMPRESA_CONSTRUCTORA')."\n";
         }
         if ($record->familiar_resident == true) {
-            $motius .= 'Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre)'."\n";
+            $motius .= env('FAMILIAR_RESIDENT')."\n";
         }
         if ($record->acces_excepcional == true) {
-            $motius .= 'Autorització d\'accés excepcional (dins de les 48 hores abans o després)'."\n";
+            $motius .= env('ACCES_EXCEPCIONAL')."\n";
         }
         if ($record->altres_motius == true && !empty($record->altres_motius_text)) {
-            $motius .= "Altres: " . $record->altres_motius_text."\n";
+            $motius .= env('ALTRES_MOTIUS') . $record->altres_motius_text."\n";
         }
         return $motius = rtrim($motius, "\n");
     }

@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('instances', function (Blueprint $table) {
-            $table->char('RESNUME',11)->primary();
+            $table->id();
+            $table->char('RESNUME',11);
             $table->CHAR('NUMEXP',11)->nullable();
             $table->string('DECRETAT')->default('0');
             $table->string('VALIDAT')->nullable();

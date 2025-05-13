@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('MATRICULA');
             $table->date('DATAEXP')->nullable();
             $table->date('DATAINICI')->nullable();
-            $table->char('instance_RESNUME', 11)->nullable();
-            $table->foreign('instance_RESNUME')->references('RESNUME')->on('instances')
+            $table->unsignedBigInteger('instance_id')->nullable();
+            $table->foreign('instance_id')->references('id')->on('instances')
                 ->onDelete('cascade');
             $table->timestamps();
         });

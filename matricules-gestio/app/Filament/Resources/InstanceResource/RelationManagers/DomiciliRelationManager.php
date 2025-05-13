@@ -13,6 +13,10 @@ use App\Models\Dwelling;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use App\Models\Instance;
+use Filament\Tables\Actions\BulkAction;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\HtmlString;
+
 
 class DomiciliRelationManager extends RelationManager
 {
@@ -69,7 +73,20 @@ class DomiciliRelationManager extends RelationManager
             ])
             ->actions([
                 Action::make('assignDomicili')
-                    ->label('Asignar Domicili Accés')
+                    ->label(fn() => new HtmlString(
+                        '<a 
+                            href="javascript:void(0);" 
+                            onclick="reloadPage(event)" 
+                            style="color:rgb(255, 160, 51); text-decoration: none; cursor: pointer;">
+                            Refrescar Página
+                        </a>
+                        <script>
+                            function reloadPage(event) {
+                                event.preventDefault();
+                                location.reload(); 
+                            }
+                        </script>'
+                    ))
                     ->icon('heroicon-m-pencil')
                     ->action(function (Dwelling $dom) {
                         $instance = $this->ownerRecord;
@@ -79,7 +96,7 @@ class DomiciliRelationManager extends RelationManager
                     })
             ])
             ->bulkActions([
-                
+
             ]);
     }
     public function getTableQuery(): Builder

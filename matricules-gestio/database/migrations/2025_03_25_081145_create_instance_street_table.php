@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('instance_street', function (Blueprint $table) {
             $table->id();
-            $table->string('RESNUME');  
+            $table->unsignedBigInteger('instance_id');  
             $table->integer('CARCOD');  
             $table->timestamps();
 
             // Foreign key constraints
-            $table->foreign('RESNUME')->references('RESNUME')->on('instances')->onDelete('cascade');
+            $table->foreign('instance_id')->references('id')->on('instances')->onDelete('cascade');
             $table->foreign('CARCOD')->references('CARCOD')->on('street_barri_vells')->onDelete('cascade');
         });
     }

@@ -17,7 +17,7 @@ class Vehicle extends Model
         'DATAINICI',
         'DATAEXP',
         'DOMCOD',
-        'instance_RESNUME'
+        'instance_id'
     ];
 
    /**
@@ -28,12 +28,15 @@ class Vehicle extends Model
     /*
     public function instance()
     {
-        return $this->belongsTo(Instance::class, 'instances_vehicle','RESNUME','MATRICULA');
-    }*/
-    public function instance()
-    {
         return $this->belongsTo(Instance::class, 'instance_RESNUME', 'RESNUME');
     }
+    */
+    public function instance()
+    {
+        return $this->belongsTo(Instance::class, 'instance_id', 'id');
+    }
+
+
     public static function booted(): void
     {   
         static::creating(function ($record) {

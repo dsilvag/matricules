@@ -13,12 +13,12 @@ use Illuminate\Validation\ValidationException;
 class Instance extends Model
 {
      // Indicar clau primaria
-    protected $primaryKey = 'RESNUME';
+    //protected $primaryKey = 'RESNUME';
 
     // No estem utilitzant auto increment en la primary key
-    public $incrementing = false;
+//    public $incrementing = false;
 
-    protected $keyType = 'string';
+  //  protected $keyType = 'string';
 
     protected $skipValidation = false;
 
@@ -64,16 +64,21 @@ class Instance extends Model
         return $this->belongsToMany(Vehicle::class, 'instances_vehicle','RESNUME','MATRICULA')->withTimestamps();
     }
 
-    */
+    *//*
     // Modelo Instance
     public function vehicles()
     {
         return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME');
+    }*/
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'instance_id', 'id');
     }
+
 
     public function vehiclesInSameDwelling()
     {
-        return $this->hasMany(Vehicle::class, 'instance_RESNUME', 'RESNUME')
+        return $this->hasMany(Vehicle::class, 'instance_id', 'id')
             ->whereHas('instance', function($query) {
                 $query->where('DOMCOD', $this->DOMCOD)
                       ->where('RESNUME', '!=', $this->RESNUME);
@@ -102,7 +107,7 @@ class Instance extends Model
 
     public function carrersBarriVell()
     {
-        return $this->belongsToMany(StreetBarriVell::class, 'instance_street','RESNUME','CARCOD')->withTimestamps();
+        return $this->belongsToMany(StreetBarriVell::class, 'instance_street','instance_id','CARCOD')->withTimestamps();
     }
 
     public static function booted(): void
@@ -182,6 +187,7 @@ class Instance extends Model
                 //Al modificar la data inici o data fi s'ha de modificar la data del vehicles assignats a l'instància
                 if($record->isDirty('data_inici') || $record->isDirty('data_fi') || $record->isDirty('VALIDAT'))
                 {
+                    //dd($record->vehicles());
                     if($record->VALIDAT!='DESFAVORABLE'){
                         $record->vehicles()->update([
                             'DATAINICI' => $record->data_inici,

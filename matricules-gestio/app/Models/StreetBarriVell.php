@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Filament\Notifications\Notification;
 use App\Models\Camera;
+use Illuminate\Database\Eloquent\Collection;
 
 class StreetBarriVell extends Model
 {
@@ -52,12 +53,21 @@ class StreetBarriVell extends Model
 
     public function instances()
     {
-        return $this->belongsToMany(Instance::class, 'instance_street', 'CARCOD', 'RESNUME');
+        return $this->belongsToMany(Instance::class, 'instance_street', 'CARCOD', 'instance_id');
     }
-
+    /*
     public function vehicles()
     {
         return $this->hasManyThrough(Vehicle::class, Instance::class, 'RESNUME', 'instance_RESNUME', 'CARCOD', 'RESNUME');
+    }*/
+
+    public function vehicles(): Collection
+    {
+        return Vehicle::whereHas('instance', function ($query) {
+            $query->whereHas('carrersBarriVell', function ($q) {
+                $q->where('street_barri_vells.CARCOD', $this->CARCOD);
+            });
+        })->get();
     }
     public static function penjarVehicles()
     {
