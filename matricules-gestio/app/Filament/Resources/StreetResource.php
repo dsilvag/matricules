@@ -41,6 +41,10 @@ class StreetResource extends Resource
                 ->icon('heroicon-o-map')
                 ->description('Informació relacionada amb la direcció de l\'ubicació.')
                 ->schema([
+                    Forms\Components\TextInput::make('PAISPROVMUNICARCOD')
+                        ->required()
+                        ->numeric()
+                        ->label('PAISPROVMUNICARCOD'),
                     Forms\Components\TextInput::make('CARCOD')
                         ->required()
                         ->numeric()
@@ -57,7 +61,7 @@ class StreetResource extends Resource
                         ->required()
                         ->numeric()
                         ->label('MUNICOD'),
-                ])->columns(4),
+                ])->columns(5),
 
             Section::make('Descripció del Carrer')
                 ->icon('heroicon-o-map-pin')
@@ -171,22 +175,9 @@ class StreetResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('PAISCOD')
-                    ->label('PAISCOD')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('PROVCOD')
-                    ->label('PROVCOD')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('MUNICOD')
-                    ->label('MUNICOD')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('CARCOD')
-                    ->label('CARCOD')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('PAISPROVMUNICARCOD')
+                    ->label('PAISPROVMUNICARCOD')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('CARSIG')
                     ->label('CARSIG')
                     ->searchable(),

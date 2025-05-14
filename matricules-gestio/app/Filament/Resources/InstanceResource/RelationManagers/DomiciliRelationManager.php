@@ -16,6 +16,7 @@ use App\Models\Instance;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HtmlString;
+use Livewire\Component;
 
 
 class DomiciliRelationManager extends RelationManager
@@ -73,26 +74,13 @@ class DomiciliRelationManager extends RelationManager
             ])
             ->actions([
                 Action::make('assignDomicili')
-                    ->label(fn() => new HtmlString(
-                        '<a 
-                            href="javascript:void(0);" 
-                            onclick="reloadPage(event)" 
-                            style="color:rgb(255, 160, 51); text-decoration: none; cursor: pointer;">
-                            Refrescar Página
-                        </a>
-                        <script>
-                            function reloadPage(event) {
-                                event.preventDefault();
-                                location.reload(); 
-                            }
-                        </script>'
-                    ))
+                    ->label('Assignar domicili')
+                    ->button()
                     ->icon('heroicon-m-pencil')
                     ->action(function (Dwelling $dom) {
-                        $instance = $this->ownerRecord;
-                        $instance->skipValidation();
-                        $instance->domicili_acces = $dom->DOMCOD;
-                        $instance->save();
+                        self::assignDwelling($dom,$this->ownerRecord);
+                        $this->dispatch('refresh');
+
                     })
             ])
             ->bulkActions([
@@ -102,5 +90,11 @@ class DomiciliRelationManager extends RelationManager
     public function getTableQuery(): Builder
     {
         return Dwelling::query();
+    }
+    private function assignDwelling($dom, $instance)
+    {
+        $instance->skipValidation();
+        $instance->domicili_acces = $dom->DOMCOD;
+        $instance->save();
     }
 }

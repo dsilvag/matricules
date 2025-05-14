@@ -12,17 +12,17 @@ class Camera extends Model
    protected $guarded=[];
 
    protected $fillable = [
-       'owner_CARCOD',
+       'owner_PAISPROVMUNICARCOD',
     ];
     
     public function ownerStreet()
     {
-        return $this->belongsTo(StreetBarriVell::class, 'owner_CARCOD', 'CARCOD');
+        return $this->belongsTo(StreetBarriVell::class, 'owner_PAISPROVMUNICARCOD', 'PAISPROVMUNICARCOD');
     }
 
     public function coveredStreets()
     {
-        return $this->belongsToMany(StreetBarriVell::class, 'camera_street', 'camera_id', 'CARCOD');
+        return $this->belongsToMany(StreetBarriVell::class, 'camera_street', 'camera_id', 'PAISPROVMUNICARCOD');
     }
     public function getNomCarrerBaseAttribute()
     {

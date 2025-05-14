@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('dwellings', function (Blueprint $table) {
             $table->integer('DOMCOD')->primary();
+            $table->string('PAISPROVMUNICARCOD');
+            $table->foreign('PAISPROVMUNICARCOD')->references('PAISPROVMUNICARCOD')->on('streets')
+                ->onDelete('cascade');
             $table->integer('PAISCOD')->nullable();
             $table->integer('PROVCOD')->nullable();
             $table->integer('MUNICOD')->nullable();
-            $table->integer('CARCOD');
-            $table->foreign('CARCOD')->references('CARCOD')->on('streets')
-                ->onDelete('cascade');
+            $table->integer('CARCOD')->nullable();
             $table->integer('PSEUDOCOD')->nullable();
             $table->string('GISCOD',255)->nullable();
             $table->char('DOMNUM',4)->nullable();

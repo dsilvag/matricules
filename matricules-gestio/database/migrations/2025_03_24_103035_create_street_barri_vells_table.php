@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('street_barri_vells', function (Blueprint $table) {
-            $table->integer('CARCOD')->primary();
-            $table->foreign('CARCOD')->references('CARCOD')->on('streets')
+            $table->string('PAISPROVMUNICARCOD')->primary();
+            $table->foreign('PAISPROVMUNICARCOD')->references('PAISPROVMUNICARCOD')->on('streets')
                 ->onDelete('cascade');
             $table->string('user')->nullable();
             $table->boolean('isCamera')->default(false);

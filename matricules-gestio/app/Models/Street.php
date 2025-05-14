@@ -10,16 +10,17 @@ class Street extends Model
     use HasFactory;
 
     // Quan primaryKey no es id hem d'indicar
-    protected $primaryKey = 'CARCOD';
+    protected $primaryKey = 'PAISPROVMUNICARCOD';
 
-    protected $keyType = 'int';
+    protected $keyType = 'string';
 
     // No estem utilitzant auto increment en la primary key
-    public $incrementing = false;
+    //public $incrementing = false;
 
     protected $guarded = [];
 
     protected $fillable = [
+        'PAISPROVMUNICARCOD',
         'PAISCOD',
         'PROVCOD',
         'MUNICOD',

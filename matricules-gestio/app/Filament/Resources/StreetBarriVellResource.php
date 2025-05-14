@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StreetBarriVellResource\Pages;
 use App\Filament\Resources\StreetBarriVellResource\RelationManagers;
 use App\Models\StreetBarriVell;
+use App\Models\Street;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -27,18 +28,15 @@ class StreetBarriVellResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('CARCOD')
+                Select::make('PAISPROVMUNICARCOD')
                     ->label('Carrer')
                     ->relationship('street', 'CARDESC')
-                    ->preload()
+                    //->preload()
+                    ->lazy()
                     ->searchable()
-                    ->options(function () {
-                        return \App\Models\Street::whereNotIn('CARCOD', StreetBarriVell::pluck('CARCOD'))
-                            ->get()
-                            ->mapWithKeys(function ($street) {
-                                return [$street->CARCOD => $street->nom_carrer];
-                            });
-                    }),
+                    ->getOptionLabelFromRecordUsing(
+                        fn (Street $record): string => "{$record->PAISPROVMUNICARCOD}, {$record->nom_carrer}"
+                    ),                    
                 Forms\Components\Toggle::make('isCamera')
                     ->label('És un carrer càmera?')
                     ->inline(false),

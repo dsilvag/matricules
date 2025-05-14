@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('cameras', function (Blueprint $table) {
             $table->id();
-            $table->integer('owner_CARCOD')->unique();
-            $table->foreign('owner_CARCOD')->references('CARCOD')->on('street_barri_vells')
+            $table->string('owner_PAISPROVMUNICARCOD')->unique();
+            $table->foreign('owner_PAISPROVMUNICARCOD')->references('PAISPROVMUNICARCOD')->on('street_barri_vells')
                 ->onDelete('cascade');
             $table->timestamps();
         });        

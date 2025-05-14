@@ -43,11 +43,15 @@ class DwellingResource extends Resource
                 ->icon('heroicon-o-map-pin')
                 ->description('Introduïu la informació relacionada amb la direcció del domicili.')
                 ->schema([
+                    Forms\Components\TextInput::make('PAISPROVMUNIDOMCOD')->required()->numeric()->label('PAISPROVMUNIDOMCOD'),
+                    Forms\Components\TextInput::make('PAISPROVMUNICARCOD')->required()->numeric()->label('PAISPROVMUNICARCOD'),
+                    
                     Forms\Components\TextInput::make('DOMCOD')->required()->numeric()->label('DOMCOD'),
                     Forms\Components\TextInput::make('PAISCOD')->numeric()->label('PAISCOD'),
                     Forms\Components\TextInput::make('PROVCOD')->numeric()->label('PROVCOD'),
                     Forms\Components\TextInput::make('MUNICOD')->numeric()->label('MUNICOD'),
                     Forms\Components\TextInput::make('CARCOD')->required()->numeric()->label('CARCOD'),
+
                     Forms\Components\TextInput::make('PSEUDOCOD')->numeric()->label('PSEUDOCOD'),
                     Forms\Components\TextInput::make('GISCOD')->maxLength(255)->label('GISCOD'),
                     Forms\Components\TextInput::make('DOMNUM')->maxLength(4)->label('DOMNUM'),

@@ -165,21 +165,21 @@ class InstanceResource extends Resource
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
                         ->label('CARRERS VALIDATS')
-                        ->relationship('carrersBarriVell', 'CARCOD') 
+                        ->relationship('carrersBarriVell', 'PAISPROVMUNICARCOD') 
                         ->preload()
                         ->lazy()
                         ->searchable()
                         ->multiple()
                         ->getOptionLabelFromRecordUsing(fn(StreetBarriVell $record): string => "{$record->nom_carrer}")
                         ->options(function () {
-                            $options = StreetBarriVell::all()->pluck('nom_carrer', 'CARCOD')->toArray();
+                            $options = StreetBarriVell::all()->pluck('nom_carrer', 'PAISPROVMUNICARCOD')->toArray();
 
                             return ['*' => 'Tots els carrers'] + $options;
                         })
                         ->afterStateUpdated(function ($state, $set) {
                             // Si el valor seleccionado es '*', seleccionamos todos los registros
                             if (in_array('*', $state)) {
-                                $set('carrersBarriVell', StreetBarriVell::all()->pluck('CARCOD')->toArray());
+                                $set('carrersBarriVell', StreetBarriVell::all()->pluck('PAISPROVMUNICARCOD')->toArray());
                             } else {
                                 $set('carrersBarriVell', $state); // Ensure we keep only selected values
                             }
@@ -205,7 +205,7 @@ class InstanceResource extends Resource
                         </script>'
                     );
                 }),
-                Forms\Components\Placeholder::make('reload_button')
+                /*Forms\Components\Placeholder::make('reload_button')
                 ->label('')
                 ->visibleOn('edit')
                 ->content(function () {
@@ -223,7 +223,7 @@ class InstanceResource extends Resource
                             }
                         </script>'
                     );
-                }),
+                }),*/
 
 
                  Section::make()

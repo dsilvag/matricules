@@ -107,7 +107,7 @@ class Instance extends Model
 
     public function carrersBarriVell()
     {
-        return $this->belongsToMany(StreetBarriVell::class, 'instance_street','instance_id','CARCOD')->withTimestamps();
+        return $this->belongsToMany(StreetBarriVell::class, 'instance_street','instance_id','PAISPROVMUNICARCOD')->withTimestamps();
     }
 
     public static function booted(): void
@@ -126,6 +126,7 @@ class Instance extends Model
             try {
                 $client = new \SoapClient($_ENV['WEB_SERVICE_REGISTRE_ENTRADA']);
                 $response = $client->doRecuperarRegistreEntrada($params);
+                //dd($response);
                 if (isset($response->return->registreRelacionat)) {
                    $record->NUMEXP=$response->return->registreRelacionat;
                 }else{

@@ -20,6 +20,7 @@ class Dwelling extends Model
     protected $guarded=[];
 
     protected $fillable = [
+        'PAISPROVMUNICARCOD',
         'DOMCOD',
         'PAISCOD',
         'PROVCOD',
@@ -70,13 +71,9 @@ class Dwelling extends Model
      */
     public function street()
     {
-        return $this->belongsTo(Street::class, 'CARCOD','CARCOD');
+        return $this->belongsTo(Street::class, 'PAISPROVMUNICARCOD','PAISPROVMUNICARCOD');
     }
 
-    public function vehicles(): HasMany
-    {
-        return $this->hasMany(Vehicle::class, 'DOMCOD');
-    }
     public function getNomHabitatgeAttribute()
     {
         return $this->street->nom_carrer . " {$this->DOMNUM} {$this->DOMBIS} {$this->DOMNUM2} {$this->DOMBIS2} {$this->DOMESC} {$this->DOMPIS} {$this->DOMPTA} {$this->DOMBLOC} {$this->DOMPTAL} {$this->DOMKM} {$this->DOMHM}";

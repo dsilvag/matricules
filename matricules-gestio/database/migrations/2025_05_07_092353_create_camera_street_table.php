@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('camera_street', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('camera_id');
-            $table->integer('CARCOD');
+            $table->string('PAISPROVMUNICARCOD');
             $table->foreign('camera_id')->references('id')->on('cameras')->onDelete('cascade');
-            $table->foreign('CARCOD')->references('CARCOD')->on('street_barri_vells')->onDelete('cascade');
+            $table->foreign('PAISPROVMUNICARCOD')->references('PAISPROVMUNICARCOD')->on('street_barri_vells')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('instance_street', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('instance_id');  
-            $table->integer('CARCOD');  
+            $table->string('PAISPROVMUNICARCOD');  
             $table->timestamps();
 
             // Foreign key constraints
             $table->foreign('instance_id')->references('id')->on('instances')->onDelete('cascade');
-            $table->foreign('CARCOD')->references('CARCOD')->on('street_barri_vells')->onDelete('cascade');
+            $table->foreign('PAISPROVMUNICARCOD')->references('PAISPROVMUNICARCOD')->on('street_barri_vells')->onDelete('cascade');
         });
     }
 

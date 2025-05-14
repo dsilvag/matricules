@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('streets', function (Blueprint $table) {
+            $table->string('PAISPROVMUNICARCOD')->primary();
             $table->integer('PAISCOD');
             $table->integer('PROVCOD');
             $table->integer('MUNICOD');
-            $table->integer('CARCOD')->primary();
+            $table->integer('CARCOD');
             $table->char('CARSIG',5)->nullable();
             $table->char('CARPAR',6)->nullable();
             $table->string('CARDESC',50);

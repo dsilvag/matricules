@@ -13,27 +13,28 @@ class StreetBarriVell extends Model
     use HasFactory;
 
     // Indicar clau primaria
-    protected $primaryKey = 'CARCOD';
+    protected $primaryKey = 'PAISPROVMUNICARCOD';
 
    // No estem utilitzant auto increment en la primary key
     public $incrementing = false;
 
-    protected $keyType = 'int';
+    protected $keyType = 'string';
+
 
    protected $guarded=[];
 
    protected $fillable = [
-       'CARCOD',
+       'PAISPROVMUNICARCOD',
        'isCamera',
     ];
     public function ownedCamera()
     {
-        return $this->hasOne(Camera::class, 'owner_CARCOD', 'CARCOD');
+        return $this->hasOne(Camera::class, 'owner_PAISPROVMUNICARCOD', 'PAISPROVMUNICARCOD');
     }
 
     public function coveringCameras()
     {
-        return $this->belongsToMany(Camera::class, 'camera_street', 'CARCOD', 'camera_id');
+        return $this->belongsToMany(Camera::class, 'camera_street', 'PAISPROVMUNICARCOD', 'camera_id');
     }
     /**
      *  Get the Street 
@@ -42,7 +43,7 @@ class StreetBarriVell extends Model
      */
     public function street()
     {
-        return $this->belongsTo(Street::class, 'CARCOD','CARCOD');
+        return $this->belongsTo(Street::class, 'PAISPROVMUNICARCOD','PAISPROVMUNICARCOD');
     }
 
     public function getNomCarrerAttribute()
@@ -53,7 +54,7 @@ class StreetBarriVell extends Model
 
     public function instances()
     {
-        return $this->belongsToMany(Instance::class, 'instance_street', 'CARCOD', 'instance_id');
+        return $this->belongsToMany(Instance::class, 'instance_street', 'PAISPROVMUNICARCOD', 'instance_id');
     }
     /*
     public function vehicles()
@@ -65,7 +66,7 @@ class StreetBarriVell extends Model
     {
         return Vehicle::whereHas('instance', function ($query) {
             $query->whereHas('carrersBarriVell', function ($q) {
-                $q->where('street_barri_vells.CARCOD', $this->CARCOD);
+                $q->where('street_barri_vells.PAISPROVMUNICARCOD', $this->PAISPROVMUNICARCOD);
             });
         })->get();
     }
@@ -291,7 +292,7 @@ class StreetBarriVell extends Model
         {
             if($record->isCamera==true){
                 $camera = new \App\Models\Camera();
-                $camera->owner_CARCOD = $record->CARCOD;
+                $camera->owner_PAISPROVMUNICARCOD = $record->PAISPROVMUNICARCOD;
                 $camera->save();
             }
         });
@@ -299,12 +300,12 @@ class StreetBarriVell extends Model
             if($record->getOriginal('isCamera')!=$record->isCamera){
                 if($record->isCamera==true){
                     $camera = new \App\Models\Camera();
-                    $camera->owner_CARCOD = $record->CARCOD;
+                    $camera->owner_PAISPROVMUNICARCOD = $record->PAISPROVMUNICARCOD;
                     $camera->save();
                 }
                 //si es posa iscamera false eliminem
                 if($record->isCamera==false){
-                    $camera = \App\Models\Camera::where('owner_CARCOD', $record->CARCOD)->first();
+                    $camera = \App\Models\Camera::where('owner_PAISPROVMUNICARCOD', $record->PAISPROVMUNICARCOD)->first();
 
                     if ($camera) {
                         $camera->coveredStreets()->detach();
