@@ -49,8 +49,8 @@ class Vehicle extends Model
                     ->warning()
                     ->send();
             }
-            if ($record->instance_RESNUME) {
-                $instance = \App\Models\Instance::find($record->instance_RESNUME);
+            if ($record->instance_id) {
+                $instance = \App\Models\Instance::find($record->instance_id);
                 
                 if ($instance) {
                     if (is_null($instance->data_inici) || is_null($instance->data_fi)) {
