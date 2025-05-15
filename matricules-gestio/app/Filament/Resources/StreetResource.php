@@ -265,6 +265,13 @@ class StreetResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
+                Tables\Actions\Action::make('syncOracleToMysql')
+                    ->label('Sincronizar Oracle a MySQL')
+                    ->color('success') // Color del botón
+                    ->action(function () {
+                        self::syncOracleToMysql();
+                    }),
+                /*
                 ExportAction::make()
                     ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->exporter(StreetExporter::class)
@@ -277,7 +284,7 @@ class StreetResource extends Resource
                     ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->importer(StreetImporter::class)
                     ->csvDelimiter(';')
-                    ->label('Importar carrers'),
+                    ->label('Importar carrers'),*/
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -290,6 +297,19 @@ class StreetResource extends Resource
                         ExportFormat::Csv,
                     ]),
             ]);
+    }
+
+    private static function syncOracleToMysql()
+    {
+        // Asegúrate de que el archivo existe antes de incluirlo
+        $filePath = base_path(env('SCRIPT_STREET'));
+        
+        if (file_exists($filePath)) {
+            include_once $filePath;
+        } else {
+            // Si el archivo no existe, lanzar un error o manejarlo
+            session()->flash('error', 'El script de sincronización no fue encontrado.');
+        }
     }
 
     public static function getRelations(): array

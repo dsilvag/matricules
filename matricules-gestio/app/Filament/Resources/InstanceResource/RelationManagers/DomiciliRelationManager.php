@@ -17,6 +17,7 @@ use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
+use Filament\Tables\Enums\ActionsPosition;
 
 
 class DomiciliRelationManager extends RelationManager
@@ -75,14 +76,13 @@ class DomiciliRelationManager extends RelationManager
             ->actions([
                 Action::make('assignDomicili')
                     ->label('Assignar domicili')
-                    ->button()
                     ->icon('heroicon-m-pencil')
                     ->action(function (Dwelling $dom) {
                         self::assignDwelling($dom,$this->ownerRecord);
                         $this->dispatch('refresh');
 
                     })
-            ])
+                ],position: ActionsPosition::BeforeColumns)
             ->bulkActions([
 
             ]);

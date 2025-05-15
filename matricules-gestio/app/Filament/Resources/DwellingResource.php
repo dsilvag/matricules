@@ -22,6 +22,7 @@ use Filament\Tables\Actions\ImportAction;
 use App\Filament\Imports\DwellingImporter;
 use Filament\Tables\Actions\ImportBulkAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
+use Filament\Actions\Action;
 
 
 class DwellingResource extends Resource
@@ -279,6 +280,13 @@ class DwellingResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
+                Tables\Actions\Action::make('syncOracleToMysql')
+                    ->label('Sincronizar Oracle a MySQL')
+                    ->color('success') // Color del botón
+                    ->action(function () {
+                        self::syncOracleToMysql();
+                    }),
+                /*
                 ExportAction::make()
                     ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->exporter(DwellingExporter::class)
@@ -291,7 +299,7 @@ class DwellingResource extends Resource
                     ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
                     ->importer(DwellingImporter::class)
                     ->csvDelimiter(';')
-                    ->label('Importar habitatges'),
+                    ->label('Importar habitatges'),*/
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -305,7 +313,18 @@ class DwellingResource extends Resource
                     ]),
             ]);
     }
-
+    private static function syncOracleToMysql()
+    {
+        // Asegúrate de que el archivo existe antes de incluirlo
+        $filePath = base_path(env('SCRIPT_DWELLING'));
+        
+        if (file_exists($filePath)) {
+            include_once $filePath;
+        } else {
+            // Si el archivo no existe, lanzar un error o manejarlo
+            session()->flash('error', 'El script de sincronización no fue encontrado.');
+        }
+    }
     public static function getRelations(): array
     {
         return [
