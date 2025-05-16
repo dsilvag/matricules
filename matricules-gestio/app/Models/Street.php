@@ -15,7 +15,7 @@ class Street extends Model
     protected $keyType = 'string';
 
     // No estem utilitzant auto increment en la primary key
-    //public $incrementing = false;
+    public $incrementing = false;
 
     protected $guarded = [];
 

@@ -39,7 +39,8 @@ try {
                    DOMTLOC, APCORREUS, DOMTIP, DOMOBS, VALDATA, BAIXASW, STDAPLADD, STDAPLMOD, STDUGR, STDUMOD,
                    STDDGR, STDDMOD, STDHGR, STDHMOD, DOMCP, X, Y, POBLDESC, GUID, SWREVISAT, REFCADASTRAL, SWPARE,
                    CIV
-            FROM NCL_DOMICILI";
+            FROM NCL_DOMICILI
+            WHERE CARCOD IS NOT NULL";
  
     $stid = oci_parse($connOracle, $sql);
     oci_execute($stid);

@@ -43,7 +43,6 @@ class StreetResource extends Resource
                 ->schema([
                     Forms\Components\TextInput::make('PAISPROVMUNICARCOD')
                         ->required()
-                        ->numeric()
                         ->label('PAISPROVMUNICARCOD'),
                     Forms\Components\TextInput::make('CARCOD')
                         ->required()
