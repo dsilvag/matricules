@@ -85,8 +85,10 @@ SQL;
     oci_free_statement($stid);
     oci_close($connOracle);
     $connMySQL->close();
+    return true;
  
 } catch (Exception $e) {
     echo "❌ ERROR: " . $e->getMessage() . "\n";
     exit(1);
+    return false;
 }

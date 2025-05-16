@@ -12,7 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\ExportAction;
@@ -320,7 +320,20 @@ class DwellingResource extends Resource
         $filePath = base_path(env('SCRIPT_DWELLING'));
         
         if (file_exists($filePath)) {
-            include_once $filePath;
+            $response = include_once $filePath;
+            if($response==true)
+            {
+                Notification::make()
+                ->title('Importació amb èxit')
+                ->success()
+                ->send();
+            }
+            else {
+                Notification::make()
+                ->title('Error en la importació')
+                ->error()
+                ->send();
+            }
         } else {
             // Si el archivo no existe, lanzar un error o manejarlo
             session()->flash('error', 'El script de sincronización no fue encontrado.');
