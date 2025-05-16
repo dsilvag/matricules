@@ -392,21 +392,21 @@ class InstanceResource extends Resource
                 Tables\Columns\TextColumn::make('RESNUME')
                     ->label('Entrada')
                     ->sortable()
-                    ->searchable(isIndividual: true),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('NUMEXP')
                     ->label('Expedient')
-                    ->searchable(isIndividual: true),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('person.nom_person')
                     ->label('Persona')
                     ->extraAttributes([
-                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 200px;',
+                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 131px;',
                     ]),
                 Tables\Columns\TextColumn::make('vehicles.MATRICULA')
                         ->label('Matrícules')
                         ->html() // Permite contenido HTML
                         ->formatStateUsing(fn ($state) => str_replace(',', ',<br>', $state))
                         ->extraAttributes([
-                            'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 200px;',
+                            'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 90px;',
                         ]),
                     
                     //->searchable(isIndividual: true),
@@ -428,8 +428,8 @@ class InstanceResource extends Resource
                     ->searchable(isIndividual: true),*/
                     Tables\Columns\TextColumn::make('VALIDAT')
                         ->label('Decret')
-                        ->searchable()
-                        ->searchable(isIndividual: true),
+                        ->limit(3)
+                        ->searchable(),
                     Tables\Columns\IconColumn::make('DECRETAT')
                         ->label('Decretat')
                         ->sortable()
@@ -455,18 +455,18 @@ class InstanceResource extends Resource
             ])
             ->actions([
                 //Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('sendToWs') 
+                    ->label('Decretar')
+                    ->action(fn ($record) => Instance::sendToWs($record))
+                    ->icon('heroicon-o-arrow-up-circle'),
                 Tables\Actions\Action::make('notificar')
                     ->label('Notificar')
                     ->action(fn ($record) => Instance::notifyInstance($record))
                     ->icon('heroicon-o-bell-alert'),
-                Tables\Actions\Action::make('sendToWs') 
-                    ->label('Penjar decret')
-                    ->action(fn ($record) => Instance::sendToWs($record))
-                    ->icon('heroicon-o-arrow-up-circle'),
-                Tables\Actions\Action::make('exportDocx')
-                    ->label('Exportar DOCX')
+                /*Tables\Actions\Action::make('exportDocx')
+                    ->label('Exp DOCX')
                     ->action(fn ($record) => static::downloadDocx($record))
-                    ->icon('heroicon-o-arrow-down-tray'),
+                    ->icon('heroicon-o-arrow-down-tray'),*/
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

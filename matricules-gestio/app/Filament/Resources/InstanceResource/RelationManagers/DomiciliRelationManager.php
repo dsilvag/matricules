@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Tables\Filters\Filter;
 
 
 class DomiciliRelationManager extends RelationManager
@@ -34,44 +35,73 @@ class DomiciliRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('DOMCOD')
                     ->label('DOMCOD')
                     ->numeric()
-                    ->searchable(isIndividual: true)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('PAISCOD')
+                    ->label('PAISCOD')
+                    ->numeric()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)      
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('PROVCOD')
+                    ->label('PROVCOD')
+                    ->numeric()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('MUNICOD')
+                    ->label('MUNICOD')
+                    ->numeric()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('CARCOD')
+                    ->label('CARCOD')
+                    ->numeric()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('street.CARSIG')
-                    ->searchable(isIndividual: true)
-                    ->label('CARSIG'),
+                    ->searchable()
+                    ->label('SIGLES'),
                 Tables\Columns\TextColumn::make('street.CARDESC')
-                    ->searchable(isIndividual: true)
-                    ->label('CARDESC'),
+                    ->searchable()
+                    ->label('NOM CARRER'),
                 Tables\Columns\TextColumn::make('DOMNUM')
-                    ->searchable(isIndividual: true)
+                    ->searchable()
                     ->label('DOMNUM'),
-                Tables\Columns\TextColumn::make('DOMBIS')
-                    ->searchable(isIndividual: true)
-                    ->label('DOMBIS'),
-                Tables\Columns\TextColumn::make('DOMNUM2')
-                    ->searchable(isIndividual: true)
-                    ->label('DOMNUM2'),
-                Tables\Columns\TextColumn::make('DOMBIS2')
-                    ->searchable(isIndividual: true)
-                    ->label('DOMBIS2'),
-                Tables\Columns\TextColumn::make('DOMESC')
-                    ->searchable(isIndividual: true)
-                    ->label('DOMESC'),
                 Tables\Columns\TextColumn::make('DOMPIS')
-                    ->searchable(isIndividual: true)
+                    ->searchable()
                     ->label('DOMPIS'),
                 Tables\Columns\TextColumn::make('DOMPTA')
-                    ->searchable(isIndividual: true)
+                    ->searchable()
                     ->label('DOMPTA'),
                 Tables\Columns\TextColumn::make('DOMBLOC')
-                    ->searchable(isIndividual: true)
+                    ->searchable()
                     ->label('DOMBLOC'),
                 Tables\Columns\TextColumn::make('DOMPTAL')
-                    ->searchable(isIndividual: true)
+                    ->searchable()
                     ->label('DOMPTAL'),
+                Tables\Columns\TextColumn::make('DOMBIS')
+                    ->searchable()
+                    ->label('DOMBIS'),
+                Tables\Columns\TextColumn::make('DOMNUM2')
+                    ->searchable()
+                    ->label('DOMNUM2'),
+                Tables\Columns\TextColumn::make('DOMBIS2')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('DOMBIS2'),
+                Tables\Columns\TextColumn::make('DOMESC')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('DOMESC'),
             ])
             ->filters([
-                //
+                Filter::make('PAISCOD')
+                ->label('Banyoles')
+                ->query(fn ($query) => $query->where('PAISCOD', 108)->where('PROVCOD', 17)->where('MUNICOD', 15))
+                ->default(true),
             ])
             ->actions([
                 Action::make('assignDomicili')
