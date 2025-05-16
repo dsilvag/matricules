@@ -286,7 +286,7 @@ class DwellingResource extends Resource
                     ->action(function () {
                         self::syncOracleToMysql();
                     })
-                    ->hidden(fn ($record) => !auth()->user()->hasRole('Admin')),
+                    //->hidden(fn ($record) => !auth()->user()->hasRole('Admin')),
                 /*
                 ExportAction::make()
                     ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))

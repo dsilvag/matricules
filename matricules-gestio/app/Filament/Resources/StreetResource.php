@@ -270,7 +270,7 @@ class StreetResource extends Resource
                     ->color('success') // Color del botón
                     ->action(function () {
                         self::syncOracleToMysql();
-                    })->hidden(fn ($record) => !auth()->user()->hasRole('Admin')),
+                    })//->hidden(fn ($record) => !auth()->user()->hasRole('Admin')),
                 /*
                 ExportAction::make()
                     ->hidden(fn ($record) => !auth()->user()->hasRole('Admin'))
