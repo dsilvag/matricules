@@ -1,5 +1,5 @@
 <?php
-// Config Oracle
+// Configuración Oracle
 $oracleHost = '172.17.18.33';
 $oraclePort = '1521';
 $oracleService = 'pdb1_genesys5';
@@ -11,11 +11,11 @@ $oracleDSN = "(DESCRIPTION=
     (CONNECT_DATA=(SERVICE_NAME=$oracleService))
 )";
 
-// Config MySQL
+// Configuración MySQL
 $mysqlHost = '127.0.0.1';
 $mysqlUser = 'matricules';
 $mysqlPass = 'ZSNogL6wH5OSEzP$34';
-$mysqlDB   = 'matricules';
+$mysqlDB = 'matricules';
 
 try {
     // Conexión Oracle
@@ -42,35 +42,61 @@ try {
     $count = 0;
 
     while (($row = oci_fetch_assoc($stid)) !== false) {
-        $fields = [];
-        $values = [];
-        $updates = [];
+        // Verificar si el registro ya existe en MySQL
+        $perscod = $row['PERSCOD'];
+        $numordre = $row['NUMORDRE'];
 
-        foreach ($row as $col => $val) {
-            $colLower = strtolower($col);
-            $fields[] = "`$colLower`";
+        // Consulta para verificar si ya existe el registro con la combinación PERSCOD y NUMORDRE
+        $checkQuery = "SELECT 1 FROM telecos WHERE PERSCOD = ? AND NUMORDRE = ?";
+        $stmt = $connMySQL->prepare($checkQuery);
+        $stmt->bind_param("ii", $perscod, $numordre);  // Asegúrate de que sean enteros
+        $stmt->execute();
+        $stmt->store_result();
 
-            if ($val === null) {
-                $escapedVal = "NULL";
-            } else {
-                $escapedVal = "'" . $connMySQL->real_escape_string($val) . "'";
+        if ($stmt->num_rows > 0) {
+            // Si el registro existe, realizar un UPDATE
+            $updateFields = [];
+            $updateValues = [];
+            foreach ($row as $col => $val) {
+                $colLower = strtolower($col);  // Convertir a minúsculas para coincidir con los nombres de columna en MySQL
+                if (!in_array($colLower, ['perscod', 'numordre'])) {  // No actualizar los campos clave
+                    $updateFields[] = "`$colLower` = ?";
+                    $updateValues[] = $val;
+                }
             }
-
-            $values[] = $escapedVal;
-
-            if (!in_array($colLower, ['perscod', 'numordre'])) { // perscod y numordre son claves compuestas
-                $updates[] = "`$colLower` = VALUES(`$colLower`)";
-            }
-        }
-
-        $sqlInsert = "INSERT INTO telecos (" . implode(',', $fields) . ") VALUES (" . implode(',', $values) . ")
-                      ON DUPLICATE KEY UPDATE " . implode(',', $updates);
-
-        if (!$connMySQL->query($sqlInsert)) {
-            echo "Error insertando PERSCOD {$row['PERSCOD']} y NUMORDRE {$row['NUMORDRE']}: " . $connMySQL->error . "\n";
+            // Realizar el UPDATE
+            $updateQuery = "UPDATE telecos SET " . implode(", ", $updateFields) . " WHERE PERSCOD = ? AND NUMORDRE = ?";
+            $stmtUpdate = $connMySQL->prepare($updateQuery);
+            $updateValues[] = $perscod;
+            $updateValues[] = $numordre;
+            $stmtUpdate->bind_param(str_repeat("s", count($updateValues)-2) . "ii", ...$updateValues);  // Vincula los parámetros
+            $stmtUpdate->execute();
         } else {
-            $count++;
+            // Si no existe, realizar el INSERT
+            $fields = [];
+            $values = [];
+            foreach ($row as $col => $val) {
+                $colLower = strtolower($col);  // Convertir a minúsculas para coincidir con los nombres de columna en MySQL
+                $fields[] = "`$colLower`";
+
+                if ($val === null) {
+                    $escapedVal = "NULL";
+                } else {
+                    $escapedVal = "'" . $connMySQL->real_escape_string($val) . "'";
+                }
+
+                $values[] = $escapedVal;
+            }
+
+            // Inserción sin incluir el campo `id`, que es autonumérico
+            $sqlInsert = "INSERT INTO telecos (" . implode(',', $fields) . ") 
+                          VALUES (" . implode(',', $values) . ")";
+            if (!$connMySQL->query($sqlInsert)) {
+                echo "Error insertando PERSCOD {$row['PERSCOD']} y NUMORDRE {$row['NUMORDRE']}: " . $connMySQL->error . "\n";
+            }
         }
+
+        $count++;
     }
 
     echo "Importados $count registros.\n";
@@ -83,5 +109,4 @@ try {
     echo "Error: " . $e->getMessage() . "\n";
     exit(1);
     return false;
-
 }
