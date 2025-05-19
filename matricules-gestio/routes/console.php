@@ -10,4 +10,6 @@ Artisan::command('inspire', function () {
 
 Schedule::call(function () {
     \App\Models\StreetBarriVell::penjarVehicles();
-})->dailyAt('9:07');
+})->dailyAt('9:43');
+
+Schedule::command('sync:oracle')->dailyAt('9:56');

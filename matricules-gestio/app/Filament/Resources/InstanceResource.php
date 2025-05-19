@@ -125,7 +125,7 @@ class InstanceResource extends Resource
                    
                     Forms\Components\Select::make('domicili_acces')
                         ->visibleOn('edit')
-                        ->suffixIcon('heroicon-m-magnifying-glass')
+                        //->suffixIcon('heroicon-m-magnifying-glass')
                         ->reactive()
                         ->required()
                         ->label('CODI DOMICILI VINCULAT')
@@ -184,27 +184,36 @@ class InstanceResource extends Resource
                                 $set('carrersBarriVell', $state); // Ensure we keep only selected values
                             }
                         }),
+                        Forms\Components\Placeholder::make('scroll_button')
+                        ->label('')
+                        ->visibleOn('edit')
+                        ->content(function () {
+                        return new HtmlString(
+                            '
+                            <div style="display: flex; align-items: center; font-size: 12px; color: #000000; margin-bottom: 8px;">
+                                <span style="margin-right: 10px;">
+                                    En cas que el domicili vinculat no coincideix amb el de l\'entrada, cercar-lo:
+                                </span>
+                                <button 
+                                    onclick="scrollToBottom(event)" 
+                                    class="btn" 
+                                    style="background-color:rgb(224, 134, 17); color: white; border-radius: 50px; padding: 10px 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer; display: flex; align-items: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 15px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <script>
+                                function scrollToBottom(event) {
+                                    event.preventDefault();
+                                    window.scrollTo(0, document.body.scrollHeight);
+                                }
+                            </script>'
+                        );
+                    }),
+
                 ])->columns(2)->visibleOn('edit'),
             
-                Forms\Components\Placeholder::make('scroll_button')
-                ->label('')
-                ->visibleOn('edit')
-                ->content(function () {
-                    return new HtmlString(
-                        '<button 
-                            onclick="scrollToBottom(event)" 
-                            class="btn" 
-                            style="background-color: #4CAF50; color: white; border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer;">
-                            Buscar domicili
-                        </button>
-                        <script>
-                            function scrollToBottom(event) {
-                                event.preventDefault(); // Evita el comportamiento por defecto (posible recarga)
-                                window.scrollTo(0, document.body.scrollHeight);
-                            }
-                        </script>'
-                    );
-                }),
                 /*Forms\Components\Placeholder::make('reload_button')
                 ->label('')
                 ->visibleOn('edit')

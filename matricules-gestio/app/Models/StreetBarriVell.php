@@ -43,7 +43,10 @@ class StreetBarriVell extends Model
      */
     public function street()
     {
-        return $this->belongsTo(Street::class, 'PAISPROVMUNICARCOD','PAISPROVMUNICARCOD');
+        return $this->belongsTo(Street::class, 'PAISPROVMUNICARCOD','PAISPROVMUNICARCOD')
+        ->where('PAISCOD', 108)
+        ->where('PROVCOD', 17)
+        ->where('MUNICOD', 15);
     }
 
     public function getNomCarrerAttribute()
