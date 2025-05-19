@@ -4,14 +4,14 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class SyncOracleToMysql extends Command
+class SyncOracleToMysqlTeleco extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sync:oracle';
+    protected $signature = 'app:sync-oracle-to-mysql-teleco';
 
     /**
      * The console command description.
@@ -25,9 +25,6 @@ class SyncOracleToMysql extends Command
      */
     public function handle()
     {
-        include base_path('scripts/syncOracleToMysqlDwelling.php');
-        include base_path('scripts/syncOracleToMysqlPeople.php');
-        include base_path('scripts/syncOracleToMysqlStreet.php');
         include base_path('scripts/syncOracleToMysqlTeleco.php');
     }
 }
