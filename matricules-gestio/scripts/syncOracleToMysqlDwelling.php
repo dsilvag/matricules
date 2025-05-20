@@ -1,11 +1,11 @@
 <?php
 
 // Config Oracle
-$oracleHost = '172.17.18.33';
-$oraclePort = '1521';
-$oracleService = 'pdb1_genesys5';
-$oracleUser = 'BANYOLES';
-$oraclePass = 'AUDIBANY2016';
+$oracleHost = env('DB_ORACLE_HOST');
+$oraclePort = env('DB_ORACLE_PORT');
+$oracleService = env('DB_ORACLE_SERVICE_NAME');
+$oracleUser = env('DB_ORACLE_USERNAME');
+$oraclePass = env('DB_ORACLE_PASSWORD');
  
 $oracleDSN = "(DESCRIPTION=
     (ADDRESS=(PROTOCOL=TCP)(HOST=$oracleHost)(PORT=$oraclePort))
@@ -13,10 +13,10 @@ $oracleDSN = "(DESCRIPTION=
 )";
  
 // Config MySQL
-$mysqlHost = '127.0.0.1';
-$mysqlUser = 'matricules';
-$mysqlPass = 'ZSNogL6wH5OSEzP$34';
-$mysqlDB   = 'matricules';
+$mysqlHost = env('DB_HOST');
+$mysqlUser = env('DB_USERNAME');
+$mysqlPass = env('DB_PASSWORD');
+$mysqlDB   = env('DB_DATABASE');
  
 try {
     // Connexió Oracle
