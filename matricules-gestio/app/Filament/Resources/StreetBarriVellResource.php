@@ -203,7 +203,7 @@ class StreetBarriVellResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('obtenirLListaCotxes') 
                     ->label('Validar llista de cotxes')
-                    ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record, true))
+                    ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record, true,false))
                     ->icon('heroicon-o-arrow-up-circle'),
             ])
             ->bulkActions([

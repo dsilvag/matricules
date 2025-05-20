@@ -75,36 +75,42 @@ class StreetBarriVell extends Model
     }
     public static function penjarVehicles()
     {
-        $streets = self::all();
+        //Tots els carrers del barri vell
+        $streetsBarriVell = self::all();
     
-        foreach ($streets as $index => $street) {
+        foreach ($streetsBarriVell as $index => $street) {
             // Nomes el primer carrer tindrà les notificacions activades
             $notis = $index === 0;
-            self::obtenirLListaCotxes($street, $notis);
+            // obtenir llista de cotxes i penjar vehicles
+            self::obtenirLListaCotxes($street, $notis,false);
+            //Penjar llista padro
+            //si es l'entorn de proves...
+            if(env('APP_ENV')!='local'){
+                self::obtenirLListaCotxes($street,$notis,true);
+            }
         }
     }
-    
-    public static function obtenirLListaCotxes($record, $notis)
+    public static function obtenirLListaCotxes($record, $notis, $isPadro)
     {
-        $token = self::createToken($record);
-    
-        // Si el token te algun error
+        $token = self::createToken($record,$isPadro);
+        // Si quan creem el token dona error
         if (str_starts_with($token, "Error")) {
             if ($notis) {
                 \App\Models\Instance::sendErrorNotification('Token error', $token, 'unknown');
             }
             return;
         }
-    
+        //obtenim llista vehicles de la llista alphanet
         $vehiclesId = self::getVehiclesId($token);
-    
+        dd($vehiclesId);
+        //si hi ha un error
         if (!is_array($vehiclesId)) {
             if ($notis) {
                 \App\Models\Instance::sendErrorNotification('Vehicles error', $vehiclesId, 'unknown');
             }
             return;
         }
-    
+        //Si la llista esta buida
         if (count($vehiclesId) < 1 && $notis) {
             Notification::make()
                 ->title('Llista buida')
@@ -120,55 +126,83 @@ class StreetBarriVell extends Model
                 \App\Models\Instance::sendErrorNotification('Vehicles delete', $deleteVehicle, 'unknown');
             }
         }
-    
-        $instances = $record->instances;
         $numErrors = 0;
         $nVehiclesInsert = 0;
-    
-        foreach ($instances as $instance) {
-            if ($instance->is_notificat && $instance->VALIDAT === 'FAVORABLE') {
-                foreach ($instance->vehicles as $vehicle) {
-                    if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
-                        $v = self::insertVehicle($token, $vehicle);
-    
-                        if (str_starts_with($v, "Error")) {
-                            if ($notis && ($numErrors > 0 || $nVehiclesInsert > 0)) {
-                                \App\Models\Instance::sendErrorNotification('Vehicles insert', $v, 'unknown');
+        if(!$isPadro){
+            //Obtenir instancies relacionades amb el carrer $record
+            $instances = $record->instances;
+            //Per cada instancia
+            foreach ($instances as $instance) {
+                //Mirem si la instancia es favorable, esta validada i notificada
+                if ($instance->is_notificat && $instance->VALIDAT === 'FAVORABLE') {
+                    //Per cada instancia mirem els vehicles que hi han associats
+                    foreach ($instance->vehicles as $vehicle) {
+                        //Mirem que no hagi expirat la caducitat del vehicle
+                        if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
+                            //inserim el vehicle
+                            $v = self::insertVehicle($token, $vehicle);
+                            //si ens ha donat algun error 
+                            if (str_starts_with($v, "Error")) {
+                                if ($notis && $numErrors == 0) {
+                                    \App\Models\Instance::sendErrorNotification('Vehicles insert', $v, 'unknown');
+                                }
+                                $numErrors++;
+                            } else {
+                                $nVehiclesInsert++;
                             }
-                            $numErrors++;
-                        } else {
-                            $nVehiclesInsert++;
                         }
                     }
                 }
             }
+        }else{
+            $vehicles = self::obtenirVehiclesPadro($record->street->CARCOD);
+            foreach($vehicles as $v){
+                $r = self::insertVehiclePadro($token,$v);
+                if (str_starts_with($r, "Error")) {
+                     if ($notis && $numErrors==0) {
+                        \App\Models\Instance::sendErrorNotification('Vehicles insert', $r, 'unknown');
+                        $numErrors++;
+                    }
+                }else{
+                    $nVehiclesInsert++;
+                }
+            }
         }
-    
         // Missatges finals
         if ($notis) {
+        //Si no hi han hagut errors i s'ha inserit un vehicle vol dir que tot ha anat bé
             if ($numErrors === 0 && $nVehiclesInsert > 0) {
                 Notification::make()
-                    ->title('Vehicles inserits')
-                    ->body('S\'han afegit els vehicles correctament.')
-                    ->success()
-                    ->send();
+                ->title('Vehicles inserits')
+                ->body('S\'han afegit els vehicles correctament.')
+                ->success()
+                ->send();
+                // si no s'ha inserit cap vehicle        
             } elseif ($nVehiclesInsert < 1) {
                 Notification::make()
-                    ->title('Llista buida')
-                    ->body('No hi ha vehicles assignats aquest carrer.')
-                    ->warning()
-                    ->send();
+                ->title('Llista buida')
+                ->body('No hi ha vehicles assignats aquest carrer.')
+                ->warning()
+                ->send();
             }
         }
     }
     
-    private static function createToken($record): string
+    private static function createToken($record, $isPadro): string
     {
         $url = 'https://adm.alphadatamanager.com:8080/alpha-data-manager/oauth/token';
-
+        $user=$record->user;
+        if($isPadro){
+            // Separem el mail
+            $emailParts = explode('@', $user);
+            //Mirem que sigui un mail valid
+            if (count($emailParts) === 2) {
+                $user = $emailParts[0] . '-padro@' . $emailParts[1];
+            }
+        }
         $data = [
             'grant_type' => 'password',
-            'username' => $record->user,
+            'username' => $user,
             'password' => env('CONTRASENYA_LLISTES')
         ];
 
@@ -203,36 +237,53 @@ class StreetBarriVell extends Model
     private static function getVehiclesId($token)
     {
         $url = "https://adm.alphadatamanager.com:8080/alpha-data-manager/api/1.0/portal";
-        $ch = curl_init($url);
-        
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-        curl_setopt($ch, CURLOPT_HTTPGET, true);        
-        
-        $headers = [
-            "Authorization: Bearer " . $token
-        ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        
-        $response = curl_exec($ch);
-        
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            return "Error: " . $error_msg;
-        }
-        
-        curl_close($ch);
-        
-        $data = json_decode($response, true);
-        
         $vehicleIds = [];
-        if (isset($data['data']) && is_array($data['data'])) {
-            foreach ($data['data'] as $vehicle) {
-                if (isset($vehicle['id'])) {
-                    $vehicleIds[] = $vehicle['id'];
+        $page = 0; // Comença des de la pàgina 0
+        $size = 10; // Num resultats per pàg
+        $hasNextPage = true; // variable per determinar si hi han més pàgines
+
+        while ($hasNextPage) {
+            $requestUrl = $url . "?page=" . $page . "&size=" . $size . "&sort=updatedOn,asc";
+
+            $ch = curl_init($requestUrl);
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPGET, true);
+
+            $headers = [
+                "Authorization: Bearer " . $token
+            ];
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                $error_msg = curl_error($ch);
+                curl_close($ch);
+                return "Error: " . $error_msg;
+            }
+
+            curl_close($ch);
+
+            $data = json_decode($response, true);
+
+            // Si hi han dades les processem
+            if (isset($data['data']) && is_array($data['data'])) {
+                foreach ($data['data'] as $vehicle) {
+                    if (isset($vehicle['id'])) {
+                        $vehicleIds[] = $vehicle['id'];
+                    }
                 }
             }
-        } 
+
+            // Verifiquem si hi han més pàgines
+            $hasNextPage = ($data['page'] + 1) < $data['totalPages']; // Si no hem arribat a l'última pàgina seguim
+            // Si hi han més pàgines incrementem el núm pàg.
+            if ($hasNextPage) {
+                $page++;
+            }
+        }
+
         return $vehicleIds;
     }
     private static function deleteVehicles($token,$vehicleId): string
@@ -283,6 +334,145 @@ class StreetBarriVell extends Model
         } else {
             return "Error: Codi d'estat HTTP: " . $httpCode . ". Resposta: " . $response;
         }
+    }
+    private static function insertVehiclePadro($token,$vehicle)
+    {
+        $url = "https://adm.alphadatamanager.com:8080/alpha-data-manager/api/1.0/portal";
+        $ch = curl_init($url);
+        $comentaris = $vehicle['domcod'] . ' - ' . $vehicle['carsig'] . ' ' . $vehicle['cardesc'] . ' ' . $vehicle['domnum'];
+
+        if (!empty($vehicle['dombis'])) {
+            $comentaris .= ' ' . $vehicle['dombis'];
+        }
+
+        if (!empty($vehicle['domnum2'])) {
+            $comentaris .= ' - ' . $vehicle['domnum2'];
+            if (!empty($vehicle['dombis2'])) {
+                $comentaris .= ' ' . $vehicle['dombis2'];
+            }
+        }
+
+        if (!empty($vehicle['dombloc'])) {
+            $comentaris .= ' Bloc ' . $vehicle['dombloc'];
+        }
+
+        if (!empty($vehicle['domptal'])) {
+            $comentaris .= ' Pt.' . $vehicle['domptal'];
+        }
+
+        if (!empty($vehicle['domesc'])) {
+            $comentaris .= ' Esc. ' . $vehicle['domesc'];
+        }
+
+        if (!empty($vehicle['dompis'])) {
+            $comentaris .= ' Pis ' . $vehicle['dompis'];
+        }
+
+        if (!empty($vehicle['dompta'])) {
+            $comentaris .= ' Porta ' . $vehicle['dompta'];
+        }
+        $propietari = $vehicle['nifnum'] . $vehicle['nifdc'] . ' ' .$vehicle['persnom'] . ' ' . $vehicle['perscog1'] . ' ' . $vehicle['perscog2'];
+        $data = [
+            "plate" => trim($vehicle['matricula']),
+            "comments"=> $comentaris,
+            "owner" => $propietari,
+            "startsOn" => date('Y-m-d', strtotime('-1 day')),
+        ];
+        $payload = json_encode($data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer " . $token,
+            "Content-Type: application/json",
+            "Content-Length: " . strlen($payload)
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $data= json_decode($response, true);
+        if ($httpCode == 201 && isset($data['id'])) {
+            return "Vehicle inserit amb èxit. ID: " . $data['id'];
+        } else {
+            return "Error: Codi d'estat HTTP: " . $httpCode . ". Resposta: " . $response;
+        }
+    }
+
+    public static function obtenirVehiclesPadro(int $carcod): array
+    {
+        // Configuració Oracle
+        $oracleHost = env('DB_ORACLE_HOST');
+        $oraclePort = env('DB_ORACLE_PORT');
+        $oracleService = env('DB_ORACLE_SERVICE_NAME');
+        $oracleUser = env('DB_ORACLE_USERNAME');
+        $oraclePass = env('DB_ORACLE_PASSWORD');
+
+        $oracleDSN = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$oracleHost)(PORT=$oraclePort))(CONNECT_DATA=(SERVICE_NAME=$oracleService)))";
+
+        // Conexió Oracle
+        $conn = oci_connect($oracleUser, $oraclePass, $oracleDSN, 'AL32UTF8');
+        if (!$conn) {
+            throw new \Exception("Error Oracle: " . oci_error()['message']);
+        }
+
+        //Query
+        $sql = "
+            SELECT 
+                H.PERSCOD, T.PERSCOD AS T_PERSCOD, H.PERSNOM, H.PERSCOG1, H.PERSCOG2,
+                H.NIFNUM, H.NIFDC, V.MATRICULA, V.MOVTIP,
+                H.DOMCOD, H.CARCOD, H.CARSIG, H.CARDESC, H.TRAMPAR,
+                H.DOMNUM, H.DOMBIS, H.DOMNUM2, H.DOMBIS2, H.DOMKM, H.DOMHM,
+                H.DOMBLOC, H.DOMPTAL, H.DOMESC, H.DOMPIS, H.DOMPTA,
+                V.OBJCOD, H.NIFSW, H.PERSPASSPORT
+            FROM GTR_VEHICLE V
+            JOIN GTR_TIT_OBJ T ON V.OBJCOD = T.OBJCOD
+            JOIN HAB_MOVHABS H ON T.PERSCOD = H.PERSCOD
+            WHERE H.DATAFINAL = ' '
+              AND H.MOVTIP <> 'B'
+              AND V.MOVTIP <> 'B'
+              AND H.CARCOD = $carcod
+              AND (
+                    ($carcod = 66 AND H.DOMNUM < 35) OR
+                    ($carcod = 103 AND H.DOMNUM > 12) OR
+                    ($carcod = 138 AND H.DOMNUM < 37) OR
+                    ($carcod = 105 AND H.DOMNUM < 68) OR
+                    ($carcod NOT IN (66, 103, 138, 105))
+                )      
+              
+        ";
+
+        $stid = oci_parse($conn, $sql);
+        oci_execute($stid);
+
+        $resultado = [];
+        //Afegim cada row a l'array
+        while (($row = oci_fetch_assoc($stid)) !== false) {
+            $resultado[] = [
+                'matricula'   => $row['MATRICULA'],
+                'domcod'      => $row['DOMCOD'],
+                'carsig'      => $row['CARSIG'],
+                'cardesc'     => $row['CARDESC'],
+                'domnum'      => $row['DOMNUM'],
+                'dombis'      => $row['DOMBIS'] ?? null,
+                'domnum2'     => $row['DOMNUM2'] ?? null,
+                'dombis2'     => $row['DOMBIS2'] ?? null,
+                'dombloc'     => $row['DOMBLOC'] ?? null,
+                'domptal'     => $row['DOMPTAL'] ?? null,
+                'domesc'      => $row['DOMESC'] ?? null,
+                'dompis'      => $row['DOMPIS'] ?? null,
+                'dompta'      => $row['DOMPTA'] ?? null,
+                'persnom'     => $row['PERSNOM'],
+                'perscog1'    => $row['PERSCOG1'],
+                'perscog2'    => $row['PERSCOG2'],
+                'nifnum'      => $row['NIFNUM'],
+                'nifdc'       => $row['NIFDC'],
+            ];
+        }
+
+        oci_free_statement($stid);
+        oci_close($conn);
+        //Retornem una array amb el resultat
+        return $resultado;
     }
 
     public static function booted(): void
