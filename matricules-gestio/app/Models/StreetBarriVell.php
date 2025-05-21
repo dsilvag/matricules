@@ -102,7 +102,7 @@ class StreetBarriVell extends Model
         }
         //obtenim llista vehicles de la llista alphanet
         $vehiclesId = self::getVehiclesId($token);
-        dd($vehiclesId);
+        //dd($vehiclesId);
         //si hi ha un error
         if (!is_array($vehiclesId)) {
             if ($notis) {
@@ -140,7 +140,7 @@ class StreetBarriVell extends Model
                         //Mirem que no hagi expirat la caducitat del vehicle
                         if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
                             //inserim el vehicle
-                            $v = self::insertVehicle($token, $vehicle);
+                            $v = self::insertVehicle($token, $vehicle,$instance);
                             //si ens ha donat algun error 
                             if (str_starts_with($v, "Error")) {
                                 if ($notis && $numErrors == 0) {
@@ -181,7 +181,7 @@ class StreetBarriVell extends Model
             } elseif ($nVehiclesInsert < 1) {
                 Notification::make()
                 ->title('Llista buida')
-                ->body('No hi ha vehicles assignats aquest carrer.')
+                ->body('No hi ha cap vehicle assignat a aquest(s) carrer(s).')
                 ->warning()
                 ->send();
             }
@@ -307,12 +307,47 @@ class StreetBarriVell extends Model
             return "Error a l'eliminar el vehicle. Codi d'estat' HTTP: " . $httpCode . ". Resposta: " . $response;
         }
     }
-    private static function insertVehicle($token,$vehicle)
+    private static function insertVehicle($token,$vehicle,$instance)
     {
         $url = "https://adm.alphadatamanager.com:8080/alpha-data-manager/api/1.0/portal";
         $ch = curl_init($url);
+        $comentaris = $instance->DOMCOD . ' - ' . $instance->domicili->street->CARSIG . ' ' . $instance->domicili->street->CARDESC . ' ' . $instance->domicili->DOMNUM;
+
+        if (!empty($instance->domicili->DOMBIS)) {
+            $comentaris .= ' ' . $instance->domicili->DOMBIS;
+        }
+
+        if (!empty($instance->domicili->DOMNUM2)) {
+            $comentaris .= ' - ' . $instance->domicili->DOMNUM2;
+            if (!empty($instance->domicili->DOMBIS2)) {
+                $comentaris .= ' ' . $instance->domicili->DOMBIS2;
+            }
+        }
+
+        if (!empty($instance->domicili->DOMBLOC)) {
+            $comentaris .= ' Bloc ' . $instance->domicili->DOMBLOC;
+        }
+
+        if (!empty($instance->domicili->DOMPTAL)) {
+            $comentaris .= ' Pt.' . $instance->domicili->DOMPTAL;
+        }
+
+        if (!empty($instance->domicili->DOMESC)) {
+            $comentaris .= ' Esc. ' . $instance->domicili->DOMESC;
+        }
+
+        if (!empty($instance->domicili->DOMPIS)) {
+            $comentaris .= ' Pis ' . $instance->domicili->DOMPIS;
+        }
+
+        if (!empty($instance->domicili->DOMPTA)) {
+            $comentaris .= ' Porta ' . $instance->domicili->DOMPTA;
+        }
+        $propietari = $instance->person->NIFNUM . $instance->person->NIFDC . ' ' .$instance->person->PERSNOM . ' ' . $instance->person->PERSCOG1 . ' ' . $instance->person->PERSCOG2;
         $data = [
             "plate" => $vehicle->MATRICULA,
+            "comments"=> $comentaris,
+            "owner" => $propietari,
             "startsOn" => $vehicle->DATAINICI,
             "expiresOn" => $vehicle->DATAEXP
         ];
