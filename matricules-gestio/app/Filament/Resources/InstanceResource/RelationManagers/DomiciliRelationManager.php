@@ -103,16 +103,19 @@ class DomiciliRelationManager extends RelationManager
                 ->query(fn ($query) => $query->where('PAISCOD', 108)->where('PROVCOD', 17)->where('MUNICOD', 15))
                 ->default(true),
             ])
-            ->actions([
-                Action::make('assignDomicili')
-                    ->label('Assignar domicili')
-                    ->icon('heroicon-m-pencil')
-                    ->action(function (Dwelling $dom) {
-                        self::assignDwelling($dom,$this->ownerRecord);
-                        $this->dispatch('refresh');
+            ->actions(
+                collect([1, 2, 3])->map(function ($num) {
+                    return Action::make("assignDomicili{$num}")
+                        ->label((string) $num)
+                        ->icon('heroicon-m-pencil')
+                        ->action(function (Dwelling $dom) use ($num) {
+                            self::assignDwelling($dom, $this->ownerRecord, $num);
+                            $this->dispatch('refresh');
+                        });
+                })->toArray(),
+                position: ActionsPosition::BeforeColumns
+            )
 
-                    })
-                ],position: ActionsPosition::BeforeColumns)
             ->bulkActions([
 
             ]);
@@ -121,10 +124,20 @@ class DomiciliRelationManager extends RelationManager
     {
         return Dwelling::query();
     }
-    private function assignDwelling($dom, $instance)
+    private function assignDwelling($dom, $instance,$num)
     {
-        $instance->skipValidation();
-        $instance->domicili_acces = $dom->DOMCOD;
-        $instance->save();
+        if($num==2){
+            $instance->skipValidation();
+            $instance->domicili_acces2 = $dom->DOMCOD;
+            $instance->save();
+        }elseif($num==3){
+            $instance->skipValidation();
+            $instance->domicili_acces3 = $dom->DOMCOD;
+            $instance->save();
+        }else{
+            $instance->skipValidation();
+            $instance->domicili_acces = $dom->DOMCOD;
+            $instance->save();
+        }
     }
 }

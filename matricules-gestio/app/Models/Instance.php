@@ -104,6 +104,14 @@ class Instance extends Model
     {
         return $this->belongsTo(Dwelling::class, 'domicili_acces');
     }
+    public function domiciliAccess2()
+    {
+        return $this->belongsTo(Dwelling::class, 'domicili_acces2');
+    }
+    public function domiciliAccess3()
+    {
+        return $this->belongsTo(Dwelling::class, 'domicili_acces3');
+    }
 
     public function carrersBarriVell()
     {

@@ -27,15 +27,23 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
 
     public static function getTitle($ownerRecord, string $pageClass): string
     {
-        $domcod = $ownerRecord->domicili_acces;
-        $resnume = $ownerRecord->RESNUME;
+        $dom1 = $ownerRecord->domicili_acces;
+        $dom2 = $ownerRecord->domicili_acces2;
+        $dom3 = $ownerRecord->domicili_acces3;
+        $NUMEXP = $ownerRecord->NUMEXP;
         $avui = now()->format('Y-m-d');
-        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($domcod,$resnume,$avui) {
-            $query->where('domicili_acces', $domcod)
-            ->where('RESNUME', '!=', $resnume)
+
+        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($dom1, $dom2, $dom3, $NUMEXP, $avui) {
+            $query->where(function ($q) use ($dom1, $dom2, $dom3) {
+                $q->whereIn('domicili_acces', [$dom1, $dom2, $dom3])
+                ->orWhereIn('domicili_acces2', [$dom1, $dom2, $dom3])
+                ->orWhereIn('domicili_acces3', [$dom1, $dom2, $dom3]);
+            })
+            ->where('NUMEXP', '!=', $NUMEXP)
             ->where('DATAEXP', '>=', $avui);
         })->count();
-        return "Altres vehicles al mateix domicili ($vehicleCount)";
+
+        return "Altres vehicles en els mateixos domicilis ($vehicleCount)";
     }
 
     public function table(Table $table): Table
@@ -45,8 +53,14 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('MATRICULA')
                     ->label('MATRICULA'),
-                Tables\Columns\TextColumn::make('instance.RESNUME')
-                    ->label('RESNUME'),
+                Tables\Columns\TextColumn::make('instance.NUMEXP')
+                    ->label('NUMEXP'),
+                Tables\Columns\TextColumn::make('instance.domiciliAccess.nom_habitatge')
+                    ->label('Domicili 1'),
+                Tables\Columns\TextColumn::make('instance.domiciliAccess2.nom_habitatge')
+                    ->label('Domicili 2'),
+                Tables\Columns\TextColumn::make('instance.domiciliAccess3.nom_habitatge')
+                    ->label('Domicili 3'),
                 Tables\Columns\TextColumn::make('DATAINICI')
                     ->label('DATAINICI')
                     ->date('d/m/Y'),    
@@ -72,10 +86,19 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     }
     public function getTableQuery(): Builder
     {
-        return Vehicle::whereHas('instance', function ($query){
-            $query->where('domicili_acces', $this->ownerRecord->domicili_acces)
-                ->where('RESNUME', '!=', $this->ownerRecord->RESNUME)
-                ->where('DATAEXP', '>=', now()->format('Y-m-d'));
+        $dom1 = $this->ownerRecord->domicili_acces;
+        $dom2 = $this->ownerRecord->domicili_acces2;
+        $dom3 = $this->ownerRecord->domicili_acces3;
+        $NUMEXP = $this->ownerRecord->NUMEXP;
+
+        return Vehicle::whereHas('instance', function ($query) use ($dom1, $dom2, $dom3, $NUMEXP) {
+            $query->where(function ($q) use ($dom1, $dom2, $dom3) {
+                $q->whereIn('domicili_acces', [$dom1, $dom2, $dom3])
+                ->orWhereIn('domicili_acces2', [$dom1, $dom2, $dom3])
+                ->orWhereIn('domicili_acces3', [$dom1, $dom2, $dom3]);
+            })
+            ->where('NUMEXP', '!=', $NUMEXP)
+            ->where('DATAEXP', '>=', now()->format('Y-m-d'));
         });
     }
 }

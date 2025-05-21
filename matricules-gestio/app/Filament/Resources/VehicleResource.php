@@ -45,6 +45,14 @@ class VehicleResource extends Resource
                 Tables\Columns\TextColumn::make('instance.RESNUME')
                     ->label('RESNUME')
                     ->searchable(),    
+                Tables\Columns\TextColumn::make('instance.NUMEXP')
+                    ->label('NUMEXP'),
+                Tables\Columns\TextColumn::make('instance.domiciliAccess.nom_habitatge')
+                    ->label('Domicili 1'),
+                Tables\Columns\TextColumn::make('instance.domiciliAccess2.nom_habitatge')
+                    ->label('Domicili 2'),
+                Tables\Columns\TextColumn::make('instance.domiciliAccess3.nom_habitatge')
+                    ->label('Domicili 3'),
                 Tables\Columns\TextColumn::make('DATAINICI')
                     ->label('DATAINICI')
                     ->date()

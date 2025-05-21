@@ -27,6 +27,7 @@ use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Actions\Action;
 use App\Livewire\Dwellings\ListDwellings;
 use \DateTime;
+use Filament\Forms\Set;
 
 class InstanceResource extends Resource
 {
@@ -111,7 +112,7 @@ class InstanceResource extends Resource
                         ->visibleOn('edit')
                         ->reactive()
                         ->required()
-                        ->label('CODI DOMICILI')
+                        ->label('CODI DOMICILI INSTÀNCIA')
                         ->relationship('domicili', 'DOMCOD')
                         ->lazy()
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
@@ -134,37 +135,10 @@ class InstanceResource extends Resource
                         ->searchable()
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
                             "{$record->DOMCOD}, {$record->nom_habitatge}"),
-                    /* 
-                    Forms\Components\TextInput::make('domicili_acces')
-                            ->label('Domicili Accés')
-                            ->readOnly()
-                            ->visibleOn('edit')
-                            ->suffixAction(
-                                Action::make('searchDomicili')
-                                    ->label('Buscar Domicili')
-                                    ->icon('heroicon-m-magnifying-glass')
-                                    ->modalContent(function () {
-                                        $dwelling = Dwelling::query()->paginate(10);
-                                        return view('livewire.domicili-selector-modal', ['dwellings' => $dwelling]);
-                                    })
-                            ),
-                */
-                            /*
-                        Forms\Components\TextInput::make('domicili_acces')
-                            ->label('Domicili Accés')
-                            ->readOnly()
-                            ->suffixAction(
-                                Action::make('openModal')
-                                    ->icon('heroicon-o-magnifying-glass')
-                                    ->action(function ($component) {
-                                        $component->mountAction('openDwellingsModal');
-                                    })
-                            ),*/
-                
                             
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
-                        ->label('CARRERS VALIDATS')
+                        ->label('CARRER DESTÍ')
                         ->relationship('carrersBarriVell', 'PAISPROVMUNICARCOD') 
                         ->preload()
                         ->lazy()
@@ -184,56 +158,55 @@ class InstanceResource extends Resource
                                 $set('carrersBarriVell', $state); // Ensure we keep only selected values
                             }
                         }),
+                        Forms\Components\Select::make('domicili_acces2')
+                            ->visibleOn('edit')
+                            ->reactive()
+                            ->label('CODI DOMICILI VINCULAT 2')
+                            ->relationship('domiciliAccess2', 'DOMCOD')
+                            ->lazy()
+                            ->searchable()
+                            ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
+                                "{$record->DOMCOD}, {$record->nom_habitatge}"),
+                        Forms\Components\Placeholder::make('spacer')->label(''),//Afegim un espai en blanc perquè tots els domicilis ocupin el mateix espai i quedin alineats en la mateixa columna 
+                        Forms\Components\Select::make('domicili_acces3')
+                            ->visibleOn('edit')
+                            ->reactive()
+                            ->label('CODI DOMICILI VINCULAT 3')
+                            ->relationship('domiciliAccess3', 'DOMCOD')
+                            ->lazy()
+                            ->searchable()
+                            ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
+                                "{$record->DOMCOD}, {$record->nom_habitatge}"),
+                        Forms\Components\Placeholder::make('spacer')->label(''), 
                         Forms\Components\Placeholder::make('scroll_button')
-                        ->label('')
-                        ->visibleOn('edit')
-                        ->content(function () {
-                        return new HtmlString(
-                            '
-                            <div style="display: flex; align-items: center; font-size: 12px; color: #000000; margin-bottom: 8px;">
-                                <span style="margin-right: 10px;">
-                                    En cas que el domicili vinculat no coincideix amb el de l\'entrada, cercar-lo:
-                                </span>
-                                <button 
-                                    onclick="scrollToBottom(event)" 
-                                    class="btn" 
-                                    style="background-color:rgb(224, 134, 17); color: white; border-radius: 50px; padding: 10px 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer; display: flex; align-items: center;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 15px;">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <script>
-                                function scrollToBottom(event) {
-                                    event.preventDefault();
-                                    window.scrollTo(0, document.body.scrollHeight);
-                                }
-                            </script>'
-                        );
-                    }),
+                            ->label('')
+                            ->visibleOn('edit')
+                            ->content(function () {
+                            return new HtmlString(
+                                '
+                                <div style="display: flex; align-items: center; font-size: 12px; color: #000000; margin-bottom: 8px;">
+                                    <span style="margin-right: 10px;">
+                                        En cas que el domicili vinculat no coincideix amb el de l\'entrada, cercar-lo:
+                                    </span>
+                                    <button 
+                                        onclick="scrollToBottom(event)" 
+                                        class="btn" 
+                                        style="background-color:rgb(224, 134, 17); color: white; border-radius: 50px; padding: 10px 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer; display: flex; align-items: center;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 15px;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <script>
+                                    function scrollToBottom(event) {
+                                        event.preventDefault();
+                                        window.scrollTo(0, document.body.scrollHeight);
+                                    }
+                                </script>'
+                            );
+                        }),
 
                 ])->columns(2)->visibleOn('edit'),
-            
-                /*Forms\Components\Placeholder::make('reload_button')
-                ->label('')
-                ->visibleOn('edit')
-                ->content(function () {
-                    return new HtmlString(
-                        '<button 
-                            onclick="reloadPage(event)" 
-                            class="btn" 
-                            style="background-color: #FF5733; color: white; border-radius: 50px; padding: 10px 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); cursor: pointer;">
-                            Refrescar Página
-                        </button>
-                        <script>
-                            function reloadPage(event) {
-                                event.preventDefault(); // Evita el comportamiento por defecto
-                                location.reload(); // Recarga la página
-                            }
-                        </script>'
-                    );
-                }),*/
-
 
                  Section::make()
                     ->icon('heroicon-o-flag')
@@ -412,29 +385,12 @@ class InstanceResource extends Resource
                     ]),
                 Tables\Columns\TextColumn::make('vehicles.MATRICULA')
                         ->label('Matrícules')
-                        ->html() // Permite contenido HTML
-                        ->formatStateUsing(fn ($state) => str_replace(',', ',<br>', $state))
-                        ->extraAttributes([
-                            'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 90px;',
-                        ]),
+                        ->html()
+                        ->formatStateUsing(fn ($state) => str_replace(',', ',<br>', $state)),
+                        /*->extraAttributes([
+                            'style' => 'word-wrap: break-word; word-break: break-word; white-space: normal; width: 90px;',
+                        ]),*/
                     
-                    //->searchable(isIndividual: true),
-                /*Tables\Columns\TextColumn::make('personRepresentative.nom_person')
-                    ->label('REPRESENTANT')
-                    ->extraAttributes([
-                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
-                    ]),
-                    //->searchable(isIndividual: true),
-                /*Tables\Columns\TextColumn::make('carrersBarriVell.street.CARSIG')
-                    ->label('CARSIG')
-                    ->sortable()
-                    ->searchable(isIndividual: true),*/
-                /*Tables\Columns\TextColumn::make('carrersBarriVell.street.CARDESC')
-                    ->label('CARRERS VALIDATS')
-                    ->extraAttributes([
-                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal;',
-                    ])
-                    ->searchable(isIndividual: true),*/
                     Tables\Columns\TextColumn::make('VALIDAT')
                         ->label('Decret')
                         ->limit(3)
