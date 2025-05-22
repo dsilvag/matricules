@@ -311,38 +311,7 @@ class StreetBarriVell extends Model
     {
         $url = "https://adm.alphadatamanager.com:8080/alpha-data-manager/api/1.0/portal";
         $ch = curl_init($url);
-        $comentaris = $instance->DOMCOD . ' - ' . $instance->domicili->street->CARSIG . ' ' . $instance->domicili->street->CARDESC . ' ' . $instance->domicili->DOMNUM;
-
-        if (!empty($instance->domicili->DOMBIS)) {
-            $comentaris .= ' ' . $instance->domicili->DOMBIS;
-        }
-
-        if (!empty($instance->domicili->DOMNUM2)) {
-            $comentaris .= ' - ' . $instance->domicili->DOMNUM2;
-            if (!empty($instance->domicili->DOMBIS2)) {
-                $comentaris .= ' ' . $instance->domicili->DOMBIS2;
-            }
-        }
-
-        if (!empty($instance->domicili->DOMBLOC)) {
-            $comentaris .= ' Bloc ' . $instance->domicili->DOMBLOC;
-        }
-
-        if (!empty($instance->domicili->DOMPTAL)) {
-            $comentaris .= ' Pt.' . $instance->domicili->DOMPTAL;
-        }
-
-        if (!empty($instance->domicili->DOMESC)) {
-            $comentaris .= ' Esc. ' . $instance->domicili->DOMESC;
-        }
-
-        if (!empty($instance->domicili->DOMPIS)) {
-            $comentaris .= ' Pis ' . $instance->domicili->DOMPIS;
-        }
-
-        if (!empty($instance->domicili->DOMPTA)) {
-            $comentaris .= ' Porta ' . $instance->domicili->DOMPTA;
-        }
+        $comentaris = $instance->NUMEXP;
         $propietari = $instance->person->NIFNUM . $instance->person->NIFDC . ' ' .$instance->person->PERSNOM . ' ' . $instance->person->PERSCOG1 . ' ' . $instance->person->PERSCOG2;
         $data = [
             "plate" => $vehicle->MATRICULA,

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Exceptions\CustomValidationException;
 use Filament\Notifications\Notification;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class Instance extends Model
 {
@@ -177,6 +178,20 @@ class Instance extends Model
                 }
             } catch (Exception $e) {
                 self::sendErrorNotification('Error general',$e->getMessage(),'unknown');
+            }
+        });
+        static::created(function ($record){
+            if(isset($record->domicili_acces)){
+                //Mira si el carrer que te assignat aquest domcod es un carrer del barri vell
+                //si compleix el requisit hauríem d'assignar aquest carrer al camp carrer destí (hi ha una taula entremig)
+                if(\App\Models\StreetBarriVell::where('PAISPROVMUNICARCOD',$record->domiciliAccess->PAISPROVMUNICARCOD)->exists()){
+                    DB::table('instance_street')->insert([
+                        'instance_id' => $record->id,
+                        'PAISPROVMUNICARCOD' => $record->domiciliAccess->PAISPROVMUNICARCOD,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         });
         static::updating(function ($record) {
