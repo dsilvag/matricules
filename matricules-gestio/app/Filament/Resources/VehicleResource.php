@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Select;
 use App\Models\StreetBarriVell;
+use Filament\Tables\Filters\Filter;
 
 
 class VehicleResource extends Resource
@@ -71,7 +72,7 @@ class VehicleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                 Filter::make('DATAEXP')->label('Actius')->query(fn ($query) => $query->whereDate('DATAEXP', '>=', now()->toDateString()))->default(true),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
