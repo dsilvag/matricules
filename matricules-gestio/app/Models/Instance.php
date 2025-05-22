@@ -154,7 +154,9 @@ class Instance extends Model
                 
                     if (\App\Models\Dwelling::where('DOMCOD', $domcod)->exists()) {
                         $record->DOMCOD = $domcod;
-                        $record->domicili_acces = $domcod;
+                        if(\App\Models\StreetBarriVell::where('PAISPROVMUNICARCOD',$record->domicili->PAISPROVMUNICARCOD)->exists()){
+                            $record->domicili_acces = $domcod;
+                        }
                     } else {
                         self::sendErrorNotification(
                             'Domcod no trobat a la base de dades',
