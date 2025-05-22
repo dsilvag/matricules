@@ -111,7 +111,6 @@ class InstanceResource extends Resource
                     Forms\Components\Select::make('DOMCOD')
                         ->visibleOn('edit')
                         ->reactive()
-                        ->required()
                         ->label('CODI DOMICILI INSTÀNCIA')
                         ->relationship('domicili', 'DOMCOD')
                         ->lazy()

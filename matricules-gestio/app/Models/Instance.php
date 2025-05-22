@@ -147,7 +147,7 @@ class Instance extends Model
                     self::sendErrorNotification('Perscod inexistent','El codi persona no existeix al sistema.','PERSCOD');
                 }
                 if (isset($response->return->codiRepresentant)) {
-                    $record->REPRCOD=$response->return->codiPersona;
+                    $record->REPRCOD=$response->return->codiRepresentant;
                 }
                 if (isset($response->return->codiDomiciliPersona)) {
                     $domcod = $response->return->codiDomiciliPersona;
@@ -164,10 +164,8 @@ class Instance extends Model
                             'DOMCOD'
                         );
                     }
-                } else {
-                    self::sendErrorNotification('Domcod inexistent', 'El codi domicili no existeix al sistema.', 'DOMCOD');
-                }                
-                if (isset($response->return->codiDomiciliPersona)) {
+                }               
+                if (isset($response->return->dataPresentacio)) {
                     $record->data_presentacio=$response->return->dataPresentacio;
                 }else{
                     self::sendErrorNotification('Data presentacio inexistent','La data presentacio no existeix al sistema.','data_presentacio');
