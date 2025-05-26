@@ -90,6 +90,24 @@ class StreetBarriVell extends Model
             }
         }
     }
+    public static function penjarVehiclesPadro()
+    {
+        //Tots els carrers del barri vell
+        $streetsBarriVell = self::all();
+    
+        foreach ($streetsBarriVell as $index => $street) {
+            self::obtenirLListaCotxes($street,$notis,true);
+        }
+    }
+    public static function penjarVehiclesInstancies()
+    {
+        //Tots els carrers del barri vell
+        $streetsBarriVell = self::all();
+    
+        foreach ($streetsBarriVell as $index => $street) {
+            self::obtenirLListaCotxes($street,$notis,true);
+        }
+    }
     public static function obtenirLListaCotxes($record, $notis, $isPadro)
     {
         $token = self::createToken($record,$isPadro);

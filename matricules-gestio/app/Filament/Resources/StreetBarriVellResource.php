@@ -193,10 +193,21 @@ class StreetBarriVellResource extends Resource
                 //
             ])
            ->headerActions([
-                Tables\Actions\Action::make('penjar_tots')
+                /*Tables\Actions\Action::make('penjar_tots')
                     ->label('Penjar vehicles')
                     ->color('success')
                     ->action(fn () => StreetBarriVell::penjarVehicles())
+                    ->icon('heroicon-o-bolt'),*/
+                Tables\Actions\Action::make('penjar_instancia')
+                    ->label('Penjar vehicles')
+                    ->color('success')
+                    ->action(fn () => StreetBarriVell::penjarVehiclesInstancies())
+                    ->icon('heroicon-o-bolt'),
+                Tables\Actions\Action::make('penjar_padro')
+                    ->label('Penjar vehicles padro')
+                    ->color('success')
+                    ->hidden(fn () => !auth()->user()->hasRole('Admin'))
+                    ->action(fn () => StreetBarriVell::penjarVehiclesPadro())
                     ->icon('heroicon-o-bolt'),
             ])
             ->actions([
