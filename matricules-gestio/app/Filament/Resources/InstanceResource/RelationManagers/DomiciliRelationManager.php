@@ -110,6 +110,7 @@ class DomiciliRelationManager extends RelationManager
                         ->icon('heroicon-m-pencil')
                         ->action(function (Dwelling $dom) use ($num) {
                             self::assignDwelling($dom, $this->ownerRecord, $num);
+                            self::assignStreet($dom,$this->ownerRecord);
                             $this->dispatch('refresh');
                         });
                 })->toArray(),
@@ -138,6 +139,30 @@ class DomiciliRelationManager extends RelationManager
             $instance->skipValidation();
             $instance->domicili_acces = $dom->DOMCOD;
             $instance->save();
+        }
+    }
+    private function assignStreet($dom, $instance)
+    {
+        //Guardar la instància per si hi ha algun domicili sense guardar
+        $instance->skipValidation();
+        $instance->save();
+
+        //Obtenir el codi del carrer
+        $carrerCode = $dom->PAISPROVMUNICARCOD;
+
+        // Verificar si es del barri vell
+        $carrer = \App\Models\StreetBarriVell::where('PAISPROVMUNICARCOD', $carrerCode)->first();
+
+        if ($carrer) {
+            // Verificar si ja esta assignada a la instancia
+            $alreadyAssigned = $instance->carrersBarriVell()
+                ->where('street_barri_vells.PAISPROVMUNICARCOD', $carrerCode)
+                ->exists();
+
+            if (!$alreadyAssigned) {
+                // Assignar el carrer a la instància
+                $instance->carrersBarriVell()->attach($carrer->PAISPROVMUNICARCOD);
+            }
         }
     }
 }

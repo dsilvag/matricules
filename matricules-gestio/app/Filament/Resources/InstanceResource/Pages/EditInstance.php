@@ -10,7 +10,7 @@ class EditInstance extends EditRecord
 {
     protected static string $resource = InstanceResource::class;
     
-    protected $listeners = ['refresh' => 'refreshForm'];
+    protected $listeners = ['refresh' => 'refreshForm','save' => 'saveForm'];
 
     protected function getHeaderActions(): array
     {
@@ -22,5 +22,17 @@ class EditInstance extends EditRecord
     public function refreshForm()
     {
         $this->fillForm();
+    }
+    
+    public function saveForm()
+    {
+        //Obtenir les dades del formulari
+        $data = $this->form->getState();
+        //Emplenar les dades del formulari
+        $this->record->fill($data);
+        //Saltar validacio
+        $this->record->skipValidation();
+        //Guardar Formulari
+        $this->record->save();
     }
 }

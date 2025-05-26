@@ -58,6 +58,7 @@ class Vehicle extends Model
                     }
                     $record->DATAINICI = $instance->data_inici;
                     $record->DATAEXP = $instance->data_fi;
+                    $record->MATRICULA = strtoupper($record->MATRICULA); 
                 }
             }
         });

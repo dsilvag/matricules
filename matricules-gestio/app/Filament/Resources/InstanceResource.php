@@ -149,13 +149,14 @@ class InstanceResource extends Resource
 
                             return ['*' => 'Tots els carrers'] + $options;
                         })
-                        ->afterStateUpdated(function ($state, $set) {
+                        ->afterStateUpdated(function ($state, $set,$livewire) {
                             // Si el valor seleccionado es '*', seleccionamos todos los registros
                             if (in_array('*', $state)) {
                                 $set('carrersBarriVell', StreetBarriVell::all()->pluck('PAISPROVMUNICARCOD')->toArray());
                             } else {
                                 $set('carrersBarriVell', $state); // Ensure we keep only selected values
                             }
+                            $livewire->dispatch('save');
                         }),
                         Forms\Components\Select::make('domicili_acces2')
                             ->visibleOn('edit')
@@ -183,7 +184,7 @@ class InstanceResource extends Resource
                             ->content(function () {
                             return new HtmlString(
                                 '
-                                <div style="display: flex; align-items: center; font-size: 12px; color: #000000; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; font-size: 12px; margin-bottom: 8px;">
                                     <span style="margin-right: 10px;">
                                         En cas que el domicili vinculat no coincideix amb el de l\'entrada, cercar-lo:
                                     </span>
@@ -501,7 +502,7 @@ class InstanceResource extends Resource
         if($record->VALIDAT!=null && $record->VALIDAT == 'FAVORABLE'){
             $templatePath = storage_path('app/templates/MODEL RESOLUCIO CAMERES.docx');
         }else{
-            $templatePath = storage_path('app/templates/MODEL RESOLUCIÓ DESESTIMACIÓ.docx');
+            $templatePath = storage_path('app/templates/MODEL RESOLUCIO DESESTIMACIO.docx');
         }
 
         // Cargar la plantilla
