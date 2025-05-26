@@ -30,7 +30,7 @@ class EditInstance extends EditRecord
         $data = $this->form->getState();
         //Emplenar les dades del formulari
         $this->record->fill($data);
-        //Saltar validacio
+        //Saltar validació
         $this->record->skipValidation();
         //Guardar Formulari
         $this->record->save();
