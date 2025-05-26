@@ -181,8 +181,7 @@ class StreetResource extends Resource
                     ->label('CARSIG')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CARPAR')
-                    ->label('CARPAR')
-                    ->searchable(),
+                    ->label('CARPAR'),
                 Tables\Columns\TextColumn::make('CARDESC')
                     ->label('CARDESC')
                     ->searchable(),
@@ -196,56 +195,39 @@ class StreetResource extends Resource
                     ->label('STDUMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDGR')
-                    ->label('STDDGR')
-                    ->searchable(),
+                    ->label('STDDGR'),
                 Tables\Columns\TextColumn::make('STDDMOD')
-                    ->label('STDDMOD')
-                    ->searchable(),
+                    ->label('STDDMOD'),
                 Tables\Columns\TextColumn::make('STDHGR')
-                    ->label('STDHGR')
-                    ->searchable(),
+                    ->label('STDHGR'),
                 Tables\Columns\TextColumn::make('STDHMOD')
-                    ->label('STDHMOD')
-                    ->searchable(),
+                    ->label('STDHMOD'),
                 Tables\Columns\TextColumn::make('VALDATA')
-                    ->label('VALDATA')
-                    ->searchable(),
+                    ->label('VALDATA'),
                 Tables\Columns\TextColumn::make('BAIXASW')
-                    ->label('BAIXASW')
-                    ->searchable(),
+                    ->label('BAIXASW'),
                 Tables\Columns\TextColumn::make('INICIFI')
-                    ->label('INICIFI')
-                    ->searchable(),
+                    ->label('INICIFI'),
                 Tables\Columns\TextColumn::make('OBSERVACIONS')
-                    ->label('OBSERVACIONS')
-                    ->searchable(),
+                    ->label('OBSERVACIONS'),
                 Tables\Columns\TextColumn::make('ORGCOD')
-                    ->label('ORGCOD')
-                    ->searchable(),
+                    ->label('ORGCOD'),
                 Tables\Columns\TextColumn::make('ORGDATA')
-                    ->label('ORGDATA')
-                    ->searchable(),
+                    ->label('ORGDATA'),
                 Tables\Columns\TextColumn::make('ORGOBS')
-                    ->label('ORGOBS')
-                    ->searchable(),
+                    ->label('ORGOBS'),
                 Tables\Columns\TextColumn::make('PLACA')
-                    ->label('PLACA')
-                    ->searchable(),
+                    ->label('PLACA'),
                 Tables\Columns\TextColumn::make('GENERIC')
-                    ->label('GENERIC')
-                    ->searchable(),
+                    ->label('GENERIC'),
                 Tables\Columns\TextColumn::make('ESPECIFIC')
-                    ->label('ESPECIFIC')
-                    ->searchable(),
+                    ->label('ESPECIFIC'),
                 Tables\Columns\TextColumn::make('TEMATICA')
-                    ->label('TEMATICA')
-                    ->searchable(),
+                    ->label('TEMATICA'),
                 Tables\Columns\TextColumn::make('SEXE')
-                    ->label('SEXE')
-                    ->searchable(),
+                    ->label('SEXE'),
                 Tables\Columns\TextColumn::make('LOCAL')
-                    ->label('LOCAL')
-                    ->searchable(),
+                    ->label('LOCAL'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

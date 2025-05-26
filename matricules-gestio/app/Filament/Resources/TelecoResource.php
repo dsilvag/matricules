@@ -125,8 +125,7 @@ class TelecoResource extends Resource
                     ->label('CONTACTE')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('OBSERVACIONS')
-                    ->label('OBSERVACIONS')
-                    ->searchable(),
+                    ->label('OBSERVACIONS'),
                 Tables\Columns\TextColumn::make('STDUGR')
                     ->label('STDUGR')
                     ->searchable(),
@@ -134,23 +133,17 @@ class TelecoResource extends Resource
                     ->label('STDUMOD')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('STDDGR')
-                    ->label('STDDGR')
-                    ->searchable(),
+                    ->label('STDDGR'),
                 Tables\Columns\TextColumn::make('STDDMOD')
-                    ->label('STDDMOD')
-                    ->searchable(),
+                    ->label('STDDMOD'),
                 Tables\Columns\TextColumn::make('STDHGR')
-                    ->label('STDHGR')
-                    ->searchable(),
+                    ->label('STDHGR'),
                 Tables\Columns\TextColumn::make('STDHMOD')
-                    ->label('STDHMOD')
-                    ->searchable(),
+                    ->label('STDHMOD'),
                 Tables\Columns\TextColumn::make('VALDATA')
-                    ->label('VALDATA')
-                    ->searchable(),
+                    ->label('VALDATA'),
                 Tables\Columns\TextColumn::make('BAIXASW')
-                    ->label('BAIXASW')
-                    ->searchable(),
+                    ->label('BAIXASW'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

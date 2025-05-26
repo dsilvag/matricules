@@ -87,6 +87,12 @@ try {
 
                 $values[] = $escapedVal;
             }
+            
+            $now = date('Y-m-d H:i:s');
+			$fields[] = "`created_at`";
+			$fields[] = "`updated_at`";
+			$values[] = "'" . $connMySQL->real_escape_string($now) . "'";
+			$values[] = "'" . $connMySQL->real_escape_string($now) . "'";
 
             // Inserción sin incluir el campo `id`, que es autonumérico
             $sqlInsert = "INSERT INTO telecos (" . implode(',', $fields) . ") 

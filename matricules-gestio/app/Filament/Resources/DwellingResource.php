@@ -135,135 +135,112 @@ class DwellingResource extends Resource
                 Tables\Columns\TextColumn::make('PAISCOD')
                     ->label('PAISCOD')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PROVCOD')
                     ->label('PROVCOD')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('MUNICOD')
                     ->label('MUNICOD')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('CARCOD')
                     ->label('CARCOD')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('street.CARSIG')
+                    ->searchable()
+                    ->label('SIGLES'),
+                Tables\Columns\TextColumn::make('street.CARDESC')
+                    ->searchable()
+                    ->label('NOM CARRER'),
                 Tables\Columns\TextColumn::make('PSEUDOCOD')
                     ->label('PSEUDOCOD')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('GISCOD')
-                    ->label('GISCOD')
-                    ->searchable(),
+                    ->label('GISCOD'),
                 Tables\Columns\TextColumn::make('DOMNUM')
                     ->label('DOMNUM')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMBIS')
-                    ->label('DOMBIS')
-                    ->searchable(),
+                    ->label('DOMBIS'),
                 Tables\Columns\TextColumn::make('DOMNUM2')
                     ->label('DOMNUM2')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('DOMBIS2')
-                    ->label('DOMBIS2')
-                    ->searchable(),
+                    ->label('DOMBIS2'),
                 Tables\Columns\TextColumn::make('DOMESC')
-                    ->label('DOMESC')
-                    ->searchable(),
+                    ->label('DOMESC'),
                 Tables\Columns\TextColumn::make('DOMPIS')
-                    ->label('DOMPIS')
-                    ->searchable(),
+                    ->label('DOMPIS'),
                 Tables\Columns\TextColumn::make('DOMPTA')
-                    ->label('DOMPTA')
-                    ->searchable(),
+                    ->label('DOMPTA'),
                 Tables\Columns\TextColumn::make('DOMBLOC')
-                    ->label('DOMBLOC')
-                    ->searchable(),
+                    ->label('DOMBLOC'),
                 Tables\Columns\TextColumn::make('DOMPTAL')
-                    ->label('DOMPTAL')
-                    ->searchable(),
+                    ->label('DOMPTAL'),
                 Tables\Columns\TextColumn::make('DOMKM')
                     ->label('DOMKM')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('DOMHM')
                     ->label('DOMHM')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('DOMTLOC')
-                    ->label('DOMTLOC')
-                    ->searchable(),
+                    ->label('DOMTLOC'),
                 Tables\Columns\TextColumn::make('APCORREUS')
                     ->label('APCORREUS')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('DOMTIP')
-                    ->label('DOMTIP')
-                    ->searchable(),
+                    ->label('DOMTIP'),
                 Tables\Columns\TextColumn::make('DOMOBS')
-                    ->label('DOMOBS')
-                    ->searchable(),
+                    ->label('DOMOBS'),
                 Tables\Columns\TextColumn::make('VALDATA')
-                    ->label('VALDATA')
-                    ->searchable(),
+                    ->label('VALDATA'),
                 Tables\Columns\TextColumn::make('BAIXASW')
-                    ->label('BAIXASW')
-                    ->searchable(),
+                    ->label('BAIXASW'),
                 Tables\Columns\TextColumn::make('STDAPLADD')
-                    ->label('STDAPLADD')
-                    ->searchable(),
+                    ->label('STDAPLADD'),
                 Tables\Columns\TextColumn::make('STDAPLMOD')
-                    ->label('STDAPLMOD')
-                    ->searchable(),
+                    ->label('STDAPLMOD'),
                 Tables\Columns\TextColumn::make('STDUGR')
-                    ->label('STDUGR')
-                    ->searchable(),
+                    ->label('STDUGR'),
                 Tables\Columns\TextColumn::make('STDUMOD')
-                    ->label('STDUMOD')
-                    ->searchable(),
+                    ->label('STDUMOD'),
                 Tables\Columns\TextColumn::make('STDDGR')
-                    ->label('STDDGR')
-                    ->searchable(),
+                    ->label('STDDGR'),
                 Tables\Columns\TextColumn::make('STDDMOD')
-                    ->label('STDDMOD')
-                    ->searchable(),
+                    ->label('STDDMOD'),
                 Tables\Columns\TextColumn::make('STDHGR')
-                    ->label('STDHGR')
-                    ->searchable(),
+                    ->label('STDHGR'),
                 Tables\Columns\TextColumn::make('STDHMOD')
-                    ->label('STDHMOD')
-                    ->searchable(),
+                    ->label('STDHMOD'),
                 Tables\Columns\TextColumn::make('DOMCP')
-                    ->label('DOMCP')
-                    ->searchable(),
+                    ->label('DOMCP'),
                 Tables\Columns\TextColumn::make('X')
                     ->label('X')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('Y')
                     ->label('Y')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('POBLDESC')
-                    ->label('POBLDESC')
-                    ->searchable(),
+                    ->label('POBLDESC'),
                 Tables\Columns\TextColumn::make('GUID')
-                    ->label('GUID')
-                    ->searchable(),
+                    ->label('GUID'),
                 Tables\Columns\TextColumn::make('SWREVISAT')
                     ->label('SWREVISAT')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('REFCADASTRAL')
-                    ->label('REFCADASTRAL')
-                    ->searchable(),
+                    ->label('REFCADASTRAL'),
                 Tables\Columns\TextColumn::make('SWPARE')
                     ->label('SWPARE')
-                    ->numeric()
-                    ->sortable(),
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('CIV')
-                    ->label('CIV')
-                    ->searchable(),
+                    ->label('CIV'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

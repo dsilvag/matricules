@@ -69,7 +69,12 @@ try {
                 $updates[] = "`$colLower` = VALUES(`$colLower`)";
             }
         }
- 
+        $now = date('Y-m-d H:i:s');
+		$fields[] = "`created_at`";
+		$fields[] = "`updated_at`";
+		$values[] = "'" . $connMySQL->real_escape_string($now) . "'";
+		$values[] = "'" . $connMySQL->real_escape_string($now) . "'";
+        
         $sqlInsert = "INSERT INTO dwellings (" . implode(',', $fields) . ") VALUES (" . implode(',', $values) . ")
                       ON DUPLICATE KEY UPDATE " . implode(',', $updates);
  

@@ -62,7 +62,15 @@ SQL;
                 $updates[] = "`$colLower` = VALUES(`$colLower`)";
             }
         }
- 
+        
+        $now = date('Y-m-d H:i:s');
+        $cols[] = "`created_at`";
+        $vals[] = "'" . $connMySQL->real_escape_string($now) . "'";
+        $cols[] = "`updated_at`";
+        $vals[] = "'" . $connMySQL->real_escape_string($now) . "'";
+        $updates[] = "`updated_at` = VALUES(`updated_at`)";
+
+
         $columnsStr = implode(', ', $cols);
         $valuesStr = implode(', ', $vals);
         $updatesStr = implode(', ', $updates);
