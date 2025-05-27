@@ -76,6 +76,29 @@ class Dwelling extends Model
 
     public function getNomHabitatgeAttribute()
     {
+        $parts = [
+            //Mira si es null es l'ho mateix que fer $this->street ? $this->street->nom_carrer : null
+            optional($this->street)->nom_carrer,
+            $this->DOMNUM,
+            $this->DOMBIS,
+            $this->DOMNUM2,
+            $this->DOMBIS2,
+            $this->DOMESC,
+            $this->DOMPIS,
+            $this->DOMPTA,
+            $this->DOMBLOC,
+            $this->DOMPTAL,
+            $this->DOMKM,
+            $this->DOMHM,
+        ];
+
+        // Elimina els valors nulls o buits i ajunta amb espais
+        return collect($parts)
+            ->filter(fn($part) => filled($part))
+            ->implode(' ');
+    }/*
+    public function getNomHabitatgeAttribute()
+    {
         return $this->street->nom_carrer . " {$this->DOMNUM} {$this->DOMBIS} {$this->DOMNUM2} {$this->DOMBIS2} {$this->DOMESC} {$this->DOMPIS} {$this->DOMPTA} {$this->DOMBLOC} {$this->DOMPTAL} {$this->DOMKM} {$this->DOMHM}";
-    }
+    }*/
 }
