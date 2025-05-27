@@ -133,7 +133,19 @@ class InstanceResource extends Resource
                         ->lazy()
                         ->searchable()
                         ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
-                            "{$record->DOMCOD}, {$record->nom_habitatge}"),
+                            "{$record->DOMCOD}, {$record->nom_habitatge}")
+                        ->afterStateUpdated(function ($state, $set, $livewire) {
+                            $instance = $livewire->record;
+                            // Buscar el domicilio seleccionado por el usuario
+                            $dom = \App\Models\Dwelling::where('DOMCOD', $state)->first();
+                            if ($instance && $dom) {
+                                $instance->assignDomicili($dom,1);
+                                $livewire->dispatch('refresh');
+                            }else {
+                                //si treu el codi dom vinculat s'ha de guardar
+                                $livewire->dispatch('save');
+                            }
+                        }),
                             
                     Forms\Components\Select::make('carrersBarriVell')
                         ->visibleOn('edit')
@@ -166,7 +178,19 @@ class InstanceResource extends Resource
                             ->lazy()
                             ->searchable()
                             ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
-                                "{$record->DOMCOD}, {$record->nom_habitatge}"),
+                                "{$record->DOMCOD}, {$record->nom_habitatge}")
+                            ->afterStateUpdated(function ($state, $set, $livewire) {
+                                $instance = $livewire->record;
+                                // Buscar el domicilio seleccionado por el usuario
+                                $dom = \App\Models\Dwelling::where('DOMCOD', $state)->first();
+                                if ($instance && $dom) {
+                                    $instance->assignDomicili($dom,2);
+                                    $livewire->dispatch('refresh');
+                                }else {
+                                    //si treu el codi dom vinculat s'ha de guardar
+                                    $livewire->dispatch('save');
+                                }
+                            }),
                         Forms\Components\Placeholder::make('spacer')->label(''),//Afegim un espai en blanc perquè tots els domicilis ocupin el mateix espai i quedin alineats en la mateixa columna 
                         Forms\Components\Select::make('domicili_acces3')
                             ->visibleOn('edit')
@@ -176,7 +200,19 @@ class InstanceResource extends Resource
                             ->lazy()
                             ->searchable()
                             ->getOptionLabelFromRecordUsing(fn(Dwelling $record): string => 
-                                "{$record->DOMCOD}, {$record->nom_habitatge}"),
+                                "{$record->DOMCOD}, {$record->nom_habitatge}")
+                            ->afterStateUpdated(function ($state, $set, $livewire) {
+                                $instance = $livewire->record;
+                                // Buscar el domicilio seleccionado por el usuario
+                                $dom = \App\Models\Dwelling::where('DOMCOD', $state)->first();
+                                if ($instance && $dom) {
+                                    $instance->assignDomicili($dom,3);
+                                    $livewire->dispatch('refresh');
+                                }else {
+                                    //si treu el codi dom vinculat s'ha de guardar
+                                    $livewire->dispatch('save');
+                                }
+                            }),
                         Forms\Components\Placeholder::make('spacer')->label(''), 
                         Forms\Components\Placeholder::make('scroll_button')
                             ->label('')

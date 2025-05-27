@@ -233,6 +233,43 @@ class Instance extends Model
         });
 
     }
+    public function assignDomicili(Dwelling $dom, $num)
+    {
+        //Assignem el domicili i guardem
+        $this->skipValidation();
+        if($num==3){
+            $this->domicili_acces3 = $dom->DOMCOD;
+        }
+        else if($num==2){
+            $this->domicili_acces2 = $dom->DOMCOD;
+        }
+        else{
+            $this->domicili_acces = $dom->DOMCOD;
+        }
+        $this->save();
+
+        $this->checkAndAssignBarriVell($dom);
+    }
+    protected function checkAndAssignBarriVell(Dwelling $dom): void
+    {
+        //mirem si es un carrer del barri vell
+        $carrerCode = $dom->PAISPROVMUNICARCOD;
+
+        $carrer = \App\Models\StreetBarriVell::where('PAISPROVMUNICARCOD', $carrerCode)->first();
+
+        if ($carrer) {
+            $alreadyAssigned = $this->carrersBarriVell()
+                ->where('street_barri_vells.PAISPROVMUNICARCOD', $carrerCode)
+                ->exists();
+
+            if (!$alreadyAssigned) {
+                $this->carrersBarriVell()->attach($carrer->PAISPROVMUNICARCOD);
+            }
+        }
+
+        $this->skipValidation();
+        $this->save();
+    }
     private static function isToggleActive($record)
     {
         $comptador = 0;
