@@ -493,6 +493,11 @@ class InstanceResource extends Resource
     private static function changeFormatData($dateString)
     {
         $date = DateTime::createFromFormat('Y-m-d', $dateString);
+        
+        if ($date && $date->format('Y') == '9999') {
+            return 'indefinit';
+        }
+
         return $date ? $date->format('d-m-Y') : null;
     }
 
@@ -522,6 +527,9 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('DATAINICI', self::changeFormatData($record->data_inici));
         $templateProcessor->setValue('AVUI', date('d/m/Y'));
         $templateProcessor->setValue('CAMERES',self::getCameres($record->carrersBarriVell));
+        $templateProcessor->setValue('DOMICILI_VINCULAT1',trim($record->domiciliAccess->nom_habitatge));
+        $templateProcessor->setValue('DOMICILI_VINCULAT2',', ' . trim($record->domiciliAccess2->nom_habitatge));
+        $templateProcessor->setValue('DOMICILI_VINCULAT3',', ' . trim($record->domiciliAccess3->nom_habitatge));
 
         $totalVehicles = $record->vehicles->count();
         if ($totalVehicles == 0) {

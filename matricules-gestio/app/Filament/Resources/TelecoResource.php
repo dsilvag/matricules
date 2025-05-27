@@ -162,7 +162,7 @@ class TelecoResource extends Resource
             ])
             ->headerActions([
                 Tables\Actions\Action::make('syncOracleToMysql')
-                    ->label('Sincronizar Oracle a MySQL')
+                    ->label('Sincronitzar dades BPM')
                     ->color('success') // Color del botón
                     ->action(function () {
                         self::syncOracleToMysql();

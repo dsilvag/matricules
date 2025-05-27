@@ -39,6 +39,11 @@ class VehicleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(function ($record) {
+                    return $record->instance
+                        ? InstanceResource::getUrl('edit', ['record' => $record->instance->getKey()])
+                        : null;
+                })
             ->columns([
                 Tables\Columns\TextColumn::make('MATRICULA')
                     ->label('MATRICULA')
@@ -47,7 +52,8 @@ class VehicleResource extends Resource
                     ->label('RESNUME')
                     ->searchable(),    
                 Tables\Columns\TextColumn::make('instance.NUMEXP')
-                    ->label('NUMEXP'),
+                    ->label('NUMEXP')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('instance.domiciliAccess.nom_habitatge')
                     ->label('Domicili 1'),
                 Tables\Columns\TextColumn::make('instance.domiciliAccess2.nom_habitatge')

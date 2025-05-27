@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\InstanceResource\RelationManagers;
 
+use App\Filament\Resources\InstanceResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -50,6 +51,11 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('MATRICULA')
+            ->recordUrl(function ($record) {
+                return $record->instance
+                    ? InstanceResource::getUrl('edit', ['record' => $record->instance->getKey()])
+                    : null;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('MATRICULA')
                     ->label('MATRICULA'),
