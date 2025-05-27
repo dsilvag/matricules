@@ -527,9 +527,21 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('DATAINICI', self::changeFormatData($record->data_inici));
         $templateProcessor->setValue('AVUI', date('d/m/Y'));
         $templateProcessor->setValue('CAMERES',self::getCameres($record->carrersBarriVell));
-        $templateProcessor->setValue('DOMICILI_VINCULAT1',trim($record->domiciliAccess->nom_habitatge));
-        $templateProcessor->setValue('DOMICILI_VINCULAT2',', ' . trim($record->domiciliAccess2->nom_habitatge));
-        $templateProcessor->setValue('DOMICILI_VINCULAT3',', ' . trim($record->domiciliAccess3->nom_habitatge));
+        $templateProcessor->setValue('DOMICILI_VINCULAT1', 
+            trim($record->domiciliAccess->nom_habitatge ?? '')
+        );
+
+        $templateProcessor->setValue('DOMICILI_VINCULAT2', 
+            isset($record->domiciliAccess2->nom_habitatge) && trim($record->domiciliAccess2->nom_habitatge) !== '' 
+                ? ', ' . trim($record->domiciliAccess2->nom_habitatge) 
+                : ''
+        );
+
+        $templateProcessor->setValue('DOMICILI_VINCULAT3', 
+            isset($record->domiciliAccess3->nom_habitatge) && trim($record->domiciliAccess3->nom_habitatge) !== '' 
+                ? ', ' . trim($record->domiciliAccess3->nom_habitatge) 
+                : ''
+        );
 
         $totalVehicles = $record->vehicles->count();
         if ($totalVehicles == 0) {
