@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Filament\Notifications\Notification;
 use App\Models\Camera;
 use Illuminate\Database\Eloquent\Collection;
+use  App\Jobs\PenjarVehiclesJob;
 
 class StreetBarriVell extends Model
 {
@@ -81,10 +82,15 @@ class StreetBarriVell extends Model
         foreach ($streetsBarriVell as $index => $street) {
             // Nomes el primer carrer tindrà les notificacions activades
             $notis = $index === 0;
+            //Segons el chat es mes optim
+            foreach ([false, true] as $padro) {
+                self::obtenirLListaCotxes($street, $notis, $padro);
+            }
+            /*
             // obtenir llista de cotxes i penjar vehicles
             self::obtenirLListaCotxes($street, $notis,false);
             //Penjar llista padro
-            self::obtenirLListaCotxes($street,$notis,true);
+            self::obtenirLListaCotxes($street,$notis,true);*/
         }
     }
     public static function penjarVehiclesPadro()
@@ -94,7 +100,8 @@ class StreetBarriVell extends Model
     
         foreach ($streetsBarriVell as $index => $street) {
             $notis = $index === 0;
-            self::obtenirLListaCotxes($street,$notis,true);
+            //self::obtenirLListaCotxes($street,$notis,true);
+            PenjarVehiclesJob::dispatch($street, true);
         }
         Notification::make()
             ->title('Vehicles Padro penjats')
@@ -108,7 +115,8 @@ class StreetBarriVell extends Model
     
         foreach ($streetsBarriVell as $index => $street) {
             $notis = $index === 0;
-            self::obtenirLListaCotxes($street,$notis,true);
+            //self::obtenirLListaCotxes($street,$notis,false);
+            PenjarVehiclesJob::dispatch($street, false);
         }
         Notification::make()
             ->title('Vehicles instàncies penjats')
@@ -119,45 +127,33 @@ class StreetBarriVell extends Model
     {
         $token = self::createToken($record,$isPadro);
         // Si quan creem el token dona error
-        if (str_starts_with($token, "Error")) {
-            if ($notis) {
-                \App\Models\Instance::sendErrorNotification('Token error', $token, 'unknown');
-            }
+        if (self::isError($token)) {
+            self::sendError('Token error', $token, $notis);
             return;
         }
         //obtenim llista vehicles de la llista alphanet
         $vehiclesId = self::getVehiclesId($token);
-        //dd($vehiclesId);
-        //si hi ha un error
         if (!is_array($vehiclesId)) {
-            if ($notis) {
-                \App\Models\Instance::sendErrorNotification('Vehicles error', $vehiclesId, 'unknown');
-            }
+            self::sendError('Vehicles error', $vehiclesId, $notis);
             return;
         }
         //Si la llista esta buida
-        if (count($vehiclesId) < 1 && $notis) {
-            Notification::make()
-                ->title('Llista buida')
-                ->body('La llista de vehicles està buida.')
-                ->info()
-                ->send();
+        if (empty($vehiclesId) && $notis) {
+            self::sendNotification('Llista buida', 'La llista de vehicles està buida.', 'info');
         }
     
         // Netejar vehicles anteriors
         foreach ($vehiclesId as $vehicle) {
-            $deleteVehicle = self::deleteVehicles($token, $vehicle);
-            if (str_starts_with($deleteVehicle, "Error")) {
-                \App\Models\Instance::sendErrorNotification('Vehicles delete', $deleteVehicle, 'unknown');
+            $result = self::deleteVehicles($token, $vehicle);
+            if (self::isError($result)) {
+                self::sendError('Vehicles delete', $result, true); // Siempre se notifica
             }
         }
         $numErrors = 0;
         $nVehiclesInsert = 0;
         if(!$isPadro){
-            //Obtenir instancies relacionades amb el carrer $record
-            $instances = $record->instances;
             //Per cada instancia
-            foreach ($instances as $instance) {
+            foreach ($record->instances as $instance) {
                 //Mirem si la instancia es favorable, esta validada i notificada
                 if ($instance->is_notificat && $instance->VALIDAT === 'FAVORABLE') {
                     //Per cada instancia mirem els vehicles que hi han associats
@@ -165,11 +161,11 @@ class StreetBarriVell extends Model
                         //Mirem que no hagi expirat la caducitat del vehicle
                         if (now()->format('Y-m-d') <= $vehicle->DATAEXP) {
                             //inserim el vehicle
-                            $v = self::insertVehicle($token, $vehicle,$instance);
+                            $response = self::insertVehicle($token, $vehicle, $instance);
                             //si ens ha donat algun error 
-                            if (str_starts_with($v, "Error")) {
-                                if ($notis && $numErrors == 0) {
-                                    \App\Models\Instance::sendErrorNotification('Vehicles insert', $v, 'unknown');
+                            if (self::isError($response)) {
+                                if ($notis && $numErrors === 0) {
+                                    self::sendError('Vehicles insert', $response, true);
                                 }
                                 $numErrors++;
                             } else {
@@ -181,36 +177,46 @@ class StreetBarriVell extends Model
             }
         }else{
             $vehicles = self::obtenirVehiclesPadro($record->street->CARCOD);
-            foreach($vehicles as $v){
-                $r = self::insertVehiclePadro($token,$v);
-                if (str_starts_with($r, "Error")) {
-                     if ($notis && $numErrors==0) {
-                        \App\Models\Instance::sendErrorNotification('Vehicles insert', $r, 'unknown');
-                        $numErrors++;
+            foreach ($vehicles as $v) {
+                $response = self::insertVehiclePadro($token, $v);
+                if (self::isError($response)) {
+                    if ($notis && $numErrors === 0) {
+                        self::sendError('Vehicles insert', $response, true);
                     }
-                }else{
+                    $numErrors++;
+                } else {
                     $nVehiclesInsert++;
                 }
             }
         }
         // Missatges finals
         if ($notis) {
-        //Si no hi han hagut errors i s'ha inserit un vehicle vol dir que tot ha anat bé
             if ($numErrors === 0 && $nVehiclesInsert > 0) {
-                Notification::make()
-                ->title('Vehicles inserits')
-                ->body('S\'han afegit els vehicles correctament.')
-                ->success()
-                ->send();
-                // si no s'ha inserit cap vehicle        
+                self::sendNotification('Vehicles inserits', 'S\'han afegit els vehicles correctament.', 'success');
             } elseif ($nVehiclesInsert < 1) {
-                Notification::make()
-                ->title('Llista buida')
-                ->body('No hi ha cap vehicle assignat a aquest(s) carrer(s).')
-                ->warning()
-                ->send();
+                self::sendNotification('Llista buida', 'No hi ha cap vehicle assignat a aquest(s) carrer(s).', 'warning');
             }
         }
+    }
+    private static function isError($response)
+    {
+        return str_starts_with($response, "Error");
+    }
+
+    private static function sendError($title, $message, $notify)
+    {
+        if ($notify) {
+            \App\Models\Instance::sendErrorNotification($title, $message, 'unknown');
+        }
+    }
+
+    private static function sendNotification($title, $message, $type)
+    {
+        Notification::make()
+            ->title($title)
+            ->body($message)
+            ->$type()
+            ->send();
     }
     
     private static function createToken($record, $isPadro): string

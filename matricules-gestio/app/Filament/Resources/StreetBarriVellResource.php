@@ -216,11 +216,12 @@ class StreetBarriVellResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('obtenirLListaCotxes') 
-                    ->label('Validar llista de cotxes')
+                    ->label('Validar cotxes')
                     ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record, true,false))
                     ->icon('heroicon-o-arrow-up-circle'),
                 Tables\Actions\Action::make('obtenirLListaCotxes2') 
-                    ->label('Validar llista de cotxes padro')
+                    ->label('Validar cotxes padro')
+                    ->hidden(fn () => !auth()->user()->hasRole('Admin'))
                     ->action(fn ($record) => StreetBarriVell::obtenirLListaCotxes($record, true,true))
                     ->icon('heroicon-o-arrow-up-circle'),
             ])
