@@ -84,10 +84,7 @@ class StreetBarriVell extends Model
             // obtenir llista de cotxes i penjar vehicles
             self::obtenirLListaCotxes($street, $notis,false);
             //Penjar llista padro
-            //si es l'entorn de proves...
-            if(env('APP_ENV')!='local'){
-                self::obtenirLListaCotxes($street,$notis,true);
-            }
+            self::obtenirLListaCotxes($street,$notis,true);
         }
     }
     public static function penjarVehiclesPadro()
