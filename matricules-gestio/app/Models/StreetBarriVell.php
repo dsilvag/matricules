@@ -463,6 +463,7 @@ class StreetBarriVell extends Model
             JOIN GTR_TIT_OBJ T ON V.OBJCOD = T.OBJCOD
             JOIN HAB_MOVHABS H ON T.PERSCOD = H.PERSCOD
             WHERE H.DATAFINAL = ' '
+              AND V.MATRICULA IS NOT NULL
               AND H.MOVTIP <> 'B'
               AND V.MOVTIP <> 'B'
               AND H.CARCOD = $carcod
