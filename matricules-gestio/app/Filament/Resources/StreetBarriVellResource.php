@@ -96,6 +96,9 @@ class StreetBarriVellResource extends Resource
                 ->copyMessageDuration(1500),*/
             Tables\Columns\TextColumn::make('coveringCameras')
                 ->label('CÀMERES VALIDADES')
+                ->extraAttributes([
+                        'style' => 'word-wrap: break-word; word-break: normal; white-space: normal; width: 131px;',
+                    ])
                 ->getStateUsing(function (StreetBarriVell $record) {
                     $coveredStreetNames = $record->coveringCameras->map(function ($camera) {
                         return $camera->ownerStreet->nom_carrer ?? 'Sin nombre';
