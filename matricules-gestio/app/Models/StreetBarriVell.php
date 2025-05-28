@@ -96,6 +96,10 @@ class StreetBarriVell extends Model
             $notis = $index === 0;
             self::obtenirLListaCotxes($street,$notis,true);
         }
+        Notification::make()
+            ->title('Vehicles Padro penjats')
+            ->info()
+            ->send();
     }
     public static function penjarVehiclesInstancies()
     {
@@ -106,6 +110,10 @@ class StreetBarriVell extends Model
             $notis = $index === 0;
             self::obtenirLListaCotxes($street,$notis,true);
         }
+        Notification::make()
+            ->title('Vehicles instàncies penjats')
+            ->info()
+            ->send();
     }
     public static function obtenirLListaCotxes($record, $notis, $isPadro)
     {
