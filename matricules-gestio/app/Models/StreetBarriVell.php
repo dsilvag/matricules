@@ -96,6 +96,7 @@ class StreetBarriVell extends Model
         $streetsBarriVell = self::all();
     
         foreach ($streetsBarriVell as $index => $street) {
+            $notis = $index === 0;
             self::obtenirLListaCotxes($street,$notis,true);
         }
     }
