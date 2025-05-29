@@ -79,12 +79,10 @@ class StreetBarriVell extends Model
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
     
-        foreach ($streetsBarriVell as $index => $street) {
-            // Nomes el primer carrer tindrà les notificacions activades
-            $notis = $index === 0;
+        foreach ($streetsBarriVell as $street) {
             //Segons el chat es mes optim
             foreach ([false, true] as $padro) {
-                self::obtenirLListaCotxes($street, $notis, $padro);
+                PenjarVehiclesJob::dispatch($street, $padro);
             }
             /*
             // obtenir llista de cotxes i penjar vehicles
@@ -98,8 +96,7 @@ class StreetBarriVell extends Model
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
     
-        foreach ($streetsBarriVell as $index => $street) {
-            $notis = $index === 0;
+        foreach ($streetsBarriVell as $street) {
             //self::obtenirLListaCotxes($street,$notis,true);
             PenjarVehiclesJob::dispatch($street, true);
         }
@@ -113,8 +110,7 @@ class StreetBarriVell extends Model
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
     
-        foreach ($streetsBarriVell as $index => $street) {
-            $notis = $index === 0;
+        foreach ($streetsBarriVell as $street) {
             //self::obtenirLListaCotxes($street,$notis,false);
             PenjarVehiclesJob::dispatch($street, false);
         }
@@ -126,16 +122,28 @@ class StreetBarriVell extends Model
     public static function obtenirLListaCotxes($record, $notis, $isPadro)
     {
         $token = self::createToken($record,$isPadro);
+        $resultats = [
+            'carrer' => $record->nom_carrer,
+            'eliminats' => 0,
+            'insertats' => 0,
+            'errors' => 0,
+            'isPadro' => $isPadro,
+            'detall_errors' => []
+        ];
         // Si quan creem el token dona error
         if (self::isError($token)) {
             self::sendError('Token error', $token, $notis);
-            return;
+            $resultats['errors']++;
+            $resultats['detall_errors'][] = ['context' => 'Token', 'error' => $token];
+            return $resultats;
         }
         //obtenim llista vehicles de la llista alphanet
         $vehiclesId = self::getVehiclesId($token);
         if (!is_array($vehiclesId)) {
             self::sendError('Vehicles error', $vehiclesId, $notis);
-            return;
+            $resultats['errors']++;
+            $resultats['detall_errors'][] = ['context' => 'GetVehiclesId', 'error' => $vehiclesId];
+            return $resultats;
         }
         //Si la llista esta buida
         if (empty($vehiclesId) && $notis) {
@@ -149,8 +157,17 @@ class StreetBarriVell extends Model
                 self::sendError('Vehicles delete', $result, true); // Siempre se notifica
             }
         }
-        $numErrors = 0;
-        $nVehiclesInsert = 0;
+
+        foreach ($vehiclesId as $vehicle) {
+            $res = self::deleteVehicles($token, $vehicle);
+            if (self::isError($res)) {
+                self::sendError('Vehicles delete', $res, true);
+                $resultats['errors']++;
+                $resultats['detall_errors'][] = ['context' => 'DeleteVehicle', 'error' => $res];
+            } else {
+                $resultats['eliminats']++;
+            }
+        }
         if(!$isPadro){
             //Per cada instancia
             foreach ($record->instances as $instance) {
@@ -164,12 +181,13 @@ class StreetBarriVell extends Model
                             $response = self::insertVehicle($token, $vehicle, $instance);
                             //si ens ha donat algun error 
                             if (self::isError($response)) {
-                                if ($notis && $numErrors === 0) {
+                                if ($notis && $resultats['errors'] === 0) {
                                     self::sendError('Vehicles insert', $response, true);
                                 }
-                                $numErrors++;
+                                $resultats['errors']++;
+                                $resultats['detall_errors'][] = ['context' => 'InsertVehicle', 'error' => $response];
                             } else {
-                                $nVehiclesInsert++;
+                                $resultats['insertats']++;
                             }
                         }
                     }
@@ -180,23 +198,25 @@ class StreetBarriVell extends Model
             foreach ($vehicles as $v) {
                 $response = self::insertVehiclePadro($token, $v);
                 if (self::isError($response)) {
-                    if ($notis && $numErrors === 0) {
+                    if ($notis && $resultats['errors'] === 0) {
                         self::sendError('Vehicles insert', $response, true);
                     }
-                    $numErrors++;
+                    $resultats['errors']++;
+                    $resultats['detall_errors'][] = ['context' => 'InsertVehiclePadro', 'error' => $response];
                 } else {
-                    $nVehiclesInsert++;
+                    $resultats['insertats']++;
                 }
             }
         }
         // Missatges finals
         if ($notis) {
-            if ($numErrors === 0 && $nVehiclesInsert > 0) {
+            if ($resultats['errors'] === 0 && $resultats['insertats'] > 0) {
                 self::sendNotification('Vehicles inserits', 'S\'han afegit els vehicles correctament.', 'success');
-            } elseif ($nVehiclesInsert < 1) {
+            } elseif ($resultats['insertats'] < 1) {
                 self::sendNotification('Llista buida', 'No hi ha cap vehicle assignat a aquest(s) carrer(s).', 'warning');
             }
         }
+        return $resultats;
     }
     private static function isError($response)
     {
