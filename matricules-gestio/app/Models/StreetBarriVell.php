@@ -8,6 +8,7 @@ use Filament\Notifications\Notification;
 use App\Models\Camera;
 use Illuminate\Database\Eloquent\Collection;
 use  App\Jobs\PenjarVehiclesJob;
+use Illuminate\Support\Facades\Storage;
 
 class StreetBarriVell extends Model
 {
@@ -135,7 +136,8 @@ class StreetBarriVell extends Model
             self::sendError('Token error', $token, $notis);
             $resultats['errors']++;
             $resultats['detall_errors'][] = ['context' => 'Token', 'error' => $token];
-            return $resultats;
+            self::escriureCsv($resultats);
+            return;
         }
         //obtenim llista vehicles de la llista alphanet
         $vehiclesId = self::getVehiclesId($token);
@@ -143,7 +145,8 @@ class StreetBarriVell extends Model
             self::sendError('Vehicles error', $vehiclesId, $notis);
             $resultats['errors']++;
             $resultats['detall_errors'][] = ['context' => 'GetVehiclesId', 'error' => $vehiclesId];
-            return $resultats;
+            self::escriureCsv($resultats);
+            return;
         }
         //Si la llista esta buida
         if (empty($vehiclesId) && $notis) {
@@ -154,7 +157,8 @@ class StreetBarriVell extends Model
         foreach ($vehiclesId as $vehicle) {
             $result = self::deleteVehicles($token, $vehicle);
             if (self::isError($result)) {
-                self::sendError('Vehicles delete', $result, true); // Siempre se notifica
+                self::sendError('Vehicles delete', $result, true);
+                return;
             }
         }
 
@@ -216,7 +220,51 @@ class StreetBarriVell extends Model
                 self::sendNotification('Llista buida', 'No hi ha cap vehicle assignat a aquest(s) carrer(s).', 'warning');
             }
         }
-        return $resultats;
+        self::escriureCsv($resultats);
+    }
+
+    private static function escriureCsv($resultats){
+         $detallErrorsText = json_encode($resultats['detall_errors'], JSON_UNESCAPED_UNICODE);
+
+        $filename = 'vehicles_result.csv';
+
+        $line = [
+            $resultats['carrer'],
+            $resultats['eliminats'],
+            $resultats['insertats'],
+            $resultats['errors'],
+            $resultats['isPadro'] ? 'true' : 'false',
+            date('Y-m-d H:i:s'),
+            $detallErrorsText,
+        ];
+
+        // Verificar si l'arxiu existeix i te contingut
+        if (Storage::exists($filename) && Storage::size($filename) > 0) {
+            // Escriure tot menys el header
+            $stream = Storage::append($filename, implode(',', array_map(function ($field) {
+                $field = str_replace('"', '""', $field);
+                if (strpos($field, ',') !== false || strpos($field, '"') !== false) {
+                    return '"' . $field . '"';
+                }
+                return $field;
+            }, $line)));
+        } else {
+            //Si el fitxer no existeix l'hem de crear
+            $csvData = [
+                ['street', 'eliminats', 'insertats', 'errors', 'isPadro','timestamps','detall_errors'], // Header
+                $line
+            ];
+
+            $handle = fopen('php://temp', 'r+');
+            foreach ($csvData as $row) {
+                fputcsv($handle, $row);
+            }
+            rewind($handle);
+            $csvContent = stream_get_contents($handle);
+            fclose($handle);
+
+            Storage::put($filename, $csvContent);
+        }
     }
     private static function isError($response)
     {
