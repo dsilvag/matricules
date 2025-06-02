@@ -553,7 +553,7 @@ class InstanceResource extends Resource
         $templateProcessor->setValue('PERSNOM', $record->person->PERSNOM);
         $templateProcessor->setValue('PERSCOG1', $record->person->PERSCOG1);
         $templateProcessor->setValue('PERSCOG2', $record->person->PERSCOG2);
-        $templateProcessor->setValue('DNI', $record->person->NIFNUM . $record->person->NIFDC);
+        $templateProcessor->setValue('DNI', self::getDniAnon($record->person->NIFNUM,$record->person->NIFDC,$record->person->PERSPASSPORT));
         $templateProcessor->setValue('CARRER_HABITATGE', trim($record->domiciliAccess->nom_habitatge));
         $templateProcessor->setValue('REGISTRE_ENTRADA', $record->RESNUME);
         $templateProcessor->setValue('MOTIU', self::getTextMotiu($record));       
@@ -674,5 +674,36 @@ class InstanceResource extends Resource
             $motius .= env('ALTRES_MOTIUS') . $record->altres_motius_text."\n";
         }
         return $motius = rtrim($motius, "\n");
+    }
+
+    private static function getDniAnon($dni,$dniDC, $passaport)
+    {
+        if($dni!=null){
+            $document = $dni . $dniDC;
+            $min = 4; 
+            $max = 7;
+        }else{
+            $document = $passaport; 
+            $min = 3; 
+            $max = 6;
+        }
+        $result = '';
+        $digitCount = 0;
+        for ($i = 0; $i < strlen($document); $i++) {
+            $char = $document[$i];
+            if(ctype_digit($char)){
+                $digitCount++;
+                if ($digitCount >= $min && $digitCount <=$max) {
+                    $result .= $char;
+                } else{
+                    $result .= '*';
+                }
+            }
+            else{
+                $result .= '*';
+            }
+        }
+        
+        return $result;
     }
 }
