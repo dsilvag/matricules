@@ -92,27 +92,21 @@ class StreetBarriVell extends Model
     public static function penjarVehicles()
     {
         self::createCsv();
-        //tots els carrers del barri vell
+
         $streetsBarriVell = self::all();
-        //array amb els jobs
-        $jobs = [];
+
+        $chain = [];
 
         foreach ($streetsBarriVell as $street) {
             foreach ([false, true] as $padro) {
-                $jobs[] = new PenjarVehiclesJob($street, $padro);
+                $chain[] = new PenjarVehiclesJob($street, $padro);
             }
         }
+        // Al final de la cadena, afegir el job per enviar el correu electrònic
+        $chain[] = new SendVehiclesCsvEmailJob();
+        // Despatxar tota la cadena
+        Bus::chain($chain)->dispatch();
 
-        Bus::batch($jobs)
-            ->then(function (Batch $batch) {
-                // Quan tots els jobs acabin amb èxit, es despatxa el job que envia l'email
-                SendVehiclesCsvEmailJob::dispatch();
-            })
-            ->catch(function (Batch $batch, Throwable $e) {
-                //Log per si hi ha algun error
-                \Log::error('Error en batch: ' . $e->getMessage());
-            })
-            ->dispatch();
     }
     public static function penjarVehiclesPadro()
     {
@@ -133,32 +127,26 @@ class StreetBarriVell extends Model
     public static function penjarVehiclesInstancies()
     {
         self::createCsv();
-        //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
-    	//array amb els jobs
-        $jobs = [];
-    
+
+        $chain = [];
+
         foreach ($streetsBarriVell as $street) {
-            //self::obtenirLListaCotxes($street,$notis,false);
-            $jobs[] = new PenjarVehiclesJob($street, false);
+            $chain[] = new PenjarVehiclesJob($street, false);
         }
-        //SendVehiclesCsvEmailJob::dispatch();
-    	Notification::make()
+
+        //Al final de la cadena, afegir el job per enviar el correu electrònic
+        $chain[] = new SendVehiclesCsvEmailJob();
+
+        //Despatxar tota la cadena
+        Bus::chain($chain)->dispatch();
+
+        Notification::make()
             ->title('Vehicles instàncies penjats')
             ->info()
             ->send();
-     	Bus::batch($jobs)
-            ->then(function (Batch $batch) {
-                // Quan tots els jobs acabin amb èxit, es despatxa el job que envia l'email
-                SendVehiclesCsvEmailJob::dispatch();
-            })
-            ->catch(function (Batch $batch, Throwable $e) {
-                //Log per si hi ha algun error
-                \Log::error('Error en batch: ' . $e->getMessage());
-            })
-            ->dispatch();
-        
     }
+
     public static function obtenirLListaCotxes($record, $notis, $isPadro)
     {
         $token = self::createToken($record,$isPadro);
