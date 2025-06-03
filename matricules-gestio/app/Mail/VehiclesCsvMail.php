@@ -8,21 +8,23 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Mail\Mailables\Attachment;
-
 
 class VehiclesCsvMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $filePath;
+
     /**
      * Create a new message instance.
      */
     public function __construct($filePath)
     {
         $this->filePath = $filePath;
+        Log::info("VehiclesCsvMail instance created with filePath: {$filePath}");
     }
     
     /**
@@ -30,6 +32,7 @@ class VehiclesCsvMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        Log::info('VehiclesCsvMail envelope method called.');
         return new Envelope(
             subject: 'Vehicles Csv Mail',
         );
@@ -40,6 +43,7 @@ class VehiclesCsvMail extends Mailable
      */
     public function content(): Content
     {
+        Log::info('VehiclesCsvMail content method called.');
         return new Content(
             markdown: 'emails.vehicles_csv',
         );
@@ -52,8 +56,10 @@ class VehiclesCsvMail extends Mailable
      */
     public function attachments(): array
     {
+        Log::info("VehiclesCsvMail attachments method called. Attaching file: {$this->filePath}");
+        
         return [
-            Attachment::fromStorage('vehicles_result.csv')
+            Attachment::fromStorage($this->filePath)
                 ->as('vehicles_result.csv')
                 ->withMime('text/csv'),
         ];

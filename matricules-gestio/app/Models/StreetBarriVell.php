@@ -75,8 +75,20 @@ class StreetBarriVell extends Model
             });
         })->get();
     }
+
+    private static function createCsv()
+    {
+        $filename = storage_path('app/vehicles_result.csv');
+        $header = ['street', 'eliminats', 'insertats', 'errors', 'isPadro', 'timestamps', 'detall_errors'];
+
+        $handle = fopen($filename, 'w');
+        fputcsv($handle, $header, ';');
+        fclose($handle);
+    }
+
     public static function penjarVehicles()
     {
+        self::createCsv();
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
     
@@ -110,6 +122,7 @@ class StreetBarriVell extends Model
     }
     public static function penjarVehiclesInstancies()
     {
+        self::createCsv();
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
     

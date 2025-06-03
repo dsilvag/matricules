@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PenjarVehiclesJob implements ShouldQueue
 {
@@ -32,48 +33,25 @@ class PenjarVehiclesJob implements ShouldQueue
     {
         $resultats = \App\Models\StreetBarriVell::obtenirLListaCotxes($this->record, false, $this->isPadro);
 
-        $detallErrorsText = json_encode($resultats['detall_errors'], JSON_UNESCAPED_UNICODE);
-
-        $filename = 'vehicles_result.csv';
-
+        // Hem posat un caràcter especial per forçar que el camp es tracti com a text
+        // Així s'evita que Excel mostri #### i es pot veure correctament el valor
         $line = [
             $resultats['carrer'],
             $resultats['eliminats'],
             $resultats['insertats'],
             $resultats['errors'],
             $resultats['isPadro'] ? 'true' : 'false',
-            date('Y-m-d H:i:s'),
-            $detallErrorsText,
+            "'" . date('Y-m-d H:i:s'),
+            json_encode($resultats['detall_errors'], JSON_UNESCAPED_UNICODE),
         ];
 
-        // Verificar si l'arxiu existeix i te contingut
-        if (Storage::exists($filename) && Storage::size($filename) > 0) {
-            // Escriure tot menys el header
-            $stream = Storage::append($filename, implode(';', array_map(function ($field) {
-                $field = str_replace('"', '""', $field);
-                if (strpos($field, ';') !== false || strpos($field, '"') !== false) {
-                    return '"' . $field . '"';
-                }
-                return $field;
-            }, $line)));
-        } else {
-            //Si el fitxer no existeix l'hem de crear
-            $csvData = [
-                ['street', 'eliminats', 'insertats', 'errors', 'isPadro','timestamps','detall_errors'], // Header
-                $line
-            ];
-
-            $handle = fopen('php://temp', 'r+');
-            foreach ($csvData as $row) {
-                fputcsv($handle, $row,';');
-            }
-            rewind($handle);
-            $csvContent = stream_get_contents($handle);
+        $filename = storage_path('app/vehicles_result.csv');
+        if (file_exists($filename)) {
+            $handle = fopen($filename, 'a');
+            fputcsv($handle, $line, ';');
             fclose($handle);
-
-            Storage::put($filename, $csvContent);
+        } else {
+            Log::info("El CSV no existeix: {$filename}");
         }
-
-        //\Log::info("CSV actualizado: {$filename}");
     }
 }
