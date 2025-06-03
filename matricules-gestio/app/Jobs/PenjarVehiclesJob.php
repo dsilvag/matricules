@@ -48,8 +48,19 @@ class PenjarVehiclesJob implements ShouldQueue
         $filename = storage_path('app/private/vehicles_result.csv');
         if (file_exists($filename)) {
             $handle = fopen($filename, 'a');
-            fputcsv($handle, $line, ';');
-            fclose($handle);
+            if ($handle) {
+                // Bloquegem l'arxiu per evitar conflictes
+                if (flock($handle, LOCK_EX)) {  // Bloqueig exclusiu
+                    fputcsv($handle, $line, ';');
+                    fflush($handle);           // Forcem perquè escrigui
+                    flock($handle, LOCK_UN);   // Trèiem el bloqueig
+                } else {
+                    Log::warning("No es pot bloquejar el fitxer CSV per escriure: {$filename}");
+                }
+                fclose($handle);
+            } else {
+                Log::warning("No es pot obrir el fitxer en mode escriptura: {$filename}");
+            }
         } else {
             Log::info("El CSV no existeix: {$filename}");
         }
