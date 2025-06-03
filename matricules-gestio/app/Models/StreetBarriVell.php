@@ -107,6 +107,7 @@ class StreetBarriVell extends Model
     }
     public static function penjarVehiclesPadro()
     {
+        self::createCsv();
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
     
