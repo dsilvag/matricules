@@ -45,7 +45,7 @@ class PenjarVehiclesJob implements ShouldQueue
             json_encode($resultats['detall_errors'], JSON_UNESCAPED_UNICODE),
         ];
 
-        $filename = storage_path('app/vehicles_result.csv');
+        $filename = storage_path('app/private/vehicles_result.csv');
         if (file_exists($filename)) {
             $handle = fopen($filename, 'a');
             fputcsv($handle, $line, ';');

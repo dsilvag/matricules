@@ -78,7 +78,7 @@ class StreetBarriVell extends Model
 
     private static function createCsv()
     {
-        $filename = storage_path('app/vehicles_result.csv');
+        $filename = storage_path('app/private/vehicles_result.csv');
         $header = ['street', 'eliminats', 'insertats', 'errors', 'isPadro', 'timestamps', 'detall_errors'];
 
         $handle = fopen($filename, 'w');
