@@ -135,16 +135,29 @@ class StreetBarriVell extends Model
         self::createCsv();
         //Tots els carrers del barri vell
         $streetsBarriVell = self::all();
+    	//array amb els jobs
+        $jobs = [];
     
         foreach ($streetsBarriVell as $street) {
             //self::obtenirLListaCotxes($street,$notis,false);
-            PenjarVehiclesJob::dispatch($street, false);
+            $jobs[] = new PenjarVehiclesJob($street, false);
         }
         //SendVehiclesCsvEmailJob::dispatch();
-        Notification::make()
+    	Notification::make()
             ->title('Vehicles instàncies penjats')
             ->info()
             ->send();
+     	Bus::batch($jobs)
+            ->then(function (Batch $batch) {
+                // Quan tots els jobs acabin amb èxit, es despatxa el job que envia l'email
+                SendVehiclesCsvEmailJob::dispatch();
+            })
+            ->catch(function (Batch $batch, Throwable $e) {
+                //Log per si hi ha algun error
+                \Log::error('Error en batch: ' . $e->getMessage());
+            })
+            ->dispatch();
+        
     }
     public static function obtenirLListaCotxes($record, $notis, $isPadro)
     {
