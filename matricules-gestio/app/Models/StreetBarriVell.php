@@ -9,6 +9,9 @@ use App\Models\Camera;
 use Illuminate\Database\Eloquent\Collection;
 use  App\Jobs\PenjarVehiclesJob;
 use  App\Jobs\SendVehiclesCsvEmailJob;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
+use Throwable;
 
 class StreetBarriVell extends Model
 {
@@ -89,21 +92,27 @@ class StreetBarriVell extends Model
     public static function penjarVehicles()
     {
         self::createCsv();
-        //Tots els carrers del barri vell
+        //tots els carrers del barri vell
         $streetsBarriVell = self::all();
-    
+        //array amb els jobs
+        $jobs = [];
+
         foreach ($streetsBarriVell as $street) {
-            //Segons el chat es mes optim
             foreach ([false, true] as $padro) {
-                PenjarVehiclesJob::dispatch($street, $padro);
+                $jobs[] = new PenjarVehiclesJob($street, $padro);
             }
-            /*
-            // obtenir llista de cotxes i penjar vehicles
-            self::obtenirLListaCotxes($street, $notis,false);
-            //Penjar llista padro
-            self::obtenirLListaCotxes($street,$notis,true);*/
         }
-        SendVehiclesCsvEmailJob::dispatch();
+
+        Bus::batch($jobs)
+            ->then(function (Batch $batch) {
+                // Quan tots els jobs acabin amb èxit, es despatxa el job que envia l'email
+                SendVehiclesCsvEmailJob::dispatch();
+            })
+            ->catch(function (Batch $batch, Throwable $e) {
+                //Log per si hi ha algun error
+                \Log::error('Error en batch: ' . $e->getMessage());
+            })
+            ->dispatch();
     }
     public static function penjarVehiclesPadro()
     {
@@ -115,7 +124,7 @@ class StreetBarriVell extends Model
             //self::obtenirLListaCotxes($street,$notis,true);
             PenjarVehiclesJob::dispatch($street, true);
         }
-        SendVehiclesCsvEmailJob::dispatch();
+        //SendVehiclesCsvEmailJob::dispatch();
         Notification::make()
             ->title('Vehicles Padro penjats')
             ->info()
@@ -131,7 +140,7 @@ class StreetBarriVell extends Model
             //self::obtenirLListaCotxes($street,$notis,false);
             PenjarVehiclesJob::dispatch($street, false);
         }
-        SendVehiclesCsvEmailJob::dispatch();
+        //SendVehiclesCsvEmailJob::dispatch();
         Notification::make()
             ->title('Vehicles instàncies penjats')
             ->info()

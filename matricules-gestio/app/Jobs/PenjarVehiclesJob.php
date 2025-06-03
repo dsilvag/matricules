@@ -33,8 +33,7 @@ class PenjarVehiclesJob implements ShouldQueue
     {
         $resultats = \App\Models\StreetBarriVell::obtenirLListaCotxes($this->record, false, $this->isPadro);
 
-        // Hem posat un caràcter especial per forçar que el camp es tracti com a text
-        // Així s'evita que Excel mostri #### i es pot veure correctament el valor
+        // Preparem la línia per escriure al CSV
         $line = [
             $resultats['carrer'],
             $resultats['eliminats'],
@@ -46,12 +45,26 @@ class PenjarVehiclesJob implements ShouldQueue
         ];
 
         $filename = storage_path('app/private/vehicles_result.csv');
+
         if (file_exists($filename)) {
+            // Obrim el fitxer en mode afegir
             $handle = fopen($filename, 'a');
-            fputcsv($handle, $line, ';');
-            fclose($handle);
+
+            if ($handle) {
+                // Intentem bloquejar el fitxer exclusivament per evitar escriptura concurrent
+                if (flock($handle, LOCK_EX)) {
+                    fputcsv($handle, $line, ';');   // Escrivim la línia al CSV
+                    fflush($handle);                // Ens assegurem que es desa al disc
+                    flock($handle, LOCK_UN);        // Alliberem el bloqueig
+                } else {
+                    \Log::warning("No s'ha pogut bloquejar el fitxer CSV per escriure: {$filename}");
+                }
+                fclose($handle);
+            } else {
+                \Log::error("No s'ha pogut obrir el fitxer CSV per escriure: {$filename}");
+            }
         } else {
-            Log::info("El CSV no existeix: {$filename}");
+            \Log::info("El fitxer CSV no existeix: {$filename}");
         }
     }
 }
