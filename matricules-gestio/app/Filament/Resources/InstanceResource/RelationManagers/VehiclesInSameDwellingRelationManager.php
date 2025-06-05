@@ -31,16 +31,16 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
         $dom1 = $ownerRecord->domicili_acces;
         $dom2 = $ownerRecord->domicili_acces2;
         $dom3 = $ownerRecord->domicili_acces3;
-        $NUMEXP = $ownerRecord->NUMEXP;
+        $id = $ownerRecord->id;
         $avui = now()->format('Y-m-d');
 
-        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($dom1, $dom2, $dom3, $NUMEXP, $avui) {
+        $vehicleCount = Vehicle::whereHas('instance', function ($query) use ($dom1, $dom2, $dom3, $id, $avui) {
             $query->where(function ($q) use ($dom1, $dom2, $dom3) {
                 $q->whereIn('domicili_acces', [$dom1, $dom2, $dom3])
                 ->orWhereIn('domicili_acces2', [$dom1, $dom2, $dom3])
                 ->orWhereIn('domicili_acces3', [$dom1, $dom2, $dom3]);
             })
-            ->where('NUMEXP', '!=', $NUMEXP)
+            ->where('instance_id', '!=', $id)
             ->where('DATAEXP', '>=', $avui);
         })->count();
 
@@ -95,15 +95,15 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
         $dom1 = $this->ownerRecord->domicili_acces;
         $dom2 = $this->ownerRecord->domicili_acces2;
         $dom3 = $this->ownerRecord->domicili_acces3;
-        $NUMEXP = $this->ownerRecord->NUMEXP;
+        $id = $this->ownerRecord->id;
 
-        return Vehicle::whereHas('instance', function ($query) use ($dom1, $dom2, $dom3, $NUMEXP) {
+        return Vehicle::whereHas('instance', function ($query) use ($dom1, $dom2, $dom3, $id) {
             $query->where(function ($q) use ($dom1, $dom2, $dom3) {
                 $q->whereIn('domicili_acces', [$dom1, $dom2, $dom3])
                 ->orWhereIn('domicili_acces2', [$dom1, $dom2, $dom3])
                 ->orWhereIn('domicili_acces3', [$dom1, $dom2, $dom3]);
             })
-            ->where('NUMEXP', '!=', $NUMEXP)
+            ->where('instance_id', '!=', $id)
             ->where('DATAEXP', '>=', now()->format('Y-m-d'));
         });
     }

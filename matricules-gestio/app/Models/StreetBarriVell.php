@@ -9,6 +9,7 @@ use App\Models\Camera;
 use Illuminate\Database\Eloquent\Collection;
 use  App\Jobs\PenjarVehiclesJob;
 use  App\Jobs\SendVehiclesCsvEmailJob;
+use  App\Jobs\CreateVehiclesPadroJob;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Throwable;
@@ -502,7 +503,7 @@ class StreetBarriVell extends Model
         $sql = "
             SELECT 
                 H.PERSCOD, T.PERSCOD AS T_PERSCOD, H.PERSNOM, H.PERSCOG1, H.PERSCOG2,
-                H.NIFNUM, H.NIFDC, V.MATRICULA, V.MOVTIP,
+                H.NIFNUM, H.NIFDC, REPLACE(V.MATRICULA, ' ', '') AS MATRICULA, V.MOVTIP,
                 H.DOMCOD, H.CARCOD, H.CARSIG, H.CARDESC, H.TRAMPAR,
                 H.DOMNUM, H.DOMBIS, H.DOMNUM2, H.DOMBIS2, H.DOMKM, H.DOMHM,
                 H.DOMBLOC, H.DOMPTAL, H.DOMESC, H.DOMPIS, H.DOMPTA,
@@ -511,7 +512,7 @@ class StreetBarriVell extends Model
             JOIN GTR_TIT_OBJ T ON V.OBJCOD = T.OBJCOD
             JOIN HAB_MOVHABS H ON T.PERSCOD = H.PERSCOD
             WHERE H.DATAFINAL = ' '
-              AND V.MATRICULA IS NOT NULL
+              AND MATRICULA IS NOT NULL
               AND H.MOVTIP <> 'B'
               AND V.MOVTIP <> 'B'
               AND H.CARCOD = $carcod
@@ -551,6 +552,7 @@ class StreetBarriVell extends Model
                 'nifnum'      => $row['NIFNUM'],
                 'nifdc'       => $row['NIFDC'],
             ];
+            CreateVehiclesPadroJob::dispatch($row['MATRICULA'], $row['DOMCOD'], $row['PERSCOD']);
         }
 
         oci_free_statement($stid);

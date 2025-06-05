@@ -28,6 +28,7 @@ use Filament\Forms\Components\Actions\Action;
 use App\Livewire\Dwellings\ListDwellings;
 use \DateTime;
 use Filament\Forms\Set;
+use Carbon\Carbon;
 
 class InstanceResource extends Resource
 {
@@ -253,16 +254,22 @@ class InstanceResource extends Resource
                          */
                         Forms\Components\Toggle::make('empadronat_si_ivtm')->label('La persona hi està empadronada i té l\'IVTM domiciliat a Banyoles (indefinit)')->columnSpan(3)->reactive() 
                         ->afterStateUpdated(function ($set, $state, $get) {
+                            //Variables data inici data fi
+                            $today = now()->format('Y-m-d');
+                            $dataInici = ($today > "2025-07-01") ? $today : "2025-07-01";
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
                                 $set('data_fi', '9999-12-31');
                             }
                         }),
                         Forms\Components\Toggle::make('empadronat_no_ivtm')->label('La persona hi està empadronada però no té l\'IVTM domiciliat a Banyoles (2 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
+                            //Variables data inici data fi
+                            $today = now()->format('Y-m-d');
+                            $dataInici = ($today > "2025-07-01") ? $today : "2025-07-01";
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
-                                $set('data_fi', now()->addYears(2)->format('Y-m-d'));
+                                $set('data_inici',Carbon::parse($dataInici)->format('Y-m-d'));
+                                $set('data_fi', Carbon::parse($dataInici)->addYears(2)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('noempadronat_viu_barri_vell')
@@ -280,13 +287,16 @@ class InstanceResource extends Resource
                                 'llogater' => 'Llogater',
                             ])
                             ->afterStateUpdated(function ($set, $state, $get) {
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
                                 if ($get('noempadronat_viu_barri_vell') === true) {
                                     $persona = $state; 
-                                    $set('data_inici', now()->format('Y-m-d')); 
+                                    $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d')); 
                                     if ($persona == 'propietari') {
-                                        $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                                        $set('data_fi', Carbon::parse($dataInici)->addYears(4)->format('Y-m-d'));
                                     } else if ($persona == 'llogater') {
-                                        $set('data_fi', now()->addYears(2)->format('Y-m-d')); 
+                                        $set('data_fi', Carbon::parse($dataInici)->addYears(2)->format('Y-m-d')); 
                                     }
                                 }})
                             ->reactive()
@@ -295,58 +305,85 @@ class InstanceResource extends Resource
                         Forms\Components\Toggle::make('pares_menor_edat')->label('La persona és pare o mare d\'un/a menor resident (4 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
-                                $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > "2025-07-01") ? $today : "2025-07-01";
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
+                                $set('data_fi', Carbon::parse($dataInici)->addYears(4)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('familiar_adult_major')->label('La persona és familiar d\'una persona d\'edat avançada (4 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
-                                $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
+                                $set('data_fi', Carbon::parse($dataInici)->addYears(4)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('targeta_aparcament_discapacitat')->label('Persona amb targeta d\'aparcament per a persones amb discapacitat (igual que la targeta)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('vehicle_comercial')->label('Vehicle comercial o empresa proveïdora al Barri Vell, Pl. de les Rodes o Pl. del Carme')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('client_botiga')->label('Client de botiga al Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar la botiga) ')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('empresa_serveis')->label('Empresa de serveis (neteja, aigua, llum, lampisteria,...) ')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('empresa_constructora')->label('Empresa constructora ')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('familiar_resident')->label('Persona amb familiar resident o usuari d\'una residència del Barri Vell, Pl. de les Rodes o Pl. del Carme (ho ha de sol·licitar el mateix centre) (4 anys)')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
-                                $set('data_fi', now()->addYears(4)->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici', Carbon::parse($dataInici)->format('Y-m-d'));
+                                $set('data_fi', Carbon::parse($dataInici)->addYears(4)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('acces_excepcional')->label('Autorització d\'accés excepcional (dins de les 48 hores abans o després) ')->columnSpan(3)->reactive()
                         ->afterStateUpdated(function ($set, $state, $get) {
                             if ($state) {
-                                $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                $set('data_inici',Carbon::parse($dataInici)->format('Y-m-d'));
                             }
                         }),
                         Forms\Components\Toggle::make('altres_motius')
@@ -356,7 +393,10 @@ class InstanceResource extends Resource
                             })
                             ->afterStateUpdated(function ($set, $state, $get) {
                                 if ($state) {
-                                    $set('data_inici', now()->format('Y-m-d'));
+                                //Variables data inici data fi
+                                $today = now()->format('Y-m-d');
+                                $dataInici = ($today > '2025-07-01') ? $today : '2025-07-01';
+                                    $set('data_inici',Carbon::parse($dataInici)->format('Y-m-d'));
                                 }
                             })
                             ->reactive()

@@ -27,6 +27,7 @@ class Instance extends Model
 
     protected $fillable = [
         'RESNUME',
+        'is_notificat',
         'NUMEXP',
         'DECRETAT',
         'VALIDAT',
