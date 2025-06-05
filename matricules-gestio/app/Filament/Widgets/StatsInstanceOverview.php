@@ -10,9 +10,9 @@ class StatsInstanceOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $notificadesCount = Instance::where('is_notificat', true)->count();
-        $noNotificadesCount = Instance::where('is_notificat', false)->count();
-        $totalCount = Instance::count();
+        $notificadesCount = Instance::where('is_notificat', true)->where('NUMEXP', '!=', 'PADRO')->count();
+        $noNotificadesCount = Instance::where('is_notificat', false)->where('NUMEXP', '!=', 'PADRO')->count();
+        $totalCount = Instance::where('NUMEXP', '!=', 'PADRO')->count();
 
         $notificadesDesc = $notificadesCount == 0 ? 'No hi ha instàncies notificades' : 'Total d\'instàncies notificades';
 

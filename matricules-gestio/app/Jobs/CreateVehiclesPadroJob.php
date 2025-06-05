@@ -40,7 +40,7 @@ class CreateVehiclesPadroJob implements ShouldQueue
             $instance = Instance::withoutEvents(function (){
                 return Instance::updateOrCreate(
                     ['RESNUME' => 'PADRO','PERSCOD' => $this->perscod,'domicili_acces' => $this->domcod,'is_notificat' => true],
-                    ['RESNUME' => 'PADRO','PERSCOD' => $this->perscod,'domicili_acces' => $this->domcod,'is_notificat' => true, 'data_inici' =>"2025-01-01",'data_fi' => "9999-12-31"]
+                    ['RESNUME' => 'PADRO','PERSCOD' => $this->perscod,'domicili_acces' => $this->domcod,'is_notificat' => true, 'data_inici' =>"2025-01-01",'data_fi' => "9999-12-31", 'NUMEXP' => 'PADRO']
                 );
             });
 
