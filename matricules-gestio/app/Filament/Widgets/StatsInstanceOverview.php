@@ -25,14 +25,16 @@ class StatsInstanceOverview extends BaseWidget
         return [
             Stat::make('Instàncies notificades', $notificadesCount)
                 ->description($notificadesDesc)
-                ->color('success'),
+                ->color('success')
+                ->url('/admin/instances?notificades=true&tableFilters[no_padro][isActive]=true'),
 
             Stat::make('Instàncies no notificades', $noNotificadesCount)
                 ->description($noNotificadesDesc)
                 ->descriptionIcon($noNotificadesIcon)
-                ->color($noNotificadesColor),
+                ->color($noNotificadesColor)
+                ->url('/admin/instances'),
 
-            Stat::make('Total Instàncies', $totalCount)
+            Stat::make('Total Instàncies', $totalCount)->url('/admin/instances?tableFilters[no_padro][isActive]=false'),
                 //->description('Total d\'instàncies'),
         ];
     }

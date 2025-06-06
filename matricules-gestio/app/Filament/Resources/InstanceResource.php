@@ -29,6 +29,7 @@ use App\Livewire\Dwellings\ListDwellings;
 use \DateTime;
 use Filament\Forms\Set;
 use Carbon\Carbon;
+use Filament\Tables\Filters\Filter;
 
 class InstanceResource extends Resource
 {
@@ -493,6 +494,10 @@ class InstanceResource extends Resource
             ->filters([
                 TernaryFilter::make('DECRETAT')->label('Decretat'),
                 TernaryFilter::make('is_notificat')->label('Notificat')->default(false),
+                Filter::make('no_padro')
+                    ->label('No padro')
+                    ->default(true)
+                    ->query(fn ($query) => $query->where('RESNUME', '!=', 'PADRO')),
             ])
             ->actions([
                 //Tables\Actions\DeleteAction::make(),
