@@ -44,7 +44,7 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
             ->where('DATAEXP', '>=', $avui);
         })->count();
 
-        return "Altres vehicles en els mateixos domicilis ($vehicleCount)";
+        return "Tots els vehicles dels domicilis ($vehicleCount)";
     }
 
     public function table(Table $table): Table
