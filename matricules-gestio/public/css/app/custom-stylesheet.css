@@ -1,0 +1,10 @@
+.my-green-bg {
+    background-color: #a4ffd0 !important;
+    color: #065f46 !important;
+    font-weight: bold !important;
+}
+/* Para dark mode */
+.dark .my-green-bg {
+    background-color: #064e3b !important; /* Verde oscuro */
+    color: #a4ffd0 !important;             /* Texto claro */
+}

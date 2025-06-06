@@ -51,7 +51,7 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('MATRICULA')
-            ->recordClasses(fn (Vehicle $record) => $record->instance_id == $this->ownerRecord->id ? 'font-bold' : null)
+            ->recordClasses(fn (Vehicle $record) => $record->instance_id == $this->ownerRecord->id ? 'my-green-bg'  : null)
             ->recordUrl(function ($record) {
                 return $record->instance
                     ? InstanceResource::getUrl('edit', ['record' => $record->instance->getKey()])
