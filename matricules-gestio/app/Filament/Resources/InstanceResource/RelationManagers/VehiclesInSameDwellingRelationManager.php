@@ -40,7 +40,7 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
                 ->orWhereIn('domicili_acces2', [$dom1, $dom2, $dom3])
                 ->orWhereIn('domicili_acces3', [$dom1, $dom2, $dom3]);
             })
-            ->where('instance_id', '!=', $id)
+            //->where('instance_id', '!=', $id)
             ->where('DATAEXP', '>=', $avui);
         })->count();
 
@@ -51,6 +51,7 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('MATRICULA')
+            ->recordClasses(fn (Vehicle $record) => $record->instance_id == $this->ownerRecord->id ? 'font-bold' : null)
             ->recordUrl(function ($record) {
                 return $record->instance
                     ? InstanceResource::getUrl('edit', ['record' => $record->instance->getKey()])
@@ -103,7 +104,7 @@ class VehiclesInSameDwellingRelationManager extends RelationManager
                 ->orWhereIn('domicili_acces2', [$dom1, $dom2, $dom3])
                 ->orWhereIn('domicili_acces3', [$dom1, $dom2, $dom3]);
             })
-            ->where('instance_id', '!=', $id)
+            //->where('instance_id', '!=', $id)
             ->where('DATAEXP', '>=', now()->format('Y-m-d'));
         });
     }
