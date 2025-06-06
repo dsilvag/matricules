@@ -10,9 +10,9 @@ Artisan::command('inspire', function () {
 
 Schedule::call(function () {
     \App\Models\StreetBarriVell::penjarVehicles();
-})->dailyAt('7:00');
+})->dailyAt('00:05');
 
-Schedule::command('app:sync-oracle-to-mysql-street')->dailyAt('7:00');
-Schedule::command('app:sync-oracle-to-mysql-dwelling')->dailyAt('7:00');
-Schedule::command('app:sync-oracle-to-mysql-people')->dailyAt('7:00');
-Schedule::command('app:sync-oracle-to-mysql-teleco')->dailyAt('7:00');
+Schedule::command('app:sync-oracle-to-mysql-street')->dailyAt('00:05');
+Schedule::command('app:sync-oracle-to-mysql-dwelling')->dailyAt('00:05');
+Schedule::command('app:sync-oracle-to-mysql-people')->dailyAt('00:05');
+Schedule::command('app:sync-oracle-to-mysql-teleco')->dailyAt('00:05');

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action;
 
 class Vehicle extends Model
 {
@@ -41,12 +42,17 @@ class Vehicle extends Model
     {   
         static::creating(function ($record) {
             //Mirar data inici i data fi matricules
-            $existingVehicle = \App\Models\Vehicle::where('MATRICULA', $record->MATRICULA)->first();
+            $existingVehicle = \App\Models\Vehicle::where('MATRICULA', $record->MATRICULA)->where('DATAEXP', '>', now())->first();
             if ($existingVehicle){
                 Notification::make()
                     ->title('Vehicle duplicat')
                     ->body('Vehicle ja existent ves a consultar-lo')
                     ->warning()
+                    ->actions([
+                        Action::make('view')
+                            ->button()
+                            ->url('/admin/vehicles?tableSearch='.$record->MATRICULA),
+                    ])
                     ->send();
             }
             if ($record->instance_id) {
