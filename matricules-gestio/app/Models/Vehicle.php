@@ -49,7 +49,7 @@ class Vehicle extends Model
                     ->body('Vehicle ja existent ves a consultar-lo')
                     ->warning()
                     ->actions([
-                        Action::make('view')
+                        Action::make('Veure')
                             ->button()
                             ->url('/admin/vehicles?tableSearch='.$record->MATRICULA),
                     ])
