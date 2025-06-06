@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Tables\Table;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
         FilamentAsset::register([
             Css::make('custom-stylesheet', __DIR__ . '/../../resources/css/filament.css'),
         ]);
+        //Treure pagination tots
+        Table::configureUsing(function (Table $table) {
+            $table->paginated([10, 25, 50, 100]);
+        });
 
     }
 }
