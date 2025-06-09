@@ -21,6 +21,7 @@ class InstancesCreatedChart extends ChartWidget
         //Obtenim les dades del últim any
         $instanceCounts = Instance::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->whereYear('created_at', now()->year)
+            ->where('RESNUME', '!=', 'PADRO')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month');
