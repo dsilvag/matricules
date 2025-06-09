@@ -8,6 +8,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsInstanceOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
+
     protected function getStats(): array
     {
         $notificadesCount = Instance::where('is_notificat', true)->where('NUMEXP', '!=', 'PADRO')->count();
