@@ -79,6 +79,12 @@ class VehicleResource extends Resource
             ])
             ->filters([
                  Filter::make('DATAEXP')->label('Actius')->query(fn ($query) => $query->whereDate('DATAEXP', '>=', now()->toDateString()))->default(true),
+                 Filter::make('no_padro')
+                    ->label('No padro')
+                    ->default(true)
+                    ->query(fn ($query) => $query->whereHas('instance', function ($query) {
+                        $query->where('RESNUME', '!=', 'PADRO');
+                    })),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
