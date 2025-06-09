@@ -48,6 +48,7 @@ class Vehicle extends Model
                     ->title('Vehicle duplicat')
                     ->body('Vehicle ja existent ves a consultar-lo')
                     ->warning()
+                    ->persistent()
                     ->actions([
                         Action::make('Veure')
                             ->button()

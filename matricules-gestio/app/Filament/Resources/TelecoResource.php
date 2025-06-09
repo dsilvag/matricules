@@ -213,6 +213,7 @@ class TelecoResource extends Resource
                 Notification::make()
                 ->title('Error en la importació')
                 ->error()
+                ->persistent()
                 ->send();
             }
         } else {

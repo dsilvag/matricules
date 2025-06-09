@@ -323,6 +323,7 @@ class Instance extends Model
             ->title($title)
             ->body($message)
             ->danger()
+            ->persistent()
             ->send();
             throw ValidationException::withMessages([
                 $field => [$message]
