@@ -62,8 +62,7 @@ class VehicleResource extends Resource
                 Tables\Columns\TextColumn::make('instance.domiciliAccess2.nom_habitatge')
                     ->label('Domicili 2'),
                 Tables\Columns\TextColumn::make('instance.domiciliAccess3.nom_habitatge')
-                    ->label('Domicili 3')
-                    ->sortable(),
+                    ->label('Domicili 3'),
                 Tables\Columns\TextColumn::make('DATAINICI')
                     ->label('DATAINICI')
                     ->date()
