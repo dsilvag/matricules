@@ -303,6 +303,7 @@ class DwellingResource extends Resource
                 Notification::make()
                 ->title('Importació amb èxit')
                 ->success()
+                ->duration(25000)
                 ->sendToDatabase(auth()->user())
                 ->send();
             }

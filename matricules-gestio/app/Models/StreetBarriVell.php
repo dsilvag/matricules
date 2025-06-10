@@ -123,6 +123,7 @@ class StreetBarriVell extends Model
         Notification::make()
             ->title('Vehicles Padro penjats')
             ->info()
+            ->duration(25000)
             ->sendToDatabase(auth()->user())
             ->send();
     }
@@ -146,6 +147,7 @@ class StreetBarriVell extends Model
         Notification::make()
             ->title('Vehicles instàncies penjats')
             ->info()
+            ->duration(25000)
             ->sendToDatabase(auth()->user())
             ->send();
     }
@@ -267,6 +269,7 @@ class StreetBarriVell extends Model
             ->title($title)
             ->body($message)
             ->$type()
+            ->duration(25000)
             ->sendToDatabase(auth()->user())
             ->send();
     }

@@ -363,6 +363,7 @@ class Instance extends Model
             Notification::make()
                 ->title('Document enviat correctament')
                 ->success()
+                ->duration(25000)
                 ->sendToDatabase(auth()->user())
                 ->send();
             $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
@@ -392,6 +393,7 @@ class Instance extends Model
             Notification::make()
                 ->title('Notificació enviada correctament')
                 ->success()
+                ->duration(25000)
                 ->sendToDatabase(auth()->user())
                 ->send();
         }
