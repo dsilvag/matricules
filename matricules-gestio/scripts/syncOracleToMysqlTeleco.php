@@ -123,6 +123,7 @@ try {
     {
         $errorMsg = "Importats $count registres.\n";
         file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $errorMsg, FILE_APPEND);
+        $logContent = file_get_contents($logFile);
         dispatch(new SendOracleEmailJob($logContent, 'teleco'));
     }
     return true;
