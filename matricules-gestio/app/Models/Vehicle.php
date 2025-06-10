@@ -52,8 +52,10 @@ class Vehicle extends Model
                     ->actions([
                         Action::make('Veure')
                             ->button()
+                            //->markAsUnread()
                             ->url('/admin/vehicles?tableSearch='.$record->MATRICULA),
                     ])
+                    ->sendToDatabase(auth()->user())
                     ->send();
             }
             if ($record->instance_id) {

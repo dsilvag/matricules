@@ -1,4 +1,5 @@
 <?php
+use App\Jobs\SendOracleEmailJob;
 
 // Config Oracle
 $oracleHost = env('DB_ORACLE_HOST');
@@ -17,8 +18,11 @@ $mysqlHost = env('DB_HOST');
 $mysqlUser = env('DB_USERNAME');
 $mysqlPass = env('DB_PASSWORD');
 $mysqlDB   = env('DB_DATABASE');
+
+$logFile = storage_path('app/private/dwelling.txt');
  
 try {
+    file_put_contents($logFile, '');
     // Connexió Oracle
     $connOracle = oci_connect($oracleUser, $oraclePass, $oracleDSN, 'AL32UTF8');
     if (!$connOracle) {
@@ -79,7 +83,8 @@ try {
                       ON DUPLICATE KEY UPDATE " . implode(',', $updates);
  
         if (!$connMySQL->query($sqlInsert)) {
-            echo "Error inserint DOMCOD {$row['DOMCOD']}: " . $connMySQL->error . "\n";
+            $errorMsg = "Error inserint DOMCOD {$row['DOMCOD']}: " . $connMySQL->error . "\n";
+            file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $errorMsg, FILE_APPEND);
         } else {
             $count++;
         }
@@ -90,9 +95,23 @@ try {
     oci_free_statement($stid);
     oci_close($connOracle);
     $connMySQL->close();
+    if ((file_exists($logFile) && filesize($logFile) > 0)) {
+        $logContent = file_get_contents($logFile);
+        dispatch(new SendOracleEmailJob($logContent, 'dwelling'));
+    }
+    if(env('DEBUG_MAIL')){
+        $errorMsg = "Importats $count registres.\n";
+        file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $errorMsg, FILE_APPEND);
+    }
     return true;
 } catch (Exception $e) {
+    $errorMessage = "[" . date('Y-m-d H:i:s') . "] Error general: " . $e->getMessage() . "\n";
+    file_put_contents($logFile, $errorMessage, FILE_APPEND);
     echo "Error: " . $e->getMessage() . "\n";
+    if ((file_exists($logFile) && filesize($logFile) > 0) || env('DEBUG_MAIL')) {
+        $logContent = file_get_contents($logFile);
+        dispatch(new SendOracleEmailJob($logContent, 'dwelling'));
+    }
     exit(1);
     return false;
 }

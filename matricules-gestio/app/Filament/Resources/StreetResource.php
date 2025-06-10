@@ -292,6 +292,7 @@ class StreetResource extends Resource
                 Notification::make()
                 ->title('Importació amb èxit')
                 ->success()
+                ->sendToDatabase(auth()->user())
                 ->send();
             }
             else {
@@ -299,6 +300,7 @@ class StreetResource extends Resource
                 ->title('Error en la importació')
                 ->error()
                 ->persistent()
+                ->sendToDatabase(auth()->user())
                 ->send();
             }
         } else {

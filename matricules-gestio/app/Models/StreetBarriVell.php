@@ -123,6 +123,7 @@ class StreetBarriVell extends Model
         Notification::make()
             ->title('Vehicles Padro penjats')
             ->info()
+            ->sendToDatabase(auth()->user())
             ->send();
     }
     public static function penjarVehiclesInstancies()
@@ -145,6 +146,7 @@ class StreetBarriVell extends Model
         Notification::make()
             ->title('Vehicles instàncies penjats')
             ->info()
+            ->sendToDatabase(auth()->user())
             ->send();
     }
 
@@ -265,6 +267,7 @@ class StreetBarriVell extends Model
             ->title($title)
             ->body($message)
             ->$type()
+            ->sendToDatabase(auth()->user())
             ->send();
     }
     

@@ -324,6 +324,7 @@ class Instance extends Model
             ->body($message)
             ->danger()
             ->persistent()
+            ->sendToDatabase(auth()->user())
             ->send();
             throw ValidationException::withMessages([
                 $field => [$message]
@@ -362,6 +363,7 @@ class Instance extends Model
             Notification::make()
                 ->title('Document enviat correctament')
                 ->success()
+                ->sendToDatabase(auth()->user())
                 ->send();
             $outputPath = storage_path('app/public/decret_' . $record->RESNUME . '.docx');
             if (file_exists($outputPath)) {
@@ -390,6 +392,7 @@ class Instance extends Model
             Notification::make()
                 ->title('Notificació enviada correctament')
                 ->success()
+                ->sendToDatabase(auth()->user())
                 ->send();
         }
     }

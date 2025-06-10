@@ -1,4 +1,5 @@
 <?php
+use App\Jobs\SendOracleEmailJob;
 // Configuració ORACLE
 $oracleHost = env('DB_ORACLE_HOST');
 $oraclePort = env('DB_ORACLE_PORT');
@@ -17,7 +18,10 @@ $mysqlUser = env('DB_USERNAME');
 $mysqlPass = env('DB_PASSWORD');
 $mysqlDB   = env('DB_DATABASE');
  
+$logFile = storage_path('app/private/street.txt');
+
 try {
+    file_put_contents($logFile, '');
     // Connexió Oracle
     $connOracle = oci_connect($oracleUser, $oraclePass, $oracleDSN, 'AL32UTF8');
     if (!$connOracle) {
@@ -82,7 +86,8 @@ SQL;
         ";
  
         if (!$connMySQL->query($sqlInsert)) {
-            echo "❌ Error inserint/clau duplicada: " . $connMySQL->error . "\n";
+            $errorMsg="Error inserint PAISPROVMUNICARCOD {$row['PAISPROVMUNICARCOD']}: " . $connMySQL->error . "\n";
+            file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $errorMsg, FILE_APPEND);
         } else {
             $count++;
         }
@@ -93,9 +98,23 @@ SQL;
     oci_free_statement($stid);
     oci_close($connOracle);
     $connMySQL->close();
+    if ((file_exists($logFile) && filesize($logFile) > 0)) {
+        $logContent = file_get_contents($logFile);
+        dispatch(new SendOracleEmailJob($logContent, 'street'));
+    }
+    if(env('DEBUG_MAIL')){
+        $errorMsg="Importats $count registres.\n";
+        file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $errorMsg, FILE_APPEND);
+    }
     return true;
  
 } catch (Exception $e) {
+    $errorMessage = "[" . date('Y-m-d H:i:s') . "] Error general: " . $e->getMessage() . "\n";
+    file_put_contents($logFile, $errorMessage, FILE_APPEND);
+    if ((file_exists($logFile) && filesize($logFile) > 0) || env('DEBUG_MAIL')) {
+        $logContent = file_get_contents($logFile);
+        dispatch(new SendOracleEmailJob($logContent, 'street'));
+    }
     echo "❌ ERROR: " . $e->getMessage() . "\n";
     exit(1);
     return false;
