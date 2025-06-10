@@ -105,6 +105,7 @@ SQL;
     if(env('DEBUG_MAIL')){
         $errorMsg="Importats $count registres.\n";
         file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $errorMsg, FILE_APPEND);
+        dispatch(new SendOracleEmailJob($logContent, 'street'));
     }
     return true;
  
