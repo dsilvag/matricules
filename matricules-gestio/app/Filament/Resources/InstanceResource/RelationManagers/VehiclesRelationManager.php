@@ -61,4 +61,13 @@ class VehiclesRelationManager extends RelationManager
                 ]),
             ]);
     }
+    public function canCreate(): bool
+    {
+        if($this->ownerRecord->is_notificat){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 }

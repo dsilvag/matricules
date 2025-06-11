@@ -210,6 +210,9 @@ class Instance extends Model
                 {
                     self::sendErrorNotification('Error dates','La data fi no pot ser més petita que la data inici','data_fi');
                 }
+                if($record->is_notificat){
+                    self::sendErrorNotification('Error Notificat','No pots modificar una instància si ja ha estat notificada','is_notificat');
+                }
                 //Al modificar la data inici o data fi s'ha de modificar la data del vehicles assignats a l'instància
                 if($record->isDirty('data_inici') || $record->isDirty('data_fi') || $record->isDirty('VALIDAT'))
                 {

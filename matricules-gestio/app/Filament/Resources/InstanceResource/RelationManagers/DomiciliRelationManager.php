@@ -108,6 +108,7 @@ class DomiciliRelationManager extends RelationManager
                     return Action::make("assignDomicili{$num}")
                         ->label((string) $num)
                         ->icon('heroicon-m-pencil')
+                        ->hidden(fn () => $this->ownerRecord->is_notificat)
                         ->action(function (Dwelling $dom) use ($num) {
                             self::assignDwelling($dom, $this->ownerRecord, $num);
                             self::assignStreet($dom,$this->ownerRecord);

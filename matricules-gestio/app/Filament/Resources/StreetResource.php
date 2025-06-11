@@ -176,6 +176,7 @@ class StreetResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('PAISPROVMUNICARCOD')
                     ->label('PAISPROVMUNICARCOD')
+                    ->searchable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('CARSIG')
                     ->label('CARSIG')

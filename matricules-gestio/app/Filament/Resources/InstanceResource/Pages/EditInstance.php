@@ -26,13 +26,18 @@ class EditInstance extends EditRecord
     
     public function saveForm()
     {
-        //Obtenir les dades del formulari
-        $data = $this->form->getState();
-        //Emplenar les dades del formulari
-        $this->record->fill($data);
-        //Saltar validació
-        $this->record->skipValidation();
-        //Guardar Formulari
-        $this->record->save();
+        if($this->record->is_notificat)
+        {
+            \App\Models\Instance::sendErrorNotification('Error Notificat','No pots modificar una instància si ja ha estat notificada','is_notificat');
+        }else {
+            //Obtenir les dades del formulari
+            $data = $this->form->getState();
+            //Emplenar les dades del formulari
+            $this->record->fill($data);
+            //Saltar validació
+            $this->record->skipValidation();
+            //Guardar Formulari
+            $this->record->save();
+        }
     }
 }

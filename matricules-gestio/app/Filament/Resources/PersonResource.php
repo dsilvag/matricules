@@ -122,6 +122,7 @@ class PersonResource extends Resource
                 Tables\Columns\TextColumn::make('PERSCOD')
                     ->label('PERSCOD')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('PAISCOD')
                     ->label('PAISCOD')
