@@ -490,6 +490,10 @@ class InstanceResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('PERSCOD')
+                    ->label('PERSCOD')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 TernaryFilter::make('DECRETAT')->label('Decretat'),
