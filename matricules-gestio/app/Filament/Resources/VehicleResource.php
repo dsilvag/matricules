@@ -81,7 +81,7 @@ class VehicleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                 Filter::make('DATAEXP')->label('Actius')->query(fn ($query) => $query->whereDate('DATAEXP', '>=', now()->toDateString()))->default(true),
+                 Filter::make('DATAEXP')->label('Actius')->query(fn ($query) => $query->whereDate('DATAEXP', '>=', now()->toDateString())->whereDate('DATAINICI','<=',now()->toDateString()))->default(true),
                  Filter::make('no_padro')
                     ->label('No padro')
                     ->default(true)
