@@ -19,7 +19,7 @@ class InstancesCreatedChart extends ChartWidget
         if ($filter === 'setmana') {
             $label = 'per setmana';
         } elseif ($filter === 'dies') {
-            $label = 'per dies';
+            $label = 'últims 15 dies';
         } else {
             $label = 'per mes';
         }
