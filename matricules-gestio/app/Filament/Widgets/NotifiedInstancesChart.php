@@ -13,7 +13,16 @@ class NotifiedInstancesChart extends ChartWidget
 
     public function getHeading(): string
     {
-        $label = env('FILTER_WIDGET') === 'setmana' ? 'per setmana' : 'per mes';
+        $filter = env('FILTER_WIDGET');
+
+        if ($filter === 'setmana') {
+            $label = 'per setmana';
+        } elseif ($filter === 'dies') {
+            $label = 'últims 15 dies';
+        } else {
+            $label = 'per mes';
+        }
+
         return 'Instàncies notificades ' . $label;
     }
 
@@ -37,6 +46,24 @@ class NotifiedInstancesChart extends ChartWidget
                 $parts = explode('/', $weekKey);
                 $formatted = $parts[1] . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
                 return [$weekKey => $instanceCounts[$formatted] ?? 0];
+            });
+
+        } elseif (env('FILTER_WIDGET') === 'dies') {
+            // Agrupar per dies (últims 15 dies)
+            $days = collect(range(0, 14))->map(function ($dayOffset) {
+                return now()->copy()->subDays($dayOffset)->format('Y-m-d');
+            })->reverse();
+
+            $instanceCounts = Instance::selectRaw('DATE(updated_at) as day, COUNT(*) as count')
+                ->where('updated_at', '>=', now()->subDays(15))
+                ->where('RESNUME', '!=', 'PADRO')
+                ->where('is_notificat', '=', true)
+                ->groupBy('day')
+                ->orderBy('day')
+                ->pluck('count', 'day');
+
+            $data = $days->mapWithKeys(function ($day) use ($instanceCounts) {
+                return [$day => $instanceCounts[$day] ?? 0];
             });
 
         } else {

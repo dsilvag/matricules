@@ -13,7 +13,16 @@ class VehiclesCreatedChart extends ChartWidget
 
     public function getHeading(): string
     {
-        $label = env('FILTER_WIDGET') === 'setmana' ? 'per setmana' : 'per mes';
+        $filter = env('FILTER_WIDGET');
+
+        if ($filter === 'setmana') {
+            $label = 'per setmana';
+        } elseif ($filter === 'dies') {
+            $label = 'últims 15 dies';
+        } else {
+            $label = 'per mes';
+        }
+
         return 'Matrícules creades ' . $label;
     }
 
@@ -37,6 +46,24 @@ class VehiclesCreatedChart extends ChartWidget
                 $parts = explode('/', $weekKey);
                 $formatted = $parts[1] . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
                 return [$weekKey => $vehicleCounts[$formatted] ?? 0];
+            });
+
+        } elseif (env('FILTER_WIDGET') === 'dies') {
+            // Agrupar per dies (últims 15 dies)
+            $days = collect(range(0, 14))->map(function ($dayOffset) {
+                return now()->copy()->subDays($dayOffset)->format('Y-m-d');
+            })->reverse();
+
+            $vehicleCounts = Vehicle::selectRaw('DATE(vehicles.created_at) as day, COUNT(*) as count')
+                ->join('instances', 'vehicles.instance_id', '=', 'instances.id')
+                ->where('vehicles.created_at', '>=', now()->subDays(15))
+                ->where('instances.RESNUME', '!=', 'PADRO')
+                ->groupBy('day')
+                ->orderBy('day')
+                ->pluck('count', 'day');
+
+            $data = $days->mapWithKeys(function ($day) use ($vehicleCounts) {
+                return [$day => $vehicleCounts[$day] ?? 0];
             });
 
         } else {
@@ -76,6 +103,6 @@ class VehiclesCreatedChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'polarArea';
+        return 'bar';
     }
 }

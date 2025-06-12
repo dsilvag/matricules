@@ -10,14 +10,22 @@ class InstancesCreatedChart extends ChartWidget
 {
     protected static ?int $sort = 2;
 
-    protected static ?string $heading = null; // Dejamos esto en null
+    protected static ?string $heading = null;
 
     public function getHeading(): string
     {
-        $label = env('FILTER_WIDGET') === 'setmana' ? 'per setmana' : 'per mes';
+        $filter = env('FILTER_WIDGET');
+
+        if ($filter === 'setmana') {
+            $label = 'per setmana';
+        } elseif ($filter === 'dies') {
+            $label = 'per dies';
+        } else {
+            $label = 'per mes';
+        }
+
         return 'Instàncies creades ' . $label;
     }
-
 
     protected function getData(): array
     {
@@ -40,7 +48,25 @@ class InstancesCreatedChart extends ChartWidget
                 return [$weekKey => $instanceCounts[$formatted] ?? 0];
             });
 
-        } else {
+        } elseif (env('FILTER_WIDGET') === 'dies') {
+            // Agrupar per dies (últims 15 dies)
+            $days = collect(range(0, 14))->map(function ($dayOffset) {
+                return now()->copy()->subDays($dayOffset)->format('Y-m-d');
+            })->reverse();
+
+            $instanceCounts = Instance::selectRaw('DATE(created_at) as day, COUNT(*) as count')
+                ->where('created_at', '>=', now()->subDays(15))
+                ->where('RESNUME', '!=', 'PADRO')
+                ->groupBy('day')
+                ->orderBy('day')
+                ->pluck('count', 'day');
+
+            $data = $days->mapWithKeys(function ($day) use ($instanceCounts) {
+                return [$day => $instanceCounts[$day] ?? 0];
+            });
+        } 
+        
+        else {
             // Agrupar per mes (últim any)
             $months = collect(range(1, 12))->map(function ($month) {
                 return Carbon::create()->month($month)->format('F');
@@ -76,6 +102,6 @@ class InstancesCreatedChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
     }
 }
