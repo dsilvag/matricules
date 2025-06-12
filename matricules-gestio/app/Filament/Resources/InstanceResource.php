@@ -507,12 +507,32 @@ class InstanceResource extends Resource
                 //Tables\Actions\DeleteAction::make(),
                 Tables\Actions\Action::make('sendToWs') 
                     ->label('Decretar')
+                    ->hidden(fn ($record) => $record->DECRETAT)
                     ->action(fn ($record) => Instance::sendToWs($record))
                     ->icon('heroicon-o-arrow-up-circle'),
+                Tables\Actions\Action::make('desDect') 
+                    ->label('Treure decret')
+                    ->hidden(fn ($record) => !$record->DECRETAT)
+                    ->action(function ($record) {
+                        $record->DECRETAT = false;
+                        $record->skipValidation();
+                        $record->save();
+                    })
+                    ->icon('heroicon-o-x-mark'),
                 Tables\Actions\Action::make('notificar')
                     ->label('Notificar')
+                    ->hidden(fn ($record) => $record->is_notificat)
                     ->action(fn ($record) => Instance::notifyInstance($record))
                     ->icon('heroicon-o-bell-alert'),
+                Tables\Actions\Action::make('desNoti')
+                    ->label('Treure Notificació')
+                    ->hidden(fn ($record) => !$record->is_notificat || !auth()->user()->hasRole('Admin'))
+                    ->action(function ($record) {
+                        $record->is_notificat = false;
+                        $record->skipValidation();
+                        $record->save();
+                    })
+                    ->icon('heroicon-o-bell-slash'),
                 /*Tables\Actions\Action::make('exportDocx')
                     ->label('Exp DOCX')
                     ->action(fn ($record) => static::downloadDocx($record))
