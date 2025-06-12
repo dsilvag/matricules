@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Filament\Widgets;
 
 use Filament\Widgets\ChartWidget;
@@ -106,3 +106,4 @@ class DecreedInstancesChart extends ChartWidget
         return 'bar';
     }
 }
+*/
