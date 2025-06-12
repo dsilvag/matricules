@@ -26,27 +26,19 @@ class VehiclesActiusChart extends ChartWidget
             ->where('DATAINICI', '<=', now())
             ->count();
         return [
-        'datasets' => [
-            [
-                'label' => 'Vehicles actius padro/no padro',
-                'data' => [$padro, $noPadro],
-                'backgroundColor' => [
-                    'rgba(93, 173, 226, 0.4)',
-                    'rgba(244, 208, 63, 0.4)'  
+            'datasets' => [
+                [
+                    'label' => 'Vehicles actius padro/no padro',
+                    'data' => [$padro, $noPadro],
+                    'backgroundColor' => ['#5dade2', '#f4d03f'],
                 ],
-                'borderColor' => [
-                    'rgba(93, 173, 226, 1)',  
-                    'rgba(244, 208, 63, 1)'  
-                ],
-                'borderWidth' => 2,
             ],
-        ],
             'labels' => ['Padro', 'No Padro'],
         ];
     }
 
     protected function getType(): string
     {
-        return 'bar';
+        return 'doughnut';
     }
 }
