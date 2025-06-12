@@ -2,22 +2,20 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Instance;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
+use App\Models\Vehicle;
 
-class InstancesCreatedChart extends ChartWidget
+class VehiclesCreatedChart extends ChartWidget
 {
-    protected static ?int $sort = 2;
-
-    protected static ?string $heading = null; // Dejamos esto en null
+    protected static ?int $sort = 5;
+    protected static ?string $heading = null;
 
     public function getHeading(): string
     {
         $label = env('FILTER_WIDGET') === 'setmana' ? 'per setmana' : 'per mes';
-        return 'Instàncies creades ' . $label;
+        return 'Matrícules creades ' . $label;
     }
-
 
     protected function getData(): array
     {
@@ -27,17 +25,18 @@ class InstancesCreatedChart extends ChartWidget
                 return now()->copy()->subWeeks($weekOffset)->startOfWeek()->format('W/Y');
             })->reverse();
 
-            $instanceCounts = Instance::selectRaw('YEARWEEK(created_at, 1) as week, COUNT(*) as count')
-                ->where('created_at', '>=', now()->subWeeks(8))
-                ->where('RESNUME', '!=', 'PADRO')
+            $vehicleCounts = Vehicle::selectRaw('YEARWEEK(vehicles.created_at, 1) as week, COUNT(*) as count')
+                ->join('instances', 'vehicles.instance_id', '=', 'instances.id')
+                ->where('vehicles.created_at', '>=', now()->subWeeks(8))
+                ->where('instances.RESNUME', '!=', 'PADRO')
                 ->groupBy('week')
                 ->orderBy('week')
                 ->pluck('count', 'week');
 
-            $data = $weeks->mapWithKeys(function ($weekKey) use ($instanceCounts) {
+            $data = $weeks->mapWithKeys(function ($weekKey) use ($vehicleCounts) {
                 $parts = explode('/', $weekKey);
                 $formatted = $parts[1] . str_pad($parts[0], 2, '0', STR_PAD_LEFT);
-                return [$weekKey => $instanceCounts[$formatted] ?? 0];
+                return [$weekKey => $vehicleCounts[$formatted] ?? 0];
             });
 
         } else {
@@ -46,26 +45,27 @@ class InstancesCreatedChart extends ChartWidget
                 return Carbon::create()->month($month)->format('F');
             });
 
-            $instanceCounts = Instance::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-                ->whereYear('created_at', now()->year)
-                ->where('RESNUME', '!=', 'PADRO')
+            $vehicleCounts = Vehicle::selectRaw('MONTH(vehicles.created_at) as month, COUNT(*) as count')
+                ->join('instances', 'vehicles.instance_id', '=', 'instances.id')
+                ->whereYear('vehicles.created_at', now()->year)
+                ->where('instances.RESNUME', '!=', 'PADRO')
                 ->groupBy('month')
                 ->orderBy('month')
                 ->pluck('count', 'month');
 
-            $data = $months->mapWithKeys(function ($monthName, $index) use ($instanceCounts) {
+            $data = $months->mapWithKeys(function ($monthName, $index) use ($vehicleCounts) {
                 $monthNumber = $index + 1;
-                return [$monthName => $instanceCounts[$monthNumber] ?? 0];
+                return [$monthName => $vehicleCounts[$monthNumber] ?? 0];
             });
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Instàncies creades',
+                    'label' => 'Matrícules creades',
                     'data' => $data->values(),
-                    'borderColor' => '#6366F1',
-                    'backgroundColor' => 'rgba(99, 102, 241, 0.2)',
+                    'borderColor' => '#3B82F6',
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.2)',
                     'fill' => true,
                     'tension' => 0.3,
                 ],
@@ -76,6 +76,6 @@ class InstancesCreatedChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'line';
+        return 'polarArea';
     }
 }

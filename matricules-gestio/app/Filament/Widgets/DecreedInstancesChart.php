@@ -2,22 +2,20 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Instance;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
+use App\Models\Instance;
 
-class InstancesCreatedChart extends ChartWidget
+class DecreedInstancesChart extends ChartWidget
 {
-    protected static ?int $sort = 2;
-
-    protected static ?string $heading = null; // Dejamos esto en null
+    protected static ?int $sort = 4;
+    protected static ?string $heading = null;
 
     public function getHeading(): string
     {
         $label = env('FILTER_WIDGET') === 'setmana' ? 'per setmana' : 'per mes';
-        return 'Instàncies creades ' . $label;
+        return 'Instàncies decretades ' . $label;
     }
-
 
     protected function getData(): array
     {
@@ -27,9 +25,10 @@ class InstancesCreatedChart extends ChartWidget
                 return now()->copy()->subWeeks($weekOffset)->startOfWeek()->format('W/Y');
             })->reverse();
 
-            $instanceCounts = Instance::selectRaw('YEARWEEK(created_at, 1) as week, COUNT(*) as count')
-                ->where('created_at', '>=', now()->subWeeks(8))
+            $instanceCounts = Instance::selectRaw('YEARWEEK(updated_at, 1) as week, COUNT(*) as count')
+                ->where('updated_at', '>=', now()->subWeeks(8))
                 ->where('RESNUME', '!=', 'PADRO')
+                ->where('DECRETAT', '=', true)
                 ->groupBy('week')
                 ->orderBy('week')
                 ->pluck('count', 'week');
@@ -46,9 +45,10 @@ class InstancesCreatedChart extends ChartWidget
                 return Carbon::create()->month($month)->format('F');
             });
 
-            $instanceCounts = Instance::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-                ->whereYear('created_at', now()->year)
+            $instanceCounts = Instance::selectRaw('MONTH(updated_at) as month, COUNT(*) as count')
+                ->whereYear('updated_at', now()->year)
                 ->where('RESNUME', '!=', 'PADRO')
+                ->where('DECRETAT', '=', true)
                 ->groupBy('month')
                 ->orderBy('month')
                 ->pluck('count', 'month');
@@ -62,10 +62,10 @@ class InstancesCreatedChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Instàncies creades',
+                    'label' => 'Instàncies decretades',
                     'data' => $data->values(),
-                    'borderColor' => '#6366F1',
-                    'backgroundColor' => 'rgba(99, 102, 241, 0.2)',
+                    'borderColor' => '#F59E0B',
+                    'backgroundColor' => 'rgba(245, 158, 11, 0.2)',
                     'fill' => true,
                     'tension' => 0.3,
                 ],
@@ -76,6 +76,6 @@ class InstancesCreatedChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'line';
+        return 'radar';
     }
 }

@@ -6,7 +6,7 @@ use Filament\Widgets\ChartWidget;
 
 class VehiclesActiusChart extends ChartWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 6;
 
     protected static ?string $heading = 'Vehicles actius padro/no padro';
 
