@@ -23,7 +23,7 @@ class VehiclesActiusChart extends ChartWidget
                 $query->where('RESNUME', '!=', 'PADRO');
             })
             ->where('DATAEXP', '>', now())
-            ->where('DATAINICI', '<=', now())
+            //->where('DATAINICI', '<=', now())
             ->count();
         return [
             'datasets' => [
