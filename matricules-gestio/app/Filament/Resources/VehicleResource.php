@@ -15,7 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Select;
 use App\Models\StreetBarriVell;
 use Filament\Tables\Filters\Filter;
-
+use App\Filament\Exports\VehicleExporter;
+use Filament\Tables\Actions\ExportAction;
 
 class VehicleResource extends Resource
 {
@@ -91,6 +92,11 @@ class VehicleResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->hidden(fn () => !auth()->user()->hasRole('Admin'))
+                    ->exporter(VehicleExporter::class),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
