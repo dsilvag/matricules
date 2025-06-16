@@ -1,7 +1,7 @@
 <x-mail::message>
 # Informe d'errors
 
-S'han trobat els errors següents durant la importació:
+S'han importat les següents líneas:
 
 @if(!empty($logContent))
 <pre style="white-space: pre-wrap; font-family: monospace;">{{ $logContent }}</pre>
